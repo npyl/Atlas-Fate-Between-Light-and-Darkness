@@ -17,7 +17,8 @@
 
         ],
         "skeleton": {
-          "skeleton": "data/skeletons/patrol/patrol.skeleton"
+          "skeleton": "data/skeletons/patrol/patrol.skeleton",
+          "scale": 1.35
         },
         "patrol_animator": true,
       "tags": [ "enemy", "patrol" ],
