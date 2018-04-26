@@ -257,7 +257,7 @@ bool CGameCoreSkeleton::create(const std::string& res_name) {
 			  return false;
 		  std::string skin_mesh_file = root_path + actual_file.replace(actual_file.find(".cmf"), actual_file.length(),"") + ".mesh";
 		  convertCalCoreMesh2RenderMesh(getCoreMesh(mesh_id), skin_mesh_file);
-		  std::remove(skin_mesh_file.replace(skin_mesh_file.find(".mesh"), skin_mesh_file.length(), ".cmf").c_str());
+		  //std::remove(skin_mesh_file.replace(skin_mesh_file.find(".mesh"), skin_mesh_file.length(), ".cmf").c_str());
 	  }
 	  drnt = readdir(dr);
   } while (drnt != NULL);
@@ -277,6 +277,8 @@ bool CGameCoreSkeleton::create(const std::string& res_name) {
     // read other metadata associated to the anim
     // ...
   }
+
+  this->scale(0.5f);
 
   // Array of bone ids to debug (auto conversion from array of json to array of ints)
   if(json["bone_ids_to_debug"].is_array())

@@ -50,6 +50,10 @@ CB_DEF(CCteLight, CB_LIGHT)
 CB_DEF(CCteSkinBones, CB_SKIN_BONES)
 {
 	MAT44 Bones[MAX_SUPPORTED_BONES];
+	float BonesScale;
+	float BonesDummy1;
+	float BonesDummy2;
+	float BonesDummy3;
 };
 
 #endif

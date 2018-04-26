@@ -111,7 +111,7 @@ void TCompSkeleton::debugInMenu() {
 
   ImGui::DragFloat("Scale", &scale, 0.01f, 0, 5.f);
   if (ImGui::SmallButton("Scale Model")) {
-	  //model->getSkeleton()->getCoreSkeleton()->scale(scale);
+	  model->getSkeleton()->getCoreSkeleton()->scale(scale);
 	  //model->getCoreModel()->scale(scale);
 
   }
@@ -224,6 +224,7 @@ void TCompSkeleton::updateCtesBones() {
     *fout++ = 1.f;
   }
 
+  cb_bones.BonesScale = 0.5f;
   cb_bones.updateGPU();
 }
 

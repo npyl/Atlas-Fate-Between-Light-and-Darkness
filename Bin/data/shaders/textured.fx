@@ -39,7 +39,7 @@ VS_OUTPUT VS_Skin(
 {
 
   float4x4 skin_mtx = getSkinMtx( iBones, iWeights );
-  float4 skinned_Pos = mul(iPos, skin_mtx);
+  float4 skinned_Pos = mul(float4( iPos.xyz * BonesScale, 1 ), skin_mtx);
 
   VS_OUTPUT output = (VS_OUTPUT)0;
   // The world matrix is inside the bones matrixs
