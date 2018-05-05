@@ -160,7 +160,7 @@ void TCompTempPlayerController::onCreate(const TMsgEntityCreated& msg) {
 	hitPoints = 0;
 	stamina = 100.f;
 	fallingTime = 0.f;
-	currentSpeed = 4.f;
+	currentMaxSpeed = 4.f;
 	initialPoints = 5;
 	rotationSpeed = 10.f;
 	fallingDistance = 0.f;
@@ -175,7 +175,8 @@ void TCompTempPlayerController::onStateStart(const TMsgStateStart& msg) {
 	if (msg.action_start != NULL) {
 
 		state = msg.action_start;
-		currentSpeed = msg.speed;
+		currentMinSpeed = msg.minSpeed;
+		currentMaxSpeed = msg.maxSpeed;
 
 		TCompRigidbody * rigidbody = get<TCompRigidbody>();
 		TCompTransform * t_trans = get<TCompTransform>();
@@ -282,12 +283,16 @@ void TCompTempPlayerController::walkState(float dt) {
 	float yaw, pitch, roll;
 	CEntity *player_camera = target_camera;
 	TCompTransform *c_my_transform = get<TCompTransform>();
+	TCompPlayerAnimator *animator = get<TCompPlayerAnimator>();
 	TCompTransform * trans_camera = player_camera->get<TCompTransform>();
 	c_my_transform->getYawPitchRoll(&yaw, &pitch, &roll);
 
 	float inputSpeed = Clamp(fabs(EngineInput["Horizontal"].value) + fabs(EngineInput["Vertical"].value), 0.f, 1.f);
-	float player_accel = inputSpeed * currentSpeed * dt;
-
+	animator->setWeightFactor(inputSpeed);
+	//dbg("input: %f\n", inputSpeed);
+	//float player_accel = inputSpeed * currentMaxSpeed * dt;
+	float player_accel = lerp(currentMinSpeed, currentMaxSpeed, inputSpeed) *dt;
+	dbg("input: %f\n", lerp(currentMinSpeed, currentMaxSpeed, inputSpeed));
 	VEC3 up = trans_camera->getFront();
 	VEC3 normal_norm = c_my_transform->getUp();
 	VEC3 proj = projectVector(up, normal_norm);
@@ -317,7 +322,7 @@ void TCompTempPlayerController::mergeState(float dt) {
 	VEC3 prevUp = c_my_transform->getUp();
 	VEC3 up = angle_test < mergeAngle ? -EnginePhysics.gravity : trans_camera->getFront();
 	float inputSpeed = Clamp(fabs(EngineInput["Horizontal"].value) + fabs(EngineInput["Vertical"].value), 0.f, 1.f);
-	float player_accel = inputSpeed * currentSpeed * dt;
+	float player_accel = inputSpeed * currentMaxSpeed * dt;
 
 	VEC3 normal_norm = rigidbody->normal_gravity;
 	normal_norm.Normalize();

@@ -148,6 +148,13 @@ float  TCompAnimator::getAnimationDuration(EAnimation animation) {
 	return compSkeleton->getAnimationDuration(animSet.animationId);
 }
 
+void TCompAnimator::setWeightFactor(float weight) {
+
+	CEntity* e = ownHandle;
+	TCompSkeleton * compSkeleton = e->get<TCompSkeleton>();
+	compSkeleton->setCyclicAnimationWeight(weight);
+}
+
 bool TCompAnimator::isPlayingAnimation(EAnimation animation) {
 	CEntity* e = ownHandle;
 	TCompSkeleton * compSkeleton = e->get<TCompSkeleton>();

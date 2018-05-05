@@ -50,9 +50,9 @@ void TCompPlayerAnimator::initializeAnimations() {
 	initializeAnimation(
 		(TCompAnimator::EAnimation)EAnimation::WALK,
 		EAnimationType::CYCLIC,
-		EAnimationSize::SINGLE,
+		EAnimationSize::DOUBLE,
 		"walk",
-		"",
+		"walk_slow",
 		1.0f,
 		1.0f
 	);

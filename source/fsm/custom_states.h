@@ -20,6 +20,7 @@ namespace FSM
 		Noise * _noise = nullptr;
 		float _size = 1.f;
 		float _radius = 0.3f;
+		float _speedlow = 0.5f;
 		float _speed = 1.f;
 		std::string _animationName;
 	};
@@ -34,6 +35,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _force = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 1.f;
 		float _size = 1.f;
 		float _radius = 0.3f;
@@ -50,6 +52,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _size = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 1.f;
 		float _radius = 0.3f;
 		float _rotation_speed = 1.f;
@@ -66,6 +69,7 @@ namespace FSM
     TargetCamera * _target = nullptr;
     Noise * _noise = nullptr;
     float _size = 1.f;
+	float _speedlow = 0.5f;
     float _speed = 1.f;
     float _radius = 0.3f;
     float _rotation_speed = 1.f;
@@ -82,6 +86,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _size = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 1.f;
 		float _radius = 0.3f;
 		float _rotation_speed = 1.f;
@@ -98,6 +103,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _size = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 1.f;
 		float _radius = 0.3f;
 		float _rotation_speed = 1.f;
@@ -114,6 +120,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _size = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 1.f;
 		float _radius = 0.3f;
 		float _rotation_speed = 1.f;
@@ -130,6 +137,7 @@ namespace FSM
     TargetCamera * _target = nullptr;
     Noise * _noise = nullptr;
     float _size = 1.f;
+	float _speedlow = 0.5f;
     float _speed = 1.f;
     float _radius = 0.3f;
     float _rotation_speed = 1.f;
@@ -146,6 +154,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _size = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 1.f;
 		float _radius = 0.3f;
 		std::string _animationName;
@@ -161,6 +170,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _size = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 1.f;
 		float _radius = 0.3f;
 		std::string _animationName;
@@ -176,6 +186,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _size = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 1.f;
 		float _radius = 0.3f;
 		std::string _animationName;
@@ -191,6 +202,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _size = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 1.f;
 		float _radius = 0.3f;
 		std::string _animationName;
@@ -206,6 +218,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _size = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 1.f;
 		float _radius = 0.3f;
 		std::string _animationName;
@@ -221,6 +234,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _size = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 1.f;
 		float _radius = 0.3f;
 		std::string _animationName;
@@ -235,6 +249,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _size = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 2.f;
 		float _radius = 0.3f;
 		std::string _animationName;
@@ -249,6 +264,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _size = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 2.f;
 		float _radius = 0.3f;
 		std::string _animationName;
@@ -263,6 +279,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _size = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 2.f;
 		float _radius = 0.3f;
 		std::string _animationName;
@@ -277,6 +294,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _size = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 2.f;
 		float _radius = 0.3f;
 		std::string _animationName;
@@ -291,6 +309,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _size = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 2.f;
 		float _radius = 0.3f;
 		std::string _animationName;
@@ -305,6 +324,7 @@ namespace FSM
 		TargetCamera * _target = nullptr;
 		Noise * _noise = nullptr;
 		float _size = 1.f;
+		float _speedlow = 0.5f;
 		float _speed = 2.f;
 		float _radius = 0.3f;
 		std::string _animationName;

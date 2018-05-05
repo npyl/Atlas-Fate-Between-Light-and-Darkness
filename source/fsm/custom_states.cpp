@@ -50,6 +50,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 4.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _noise = jData.count("noise") ? getNoise(jData["noise"]) : getNoise(NULL);
@@ -63,7 +64,7 @@ namespace FSM
     //e->sendMsg(TMsgAnimation{ _animationName });
     CEntity* e = ctx.getOwner();
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::IDLE , 1.0f });
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speed, _size, _radius, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speedlow, _speed, _size, _radius, _target, _noise });
   }
 
   void IdleState::onFinish(CContext& ctx) const {
@@ -74,6 +75,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 4.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _rotation_speed = jData.value("rotationSpeed", 10.f);
@@ -90,7 +92,7 @@ namespace FSM
 
     CEntity* e = ctx.getOwner();
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::WALK , 1.0f });
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::walkState, _speed, _size, _radius, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::walkState, _speedlow, _speed, _size, _radius, _target, _noise });
   }
 
   void WalkState::onFinish(CContext& ctx) const {
@@ -101,6 +103,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 4.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _rotation_speed = jData.value("rotationSpeed", 10.f);
@@ -117,7 +120,7 @@ namespace FSM
 
     CEntity* e = ctx.getOwner();
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::WALK_SLOW , 1.0f });
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::walkState, _speed, _size, _radius, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::walkState, _speedlow, _speed, _size, _radius, _target, _noise });
   }
 
   void WalkSlowState::onFinish(CContext& ctx) const {
@@ -128,6 +131,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 5.5f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _rotation_speed = jData.value("rotationSpeed", 10.f);
@@ -144,7 +148,7 @@ namespace FSM
 
     CEntity* e = ctx.getOwner();
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::RUN , 1.0f });
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::walkState, _speed, _size, _radius, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::walkState, _speed, _speedlow, _size, _radius, _target, _noise });
   }
 
   void RunState::onFinish(CContext& ctx) const {
@@ -155,6 +159,7 @@ namespace FSM
 
     _force = jData.value("force", 1.f);
     _speed = jData.value("speed", 3.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _animationName = jData["animation"];
@@ -168,7 +173,7 @@ namespace FSM
     // Send a message to the player controller
     CEntity* e = ctx.getOwner();
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::FALL , 1.0f });
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::walkState, _speed, _size, _radius, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::walkState, _speedlow, _speed, _size, _radius, _target, _noise });
   }
 
   void FallState::onFinish(CContext& ctx) const {
@@ -180,6 +185,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 3.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _rotation_speed = jData.value("rotationSpeed", 10.f);
@@ -196,7 +202,7 @@ namespace FSM
 
     CEntity* e = ctx.getOwner();
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::CROUCH_IDLE , 1.0f });
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speed, _size, _radius, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speedlow, _speed, _size, _radius, _target, _noise });
   }
 
   void CrouchState::onFinish(CContext& ctx) const {
@@ -207,6 +213,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 3.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _rotation_speed = jData.value("rotationSpeed", 10.f);
@@ -223,7 +230,7 @@ namespace FSM
 
     CEntity* e = ctx.getOwner();
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::CROUCH_WALK , 1.0f });
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::walkState, _speed, _size, _radius, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::walkState, _speedlow, _speed, _size, _radius, _target, _noise });
   }
 
   void CrouchWalkState::onFinish(CContext& ctx) const {
@@ -234,6 +241,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 3.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _rotation_speed = jData.value("rotationSpeed", 10.f);
@@ -250,7 +258,7 @@ namespace FSM
 
     CEntity* e = ctx.getOwner();
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::CROUCH_WALK_SLOW , 1.0f });
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::walkState, _speed, _size, _radius, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::walkState, _speedlow, _speed, _size, _radius, _target, _noise });
   }
 
   void CrouchWalkSlowState::onFinish(CContext& ctx) const {
@@ -261,6 +269,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 3.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _noise = jData.count("noise") ? getNoise(jData["noise"]) : getNoise(NULL);
@@ -277,7 +286,7 @@ namespace FSM
     CEntity* e = ctx.getOwner();
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::SM_POSE , 1.0f });
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::SM_ENTER , 1.0f });
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speed, _size, _radius, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speedlow, _speed, _size, _radius, _target, _noise });
 
     //// Testing!
     CHandle player_light = getEntityByName("LightPlayer");
@@ -310,6 +319,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 3.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _noise = jData.count("noise") ? getNoise(jData["noise"]) : getNoise(NULL);
@@ -323,7 +333,7 @@ namespace FSM
     CEntity* e = ctx.getOwner();
     //e->sendMsg(TMsgAnimation{ "crouch" });
 
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::mergeState, _speed, _size, _radius, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::mergeState, _speedlow, _speed, _size, _radius, _target, _noise });
   }
 
   void MergeState::onFinish(CContext& ctx) const {
@@ -337,6 +347,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 3.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _noise = jData.count("noise") ? getNoise(jData["noise"]) : getNoise(NULL);
@@ -352,7 +363,7 @@ namespace FSM
     //e->sendMsg(TMsgAnimation{ "crouch" });
 
     CEntity* e = ctx.getOwner();
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speed, _size, _radius, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speedlow, _speed, _size, _radius, _target, _noise });
 
     // Testing!
     CHandle player_light = getEntityByName("LightPlayer");
@@ -394,6 +405,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 2.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _noise = jData.count("noise") ? getNoise(jData["noise"]) : getNoise(NULL);
@@ -405,7 +417,7 @@ namespace FSM
 
     CEntity* e = ctx.getOwner();
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::LAND_SOFT , 1.0f });
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState,_speed, _size, _radius, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speedlow, _speed, _size, _radius, _target, _noise });
 
     CHandle player_light = getEntityByName("LightPlayer");
     if (player_light.isValid()) {
@@ -426,6 +438,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 2.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _noise = jData.count("noise") ? getNoise(jData["noise"]) : getNoise(NULL);
@@ -438,7 +451,7 @@ namespace FSM
     CEntity* e = ctx.getOwner();
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::LAND_SOFT , 1.0f });
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::IDLE , 1.0f });
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speed, _size, _radius, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speedlow, _speed, _size, _radius, _target, _noise });
   }
   void SoftLandState::onFinish(CContext& ctx) const {
 
@@ -448,6 +461,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 2.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _noise = jData.count("noise") ? getNoise(jData["noise"]) : getNoise(NULL);
@@ -459,7 +473,7 @@ namespace FSM
     CEntity* e = ctx.getOwner();
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::LAND_HARD , 1.0f });
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::IDLE , 1.0f });
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speed, _size, _radius, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speedlow, _speed, _size, _radius, _target, _noise });
   }
 
   void HardLandState::onFinish(CContext& ctx) const {
@@ -471,6 +485,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 2.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _noise = jData.count("noise") ? getNoise(jData["noise"]) : getNoise(NULL);
@@ -483,7 +498,8 @@ namespace FSM
 
     CEntity* e = ctx.getOwner();
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::ATTACK , 1.0f });
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::attackState, _speed, _radius, _size, _target, _noise });
+	e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::IDLE , 1.0f });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::attackState, _speedlow, _speed, _radius, _size, _target, _noise });
   }
   void AttackState::onFinish(CContext& ctx) const {
 
@@ -493,6 +509,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 2.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _noise = jData.count("noise") ? getNoise(jData["noise"]) : getNoise(NULL);
@@ -503,7 +520,7 @@ namespace FSM
   void RemoveInhibitor::onStart(CContext& ctx) const {
 
     CEntity* e = ctx.getOwner();
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::removingInhibitorState, _speed, _radius, _size, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::removingInhibitorState, _speedlow, _speed, _radius, _size, _target, _noise });
 
   }
 
@@ -515,6 +532,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 2.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _noise = jData.count("noise") ? getNoise(jData["noise"]) : getNoise(NULL);
@@ -526,7 +544,7 @@ namespace FSM
 
     CEntity* e = ctx.getOwner();
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::METRALLA_FINISH , 1.0f });
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speed, _radius, _size, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speedlow, _speed, _radius, _size, _target, _noise });
 
   }
 
@@ -538,6 +556,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 2.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _noise = jData.count("noise") ? getNoise(jData["noise"]) : getNoise(NULL);
@@ -549,7 +568,7 @@ namespace FSM
 
     CEntity* e = ctx.getOwner();
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::METRALLA_MIDDLE , 1.0f });
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speed, _radius, _size, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speedlow, _speed, _radius, _size, _target, _noise });
 
   }
 
@@ -561,6 +580,7 @@ namespace FSM
 
     _animationName = jData["animation"];
     _speed = jData.value("speed", 2.f);
+	_speedlow = jData.value("speed_low", 1.f);
     _size = jData.value("size", 1.f);
     _radius = jData.value("radius", 0.3f);
     _noise = jData.count("noise") ? getNoise(jData["noise"]) : getNoise(NULL);
@@ -573,7 +593,7 @@ namespace FSM
     CEntity* e = ctx.getOwner();
     e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::DEATH , 1.0f });
 	e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::DEAD , 1.0f });
-    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::deadState, _speed, _radius, _size, _target, _noise });
+    e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::deadState, _speedlow, _speed, _radius, _size, _target, _noise });
   }
   void DieState::onFinish(CContext& ctx) const {
 
@@ -583,6 +603,7 @@ namespace FSM
 
 	  _animationName = jData["animation"];
 	  _speed = jData.value("speed", 2.f);
+	  _speedlow = jData.value("speed_low", 1.f);
 	  _size = jData.value("size", 1.f);
 	  _radius = jData.value("radius", 0.3f);
 	  _noise = jData.count("noise") ? getNoise(jData["noise"]) : getNoise(NULL);
@@ -594,7 +615,7 @@ namespace FSM
 
 	  CEntity* e = ctx.getOwner();
 	  e->sendMsg(TCompPlayerAnimator::TMsgExecuteAnimation{ TCompPlayerAnimator::EAnimation::DEAD , 1.0f });
-	  e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speed, _radius, _size, _target, _noise });
+	  e->sendMsg(TMsgStateStart{ (actionhandler)&TCompTempPlayerController::idleState, _speedlow, _speed, _radius, _size, _target, _noise });
   }
   void DeadState::onFinish(CContext& ctx) const {
 

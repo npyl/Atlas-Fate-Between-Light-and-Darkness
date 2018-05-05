@@ -52,6 +52,8 @@ public:
 	EAnimation getAnimationByName(std::string animation_name);
 	float getAnimationDuration(EAnimation animation);
 
+	void setWeightFactor(float weight);
+
 	void setFeetIds(std::vector<int> feetBonesId);
 	void setFeetNumAndCalculate(int numFeet);
 	std::vector<VEC3> getFeetPositions();

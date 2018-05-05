@@ -28,7 +28,8 @@ struct Noise {
 struct TMsgStateStart {
 	
 	actionhandler action_start;
-	float speed;
+	float minSpeed;
+	float maxSpeed;
 	float size;
 	float radius;
 
@@ -71,7 +72,8 @@ class TCompTempPlayerController : public TCompBase
 	bool tempInverseVerticalMovementMerged = false;
 
 	float mergeAngle;
-	float currentSpeed;
+	float currentMinSpeed;
+	float currentMaxSpeed;
 	float rotationSpeed;
 	float fallingTime;
 	float maxFallingTime;
