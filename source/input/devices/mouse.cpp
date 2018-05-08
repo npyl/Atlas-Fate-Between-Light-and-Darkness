@@ -24,6 +24,7 @@ namespace Input
 		// position
 		data._position_delta = _position - data._position;
 		data._position = _position;
+         
 
 		// wheel
 		data._wheel_delta = _wheel_delta;
