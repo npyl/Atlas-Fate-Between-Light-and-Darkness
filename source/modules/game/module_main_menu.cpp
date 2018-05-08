@@ -18,7 +18,7 @@ bool CModuleMainMenu::start()
 	
 	// Initialization settings
 	Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
-	mouse->setLockMouse(false);
+	//mouse->setLockMouse(false);
 	ShowCursor(false);
 
 	CHandle h_camera = getEntityByName("TPCamera");

@@ -47,87 +47,99 @@ LRESULT CALLBACK CApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
-	case WM_MBUTTONDOWN:
-	{
-		Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
-		if (mouse)
-		{
-			mouse->setButton(Input::MOUSE_MIDDLE, true);
-			SetCapture(hWnd);
-		}
-	}
-	break;
 
-	case WM_MBUTTONUP:
-	{
-		Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
-		if (mouse)
-		{
-			//ShowCursor(mouse->_lock_cursor);
-			//mouse->setLockMouse();
-			mouse->setButton(Input::MOUSE_MIDDLE, false);
-			ReleaseCapture();
-		}
-	}
-	break;
+    case WM_MOUSEMOVE:
+    {
+        Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
+        if (mouse)
+        {
+            int posX = GET_X_LPARAM(lParam);
+            int posY = GET_Y_LPARAM(lParam);
+            mouse->setPosition(static_cast<float>(posX), static_cast<float>(posY));
+            app_instance->resetMouse = true;
+        }
+    }
+    break;
 
-	case WM_LBUTTONDOWN:
-	{
-		Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
-		if (mouse)
-		{
-			mouse->setButton(Input::MOUSE_LEFT, true);
-			SetCapture(hWnd);
-		}
-	}
-	break;
+    case WM_MBUTTONDOWN:
+    {
+        Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
+        if (mouse)
+        {
+            mouse->setButton(Input::MOUSE_MIDDLE, true);
+            SetCapture(hWnd);
+        }
+    }
+    break;
 
-	case WM_LBUTTONUP:
-	{
-		Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
-		if (mouse)
-		{
-			mouse->setButton(Input::MOUSE_LEFT, false);
-			ReleaseCapture();
-		}
-	}
-	break;
+    case WM_MBUTTONUP:
+    {
+        Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
+        if (mouse)
+        {
+            mouse->setButton(Input::MOUSE_MIDDLE, false);
+            ReleaseCapture();
+        }
+    }
+    break;
 
-	case WM_RBUTTONDOWN:
-	{
-		Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
-		if (mouse)
-		{
-			mouse->setButton(Input::MOUSE_RIGHT, true);
-			SetCapture(hWnd);
-		}
-	}
-	break;
+    case WM_LBUTTONDOWN:
+    {
+        Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
+        if (mouse)
+        {
+            mouse->setButton(Input::MOUSE_LEFT, true);
+            SetCapture(hWnd);
+        }
+    }
+    break;
 
-	case WM_RBUTTONUP:
-	{
-		Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
-		if (mouse)
-		{
-			mouse->setButton(Input::MOUSE_RIGHT, false);
-			ReleaseCapture();
-		}
-	}
-	break;
+    case WM_LBUTTONUP:
+    {
+        Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
+        if (mouse)
+        {
+            mouse->setButton(Input::MOUSE_LEFT, false);
+            ReleaseCapture();
+        }
+    }
+    break;
 
-	case WM_MOUSEWHEEL:
-	{
-		Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
-		if (mouse)
-		{
-			float wheel_delta = static_cast<float>(GET_WHEEL_DELTA_WPARAM(wParam)) / WHEEL_DELTA;
-			mouse->setWheelDelta(wheel_delta);
-		}
-	}
-	break;
+    case WM_RBUTTONDOWN:
+    {
+        Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
+        if (mouse)
+        {
+            mouse->setButton(Input::MOUSE_RIGHT, true);
+            SetCapture(hWnd);
+        }
+    }
+    break;
 
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
+    case WM_RBUTTONUP:
+    {
+        Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
+        if (mouse)
+        {
+            mouse->setButton(Input::MOUSE_RIGHT, false);
+            ReleaseCapture();
+        }
+    }
+    break;
+
+    case WM_MOUSEWHEEL:
+    {
+        Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
+        if (mouse)
+        {
+            float wheel_delta = static_cast<float>(GET_WHEEL_DELTA_WPARAM(wParam)) / WHEEL_DELTA;
+            mouse->setWheelDelta(wheel_delta);
+        }
+    }
+    break;
+
+    default:
+        return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 
 	return 0;
@@ -189,17 +201,6 @@ void CApp::mainLoop() {
 		}
 		else
 		{
-			if (resetMouse)
-			{
-				POINT pt;
-
-				pt.x = xres / 2;
-				pt.y = yres / 2;
-				ClientToScreen(hWnd, &pt);
-
-				SetCursorPos(pt.x, pt.y);
-				resetMouse = false;
-			}
 			doFrame();
 		}
 	}

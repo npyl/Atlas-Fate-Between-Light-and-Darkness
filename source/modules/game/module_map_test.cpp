@@ -40,7 +40,7 @@ bool CModuleMapTest::start()
 	});
 
 	Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
-	mouse->setLockMouse(true);
+	//mouse->setLockMouse(true);
 	ShowCursor(false);
 
 	return true;

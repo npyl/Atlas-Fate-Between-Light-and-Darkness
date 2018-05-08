@@ -33,7 +33,7 @@ bool CModuleMapIntro::start()
 	Engine.getNavmeshes().buildNavmesh("data/navmeshes/milestone2_navmesh.bin");
 
 	Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
-	mouse->setLockMouse(true);
+	//mouse->setLockMouse(true);
 	ShowCursor(false);
 
 	CHandle h_camera = getEntityByName("TPCamera");

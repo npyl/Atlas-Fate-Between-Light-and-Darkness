@@ -4,28 +4,19 @@
 
 namespace Input
 {
-	class CMouse : public IDevice
-	{
-	public:
-		bool _lock_cursor;
+    class CMouse : public IDevice
+    {
+    public:
+        CMouse(const std::string& name);
+        virtual void updateMouseData(float delta, TInterface_Mouse& data) override;
 
-		CMouse(const std::string& name);
-		virtual void updateMouseData(float delta, TInterface_Mouse& data) override;
+        void setButton(EMouseButton bt, bool pressed);
+        void setPosition(float posX, float posY);
+        void setWheelDelta(float delta);
 
-		void setButton(EMouseButton bt, bool pressed);
-		void setPosition(float posX, float posY);
-		void setWheelDelta(float delta);
-
-		void setPreviousPosition(float posX, float posY);
-		void setPositionDelta(float deltaX, float deltaY);
-		void setLockMouse(bool state);
-		bool isMouseLocked() { return _lock_cursor; };
-
-	private:
-		bool _buttons[MOUSE_BUTTONS];
-		VEC2 _position;
-		VEC2 _previous_position;
-		VEC2 _position_delta;
-		float _wheel_delta;
-	};
+    private:
+        bool _buttons[MOUSE_BUTTONS];
+        VEC2 _position;
+        float _wheel_delta;
+    };
 }

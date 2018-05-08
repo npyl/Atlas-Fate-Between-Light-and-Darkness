@@ -1,6 +1,7 @@
 #include "mcv_platform.h"
 #include "input/devices/mouse.h"
 
+
 namespace Input
 {
 	CMouse::CMouse(const std::string& name)
@@ -11,7 +12,6 @@ namespace Input
 		_buttons[MOUSE_RIGHT] = false;
 		_wheel_delta = 0.f;
 		_position = VEC2(0.5f, 0.5f);
-		_lock_cursor = true;
 	}
 
 	void CMouse::updateMouseData(float delta, TInterface_Mouse& data)
@@ -22,12 +22,8 @@ namespace Input
 		data._buttons[MOUSE_RIGHT].update(delta, _buttons[MOUSE_RIGHT] ? 1.f : 0.f);
 
 		// position
-		data._position_delta = _position_delta;
-		data._position = data._position + data._position_delta;
-		_position_delta = VEC2::Zero;	//reset previous position
-
-		//dbg("posx %.f posy %.f\n", _position.x, _position.y);
-		//if (!_lock_cursor) _previous_position = _position; // Refactor
+		data._position_delta = _position - data._position;
+		data._position = _position;
 
 		// wheel
 		data._wheel_delta = _wheel_delta;
@@ -47,21 +43,6 @@ namespace Input
 	void CMouse::setWheelDelta(float delta)
 	{
 		_wheel_delta += delta;
-	}
-
-	void CMouse::setPreviousPosition(float posX, float posY)
-	{
-		_previous_position = VEC2(posX, posY);
-	}
-
-	void CMouse::setPositionDelta(float deltaX, float deltaY)
-	{
-		_position_delta = VEC2(deltaX, deltaY);
-	}
-
-	void CMouse::setLockMouse(bool state)
-	{
-		_lock_cursor = state;
 	}
 
 }

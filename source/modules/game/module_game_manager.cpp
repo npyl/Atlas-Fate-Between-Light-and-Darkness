@@ -53,7 +53,7 @@ void CModuleGameManager::update(float delta)
 	if (playerCont->isDead()) {
 		ShowCursor(false);
 		Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
-		mouse->setLockMouse(false);
+		//mouse->setLockMouse(false);
 		lostMenuVisible = true;
 		TMsgScenePaused msg;
 		msg.isPaused = true;
@@ -73,7 +73,7 @@ void CModuleGameManager::update(float delta)
 			// Lock/Unlock the cursor
 			Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
 			ShowCursor(!menuVisible);
-			mouse->setLockMouse(menuVisible);
+			//mouse->setLockMouse(menuVisible);
 
 			menuVisible = !menuVisible;
 		}
