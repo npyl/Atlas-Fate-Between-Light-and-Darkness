@@ -42,8 +42,8 @@ void TCompRigidbody::update(float dt) {
 		VEC3 new_pos = transform->getPosition();
 		VEC3 delta_movement = new_pos - lastFramePosition;
 		velocity = physx::PxVec3(delta_movement.x, delta_movement.y, delta_movement.z) / dt;
-		lastFramePosition = new_pos;
-
+		//lastFramePosition = new_pos;
+        dbg("delta move %f %f %f", delta_movement.x, delta_movement.y, delta_movement.z);
 		if (is_gravity) {
 			if (is_grounded) totalDownForce = physx::PxVec3(0, 0, 0);
 			physx::PxVec3 actualDownForce = physx::PxVec3(normal_gravity.x, normal_gravity.y, normal_gravity.z);

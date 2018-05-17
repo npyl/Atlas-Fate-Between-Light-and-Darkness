@@ -68,6 +68,7 @@ void CPhysicsCollider::createDynamic(physx::PxShape* actor_shape, TCompTransform
 	QUAT quat = c_transform->getRotation();
 	physx::PxTransform transform(physx::PxVec3(pos.x, pos.y, pos.z), physx::PxQuat(quat.x, quat.y, quat.z, quat.w));
 	physx::PxRigidDynamic* rigid_actor = gPhysics->createRigidDynamic(transform);
+    rigid_actor->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
 	physx::PxRigidBodyExt::updateMassAndInertia(*rigid_actor, 10.0f);
 	actor = rigid_actor;
 	actor->attachShape(*actor_shape);
@@ -216,7 +217,7 @@ physx::PxController* CPhysicsCapsule::createController(TCompTransform * c_transf
 	QUAT quat = c_transform->getRotation();
 	ctrl->setFootPosition(physx::PxExtendedVec3(pos.x, pos.y, pos.z));
 	ctrl->setContactOffset(contact_offset);
-
+    
 	actor = ctrl->getActor();
 	actor->setActorFlag(physx::PxActorFlag::eDISABLE_GRAVITY, true);
 	setupFiltering(actor, group, mask);

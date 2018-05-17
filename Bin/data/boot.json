@@ -38,6 +38,7 @@
 			"data/scenes/player_fsm.scene",
 			"data/scenes/sp_dynamic_lights.scene",
 			"data/scenes/milestone2_map_pre.scene",
+			"data/scenes/milestone2_map_lights2_low.scene",
 			"data/scenes/milestone2_map_colliders.scene",
 			"data/scenes/capsules.scene",
 			"data/scenes/camera.scene",

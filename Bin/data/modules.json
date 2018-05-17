@@ -1,8 +1,8 @@
 {
 	"update":
 	[
-		"input",
 		"physics",
+		"input",
 		"entities",
 		"render",
 		"navmeshes",
