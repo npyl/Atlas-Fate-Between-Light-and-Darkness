@@ -71,9 +71,11 @@ void TCompSkeleton::load(const json& j, TEntityParseContext& ctx) {
   actualCycleAnimId[0] = 0;
   model->getMixer()->blendCycle(actualCycleAnimId[0], 1.f, 0.f);
 
-  cb_bones.BonesScale = scaleFactor;
-  model->getCoreModel()->scale(scaleFactor);
-
+  if (scaleFactor != cb_bones.BonesScale) {
+	  cb_bones.BonesScale = scaleFactor;
+	  model->getCoreModel()->scale(scaleFactor);
+  }
+  
   // Do a time zero update just to have the bones in a correct place
   model->update(0.f);
   
