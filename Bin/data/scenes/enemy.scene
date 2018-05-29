@@ -12,7 +12,12 @@
 			},
 			"ai_patrol": {
 				"startLightsOn": false
-			}
+			},
+			"skeleton": {
+				"skeleton": "data/skeletons/patrol/patrol.skeleton",
+				"scale": 1.4
+			},
+			"patrol_animator": true
 		}
 	}, {
 		"xentity": {
@@ -36,7 +41,7 @@
 			}
 		}
 	}, {
-		"entity": {
+		"xentity": {
 			"prefab": "data/prefabs/patrol.prefab",
 			"name": "The Enemy 3",
 			"transform": {
@@ -57,7 +62,7 @@
 			}
 		}
 	}, {
-		"entity": {
+		"xentity": {
 			"prefab": "data/prefabs/patrol.prefab",
 			"name": "The Enemy 4",
 			"transform": {
@@ -69,7 +74,7 @@
 			}
 		}
 	}, {
-		"entity": {
+		"xentity": {
 			"prefab": "data/prefabs/mimetic.prefab",
 			"name": "Mimetic 1",
 			"transform": {

@@ -274,7 +274,7 @@ bool CGameCoreSkeleton::create(const std::string& res_name) {
 			  return false;
 		  std::string skin_mesh_file = root_path + actual_file.replace(actual_file.find(".cmf"), actual_file.length(),"") + ".mesh";
 		  convertCalCoreMesh2RenderMesh(getCoreMesh(mesh_id), skin_mesh_file);
-		  std::remove(skin_mesh_file.replace(skin_mesh_file.find(".mesh"), skin_mesh_file.length(), ".cmf").c_str());
+		  //std::remove(skin_mesh_file.replace(skin_mesh_file.find(".mesh"), skin_mesh_file.length(), ".cmf").c_str());
 	  }
 	  drnt = readdir(dr);
   } while (drnt != NULL);
