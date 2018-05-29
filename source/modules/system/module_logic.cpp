@@ -1,6 +1,7 @@
 #include "mcv_platform.h"
 #include "module_logic.h"
 #include "components/comp_tags.h"
+#include "components\comp_transform.h"
 #include "components\lighting\comp_light_spot.h"
 #include "components\ia\comp_bt_patrol.h"
 #include "components\ia\comp_bt_mimetic.h"
@@ -103,12 +104,22 @@ void CModuleLogic::publishClasses() {
 		.comment("This is our wrapper of the logic class")
 		.set("printLog", &CModuleLogic::printLog);
 
+	SLB::Class< VEC3 >("VEC3", m)
+		.constructor<float, float, float>()
+		.comment("This is our wrapper of the VEC3 class")
+		.property("x", &VEC3::x)
+		.property("y", &VEC3::y)
+		.property("z", &VEC3::z);
+
 
 	/* Global functions */
 
 	//game hacks
 	m->set("pauseGame", SLB::FuncCall::create(&pauseGame));
 	m->set("loadscene", SLB::FuncCall::create(&loadscene));
+	m->set("move", SLB::FuncCall::create(&move));
+	m->set("spawn", SLB::FuncCall::create(&spawn));
+
 
 	//player hacks
 	m->set("movePlayer", SLB::FuncCall::create(&movePlayer));
@@ -149,7 +160,6 @@ void CModuleLogic::publishClasses() {
 
 
 	//others
-	m->set("spawn", SLB::FuncCall::create(&spawn));
 	m->set("bind", SLB::FuncCall::create(&bind));
 
 }
@@ -428,10 +438,29 @@ void deleteEnemies() {
 
 }
 
-void movePlayer(const float x, const float y, const float z) {
+void move(const std::string& entityName, VEC3 pos, VEC3 lookat) {
+	CHandle entity_h = getEntityByName(entityName);
+	if (entity_h.isValid()) {
+		CEntity* e = entity_h;
+		TCompTransform* transform = e->get<TCompTransform>();
+		transform->lookAt(pos, lookat);
+	}
+}
+
+void spawn(const std::string & type, VEC3 pos, VEC3 lookAt) {
+	if (type.compare("patrol") == 0) {
+		int a = 2;
+	}
+	else if (type.compare("mimetic") == 0) {
+		int a = 2;
+	}
+
+}
+
+void movePlayer(VEC3 pos) {
 	CHandle h = getEntityByName("The Player");
 	TMsgPlayerMove msg;
-	msg.pos = VEC3(x, y, z);
+	msg.pos = pos;
 	h.sendMsg(msg);
 }
 
@@ -479,7 +508,4 @@ void cg_drawlights(int type) {
 	getObjectManager<TCompLightPoint>()->forEach([&](TCompLightPoint* c) {
 		c->isEnabled = point;
 	});
-}
-void spawn(const std::string & name, const VEC3 & pos) {
-	//To-Do
 }

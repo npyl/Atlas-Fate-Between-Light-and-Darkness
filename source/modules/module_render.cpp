@@ -160,8 +160,11 @@ bool CModuleRender::stop()
 void CModuleRender::update(float delta)
 {
 	(void)delta;
-	// Notify ImGUI that we are starting a new frame
-	ImGui_ImplDX11_NewFrame();
+	if (_debugMode) {
+
+		// Notify ImGUI that we are starting a new frame
+		ImGui_ImplDX11_NewFrame();
+	}
 
 	cb_globals.global_world_time += delta;
 }

@@ -85,7 +85,7 @@ bool CModuleSceneManager::loadScene(const std::string & name) {
             dbg("Autoloading scene %s\n", name2.c_str());
             TEntityParseContext ctx;
 			if (parseScene(scene_name, ctx)) {
-				EngineLogic.execEvent(CModuleLogic::Events::SCENE_START, name2);
+				//EngineLogic.execEvent(CModuleLogic::Events::SCENE_START, name2);
 			}
         }
 

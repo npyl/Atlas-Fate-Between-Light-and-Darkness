@@ -37,8 +37,8 @@ function deleteEnemies()
 	SLB.deleteEnemies()
 end
 
-function movePlayer(x,y,z)
-	SLB.movePlayer(x,y,z)
+function movePlayer(pos)
+	SLB.movePlayer(pos)
 end
 
 function staminaInfinite()
@@ -85,8 +85,8 @@ function cg_drawlights(type)
 	SLB.cg_drawlights(type)
 end
 
-function spawn()
-	SLB.spawn()
+function spawn(type, pos, lookAt)
+	SLB.spawn(type, pos, lookAt)
 end
 
 function animationsToggle()
@@ -95,4 +95,8 @@ end
 
 function noClipToggle()
 	SLB.noClipToggle()
+end
+
+function move(name, pos, lookAt)
+	SLB.move(name, pos, lookAt)
 end
