@@ -9,6 +9,7 @@
 #include "components\ia\comp_patrol_animator.h"
 #include "components\ia\comp_mimetic_animator.h"
 #include "components\comp_group.h"
+#include "components\comp_name.h"
 #include "components\postfx\comp_render_ao.h"
 #include "components\physics\comp_rigidbody.h"
 #include "components\comp_fsm.h"
@@ -16,6 +17,7 @@
 #include "modules/game/module_game_manager.h"
 #include <iostream>
 #include "physics\physics_collider.h"
+#include "entity\entity_parser.h"
 
 #include "components/lighting/comp_light_dir.h"
 #include "components/lighting/comp_light_spot.h"
@@ -449,10 +451,29 @@ void move(const std::string& entityName, VEC3 pos, VEC3 lookat) {
 
 void spawn(const std::string & type, VEC3 pos, VEC3 lookAt) {
 	if (type.compare("patrol") == 0) {
-		int a = 2;
+		/* Create patrol */
+		TEntityParseContext ctxPatrol;
+		ctxPatrol.root_transform.setPosition(pos);
+		parseScene("data/prefabs/patrol.prefab", ctxPatrol);
+		CEntity *ePatrol = ctxPatrol.entities_loaded[0];
+
+		/* Set name */
+		TCompName *ePatrolName = ePatrol->get<TCompName>();
+		ePatrolName->setName(("Spawned Patrol" + std::to_string(getLogic()->spawnedPatrols)).c_str());
+		getLogic()->spawnedPatrols++;
+
 	}
 	else if (type.compare("mimetic") == 0) {
-		int a = 2;
+		/* Create mimetic */
+		TEntityParseContext ctxMimetic;
+		ctxMimetic.root_transform.setPosition(pos);
+		parseScene("data/prefabs/mimetic.prefab", ctxMimetic);
+		CEntity *eMimetic = ctxMimetic.entities_loaded[0];
+
+		/* Set name */
+		TCompName *eMimeticName = eMimetic->get<TCompName>();
+		eMimeticName->setName(("Spawned Mimetic" + std::to_string(getLogic()->spawnedMimetics)).c_str());
+		getLogic()->spawnedMimetics++;
 	}
 
 }

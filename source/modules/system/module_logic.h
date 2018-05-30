@@ -11,59 +11,62 @@ class CModuleLogic : public IModule
 
 public:
 
-    struct ConsoleResult {
-        bool success;
-        std::string resultMsg;
-    };
+	struct ConsoleResult {
+		bool success;
+		std::string resultMsg;
+	};
 
-    struct DelayedScript {
-        std::string script;
-        float remainingTime;
-    };
+	struct DelayedScript {
+		std::string script;
+		float remainingTime;
+	};
 
-    struct CommandVariable {
-        void* variable;
-    };
+	struct CommandVariable {
+		void* variable;
+	};
+	//Auxiliar info
+	int spawnedPatrols = 0, spawnedMimetics = 0, spawnedSpotlights = 0;
 
-    /* Enum with event id. Add as many as necessary */
-    enum Events {
-        GAME_START,
-        GAME_END,
-        SCENE_START,
-        SCENE_END,
-        TRIGGER_ENTER,
-        TRIGGER_EXIT,
-        ENEMY_KILLED,
-        PLAYER_ON_SHADOW_ENTER,
-        NUM_EVENTS
-    };
+	/* Enum with event id. Add as many as necessary */
+	enum Events {
+		GAME_START,
+		GAME_END,
+		SCENE_START,
+		SCENE_END,
+		TRIGGER_ENTER,
+		TRIGGER_EXIT,
+		ENEMY_KILLED,
+		PLAYER_ON_SHADOW_ENTER,
+		NUM_EVENTS
+	};
 
-    std::vector<std::string> log;
-    std::map<int, std::string> _bindings;
+	std::vector<std::string> log;
+	std::map<int, std::string> _bindings;
 
-    CModuleLogic(const std::string& aname) : IModule(aname) { }
+	CModuleLogic(const std::string& aname) : IModule(aname) { }
 
-    bool start() override;
-    bool stop() override;
-    void update(float delta) override;
-    CModuleLogic* getPointer() { return this; }
+	bool start() override;
+	bool stop() override;
+	void update(float delta) override;
+	CModuleLogic* getPointer() { return this; }
 
-    void execCvar(std::string& script);
-    ConsoleResult execScript(const std::string& script);
-    bool execScriptDelayed(const std::string& script, float delay);
-    bool execEvent(Events event, const std::string& params = "", float delay = 0.f);
-    void printLog();
+	void execCvar(std::string& script);
+	ConsoleResult execScript(const std::string& script);
+	bool execScriptDelayed(const std::string& script, float delay);
+	bool execEvent(Events event, const std::string& params = "", float delay = 0.f);
+	void printLog();
 
 private:
 
-    SLB::Manager* m = new SLB::Manager;
-    SLB::Script* s = new SLB::Script(m);
+	SLB::Manager* m = new SLB::Manager;
+	SLB::Script* s = new SLB::Script(m);
 
-    std::vector<DelayedScript> delayedScripts;
+	std::vector<DelayedScript> delayedScripts;
 
-    void BootLuaSLB();
-    void publishClasses();
-    void loadScriptsInFolder(char * path);
+	void BootLuaSLB();
+	void publishClasses();
+	void loadScriptsInFolder(char * path);
+
 };
 
 /* Auxiliar functions */
