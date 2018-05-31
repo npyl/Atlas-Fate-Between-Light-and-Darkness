@@ -27,7 +27,7 @@ void TCompMimeticAnimator::debugInMenu() {
 
 void TCompMimeticAnimator::initializeAnimations() {
 
-	initializeAnimation(
+	/*initializeAnimation(
 		(TCompAnimator::EAnimation)EAnimation::IDLE,
 		EAnimationType::CYCLIC,
 		EAnimationSize::SINGLE,
@@ -155,6 +155,16 @@ void TCompMimeticAnimator::initializeAnimations() {
 		"",
 		1.0f,
 		1.0f
+	);*/
+	initializeAnimation(
+	(TCompAnimator::EAnimation)EAnimation::IDLE,
+	EAnimationType::CYCLIC,
+	EAnimationSize::SINGLE,
+	"root",
+	"",
+	1.0f,
+	1.0f,
+	true
 	);
 }
 

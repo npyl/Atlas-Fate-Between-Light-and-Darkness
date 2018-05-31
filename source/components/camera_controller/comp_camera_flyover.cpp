@@ -18,14 +18,12 @@ void TCompCameraFlyover::load(const json& j, TEntityParseContext& ctx) {
 
 void TCompCameraFlyover::update(float dt)
 {
+	//dbg("%f		%f		%f\n", );
     TCompTransform* c_transform = get<TCompTransform>();
     if (!c_transform)
         return;
 
-    VEC3 pos = c_transform->getPosition();
-    VEC3 front = c_transform->getFront();
-    VEC3 left = c_transform->getLeft();
-    VEC3 up = VEC3::UnitY;
+    
 
     if (btDebugPause.getsPressed()) {
         paused = !paused;
@@ -39,17 +37,21 @@ void TCompCameraFlyover::update(float dt)
 
         }
         else {
+            Engine.getCameras().blendOutCamera(CHandle(this).getOwner(), 1.f);
             TMsgScenePaused msg;
             msg.isPaused = false;
             EngineEntities.broadcastMsg(msg);
             CEntity * player = CTagsManager::get().getAllEntitiesByTag(getID("player"))[0];
 
-            Engine.getCameras().blendOutCamera(CHandle(this).getOwner(), 1.f);
         }
     }
 
     if (paused) {
 
+		VEC3 pos = c_transform->getPosition();
+		VEC3 front = c_transform->getFront();
+		VEC3 left = c_transform->getLeft();
+		VEC3 up = VEC3::UnitY;
         // movement
         float deltaSpeed = _speed * dt;
         if (EngineInput["btRun"].isPressed())
@@ -85,4 +87,17 @@ void TCompCameraFlyover::update(float dt)
             dbg("Camera pos - \"%f %f %f)\"\n", newPos.x, newPos.y, newPos.z);
         }
     }
+}
+
+void TCompCameraFlyover::registerMsgs() {
+	DECL_MSG(TCompCameraFlyover, TMsgCameraActivated, onMsgActiveMyself);
+}
+
+void TCompCameraFlyover::onMsgActiveMyself(const TMsgCameraActivated & msg) {
+	
+	CEntity * player = getEntityByName("The Player");
+	TCompTransform* c_player_transform = player->get<TCompTransform>();
+	TCompTransform* c_transform = get<TCompTransform>();
+	c_transform->setPosition(c_player_transform->getPosition() + Vector3::Up * 2.0);
+	c_transform->setRotation(c_player_transform->getRotation());
 }

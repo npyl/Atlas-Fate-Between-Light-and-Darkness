@@ -10,11 +10,14 @@ public:
 	void debugInMenu();
 	void load(const json& j, TEntityParseContext& ctx);
 	void update(float dt);
+	static void registerMsgs();
 
 private:
 	const Input::TButton& btDebugPause = EngineInput["btDebugPause"];
 	const Input::TButton& btDebugGetPos = EngineInput["btAction"];
 	CHandle previousCamera;
+	
+	void onMsgActiveMyself(const TMsgCameraActivated & msg);
 
 	float _speed = 10.f;
 	float _sensitivity = 0.005f;

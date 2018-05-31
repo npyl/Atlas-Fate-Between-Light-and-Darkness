@@ -3,7 +3,7 @@
 			"name": "Enemies"
 		}
 	}, {
-		"entity": {
+		"xentity": {
 			"prefab": "data/prefabs/patrol.prefab",
 			"name": "The Enemy 1",
 			"transform": {
@@ -36,7 +36,7 @@
 			}
 		}
 	}, {
-		"entity": {
+		"xentity": {
 			"prefab": "data/prefabs/patrol.prefab",
 			"name": "The Enemy 3",
 			"transform": {
@@ -57,7 +57,7 @@
 			}
 		}
 	}, {
-		"entity": {
+		"xentity": {
 			"prefab": "data/prefabs/patrol.prefab",
 			"name": "The Enemy 4",
 			"transform": {
@@ -78,7 +78,7 @@
 			},
 			"ai_mimetic": {
 				"startLightsOn": false,
-				"type": "wall",
+				"type": "floor",
 				"isSlept": false
 			}
 		}
