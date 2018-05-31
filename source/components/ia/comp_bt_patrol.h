@@ -8,19 +8,19 @@ class TCompAIPatrol : public TCompIAController {
 
 private:
 
-  struct StateColors {
-    VEC4 colorNormal;
-    VEC4 colorSuspect;
-    VEC4 colorAlert;
-    VEC4 colorDead;
-  } patrolColor;
+	struct StateColors {
+		VEC4 colorNormal;
+		VEC4 colorSuspect;
+		VEC4 colorAlert;
+		VEC4 colorDead;
+	} patrolColor;
 
 	/* Atributes */
 	std::vector<Waypoint> _waypoints;
 	int currentWaypoint;
 
-  /* TEMPORAL */
-  VEC3 trueLookAt;
+	/* TEMPORAL */
+	VEC3 trueLookAt;
 
 	float suspectO_Meter = 0.f;
 	bool isLastPlayerKnownDirLeft = false;
@@ -33,21 +33,21 @@ private:
 	bool hasBeenShadowMerged = false;
 	bool hasBeenFixed = false;
 
-  /* TODO: create struct for noises */
+	/* TODO: create struct for noises */
 	bool hasHeardNaturalNoise = false;
 	bool hasHeardArtificialNoise = false;
 	VEC3 noiseSource = VEC3::Zero;
-  bool noiseSourceChanged = false;
-  CHandle hNoiseSource = CHandle();
-  std::chrono::steady_clock::time_point lastTimeNoiseWasHeard;
+	bool noiseSourceChanged = false;
+	CHandle hNoiseSource = CHandle();
+	std::chrono::steady_clock::time_point lastTimeNoiseWasHeard;
 
-  float maxDistanceToNavmeshPoint = 3.f;
+	float maxDistanceToNavmeshPoint = 3.f;
 
 	std::string validState = "";
 
-  std::vector<VEC3> navmeshPath;
-  int navmeshPathPoint = 0;
-  bool recalculateNavmesh = false;
+	std::vector<VEC3> navmeshPath;
+	int navmeshPathPoint = 0;
+	bool recalculateNavmesh = false;
 
 	/* Timers */
 	float timerWaitingInWpt = 0.f;
@@ -77,9 +77,9 @@ private:
 	bool isStunnedPatrolInFov(float fov, float maxChaseDistance);
 	bool isStunnedPatrolInPos(VEC3 lastPos);
 	CHandle getPatrolInPos(VEC3 lastPos);
-  void generateNavmesh(VEC3 initPos, VEC3 destPos, bool recalc = false);
-  bool moveToPoint(float speed, float rotationSpeed, VEC3 destPoint, float dt);
-	
+	void generateNavmesh(VEC3 initPos, VEC3 destPos, bool recalc = false);
+	bool moveToPoint(float speed, float rotationSpeed, VEC3 destPoint, float dt);
+
 	//load
 	void loadActions() override;
 	void loadConditions() override;
@@ -96,24 +96,24 @@ public:
 	BTNode::ERes actionClosestWpt(float dt);
 	BTNode::ERes actionEndAlert(float dt);
 	BTNode::ERes actionMarkNoiseAsInactive(float dt);
-  BTNode::ERes actionGenerateNavmeshNoise(float dt);
+	BTNode::ERes actionGenerateNavmeshNoise(float dt);
 	BTNode::ERes actionGoToNoiseSource(float dt);
 	BTNode::ERes actionWaitInNoiseSource(float dt);
-  BTNode::ERes actionGenerateNavmeshWpt(float dt);
+	BTNode::ERes actionGenerateNavmeshWpt(float dt);
 	BTNode::ERes actionGoToWpt(float dt);
 	BTNode::ERes actionWaitInWpt(float dt);
 	BTNode::ERes actionNextWpt(float dt);
 	BTNode::ERes actionSuspect(float dt);
 	BTNode::ERes actionMarkPlayerAsSeen(float dt);
 	BTNode::ERes actionShootInhibitor(float dt);
-  BTNode::ERes actionGenerateNavmeshChase(float dt);
+	BTNode::ERes actionGenerateNavmeshChase(float dt);
 	BTNode::ERes actionChasePlayer(float dt);
 	BTNode::ERes actionAttack(float dt);
 	BTNode::ERes actionRotateToNoiseSource(float dt);
 	BTNode::ERes actionResetPlayerWasSeenVariables(float dt);
 	BTNode::ERes actionGoToPlayerLastPos(float dt);
 	BTNode::ERes actionLookForPlayer(float dt);
-  BTNode::ERes actionGenerateNavmeshGoToPatrol(float dt);
+	BTNode::ERes actionGenerateNavmeshGoToPatrol(float dt);
 	BTNode::ERes actionGoToPatrol(float dt);
 	BTNode::ERes actionFixPatrol(float dt);
 	BTNode::ERes actionMarkPatrolAsLost(float dt);

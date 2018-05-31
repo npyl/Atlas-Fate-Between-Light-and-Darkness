@@ -8,12 +8,12 @@ class TCompAIMimetic : public TCompIAController {
 
 private:
 
-  struct StateColors {
-    VEC4 colorNormal;
-    VEC4 colorSuspect;
-    VEC4 colorAlert;
-    VEC4 colorDead;
-  } mimeticColor;
+	struct StateColors {
+		VEC4 colorNormal;
+		VEC4 colorSuspect;
+		VEC4 colorAlert;
+		VEC4 colorDead;
+	} mimeticColor;
 
 	/* Atributes */
 	std::vector<Waypoint> _waypoints;
@@ -42,12 +42,12 @@ private:
 	bool hasHeardArtificialNoise = false;
 	bool hasHeardNaturalNoise = false;
 	VEC3 noiseSource = VEC3::Zero;
-  bool noiseSourceChanged = false;
+	bool noiseSourceChanged = false;
 
-  std::vector<VEC3> navmeshPath;
-  unsigned int navmeshPathPoint;
-  bool recalculateNavmesh = false;
-  float maxDistanceToNavmeshPoint = 3.f;
+	std::vector<VEC3> navmeshPath;
+	unsigned int navmeshPathPoint;
+	bool recalculateNavmesh = false;
+	float maxDistanceToNavmeshPoint = 3.f;
 
 	std::string validState = "";
 
@@ -63,7 +63,7 @@ private:
 	VEC3 initialPos;
 	VEC3 initialLookAt;
 	float rotationSpeedObservation = deg2rad(40.f);
-  float rotationSpeedPatrolling = deg2rad(80.f);
+	float rotationSpeedPatrolling = deg2rad(80.f);
 	float waitTimeInLasPlayerPos = 3.f;
 	float chaseSpeed = 6.f;
 
@@ -91,9 +91,9 @@ private:
 	bool isEntityHidden(CHandle hEntity);
 	void setGravityToFaceWall();
 	EType parseStringMimeticType(const std::string& typeString);
-  void generateNavmesh(VEC3 initPos, VEC3 destPos, bool recalc = false);
-  bool moveToPoint(float speed, float rotationSpeed, VEC3 objective, float dt);
-	
+	void generateNavmesh(VEC3 initPos, VEC3 destPos, bool recalc = false);
+	bool moveToPoint(float speed, float rotationSpeed, VEC3 objective, float dt);
+
 	//load
 	void loadActions() override;
 	void loadConditions() override;
@@ -111,7 +111,7 @@ public:
 	BTNode::ERes actionObserveRight(float dt);
 	BTNode::ERes actionWaitObserving(float dt);
 	BTNode::ERes actionSetActive(float dt);
-  BTNode::ERes actionGenerateNavmeshWpt(float dt);
+	BTNode::ERes actionGenerateNavmeshWpt(float dt);
 	BTNode::ERes actionGoToWpt(float dt);
 	BTNode::ERes actionResetTimerWaiting(float dt);
 	BTNode::ERes actionWaitInWpt(float dt);
@@ -122,29 +122,29 @@ public:
 	BTNode::ERes actionResetVariablesChase(float dt);
 	BTNode::ERes actionChasePlayerWithNoise(float dt);
 	BTNode::ERes actionMarkNoiseAsInactive(float dt);
-  BTNode::ERes actionGenerateNavmeshNoiseSource(float dt);
+	BTNode::ERes actionGenerateNavmeshNoiseSource(float dt);
 	BTNode::ERes actionGoToNoiseSource(float dt);
 	BTNode::ERes actionWaitInNoiseSource(float dt);
 	BTNode::ERes actionSuspect(float dt);
 	BTNode::ERes actionRotateToNoiseSource(float dt);
-  BTNode::ERes actionGenerateNavmeshPlayerLastPos(float dt);
+	BTNode::ERes actionGenerateNavmeshPlayerLastPos(float dt);
 	BTNode::ERes actionGoToPlayerLastPos(float dt);
 	BTNode::ERes actionWaitInPlayerLastPos(float dt);
 	BTNode::ERes actionSetGoInactive(float dt);
-  BTNode::ERes actionGenerateNavmeshInitialPos(float dt);
+	BTNode::ERes actionGenerateNavmeshInitialPos(float dt);
 	BTNode::ERes actionGoToInitialPos(float dt);
 	BTNode::ERes actionRotateToInitialPos(float dt);
 	BTNode::ERes actionJumpWall(float dt);
 	BTNode::ERes actionHoldOnWall(float dt);
 	BTNode::ERes actionSetInactive(float dt);
-  BTNode::ERes actionClosestWpt(float dt);
+	BTNode::ERes actionClosestWpt(float dt);
 
 	/* CONDITIONS */
 	bool conditionHasBeenStunned(float dt);
 	bool conditionIsTypeWall(float dt);
 	bool conditionIsNotPlayerInFovAndNotNoise(float dt);
 	bool conditionIsNotActive(float dt);
-  bool conditionHasWpts(float dt);
+	bool conditionHasWpts(float dt);
 	bool conditionIsTypeFloor(float dt);
 	bool conditionIsSlept(float dt);
 	bool conditionHasNotWaypoints(float dt);
