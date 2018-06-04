@@ -100,3 +100,7 @@ end
 function move(name, pos, lookAt)
 	SLB.move(name, pos, lookAt)
 end
+
+function wireframeToggle()
+	SLB.wireframeToggle()
+end

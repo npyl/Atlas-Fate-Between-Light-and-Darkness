@@ -31,6 +31,8 @@ public:
     void debugInMenu();
     void renderDebug();
     void load(const json& j, TEntityParseContext& ctx);
+    void renderMeshes();
+
 
     void loadMesh(const json& j, TEntityParseContext& ctx);
     void onDefineLocalAABB(const TMsgDefineLocalAABB& msg);

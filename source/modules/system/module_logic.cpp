@@ -137,6 +137,10 @@ void CModuleLogic::publishClasses() {
 	m->set("shadowsToggle", SLB::FuncCall::create(&shadowsToggle));
 	m->set("cg_drawlights", SLB::FuncCall::create(&cg_drawlights));
 
+  //drawing mode hacks
+  m->set("wireframeToggle", SLB::FuncCall::create(&wireframeToggle));
+
+
 	//postfx hacks
 	m->set("postFXToggle", SLB::FuncCall::create(&postFXToggle));
 
@@ -384,6 +388,11 @@ void lanternToggle() {
 
 void shadowsToggle() {
 	EngineRender.setGenerateShadows(!EngineRender.getGenerateShadows());
+}
+
+void wireframeToggle() {
+  EngineRender.setShowWireframe(!EngineRender.getShowWireframe());
+
 }
 
 void postFXToggle() {
