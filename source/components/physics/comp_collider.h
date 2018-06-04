@@ -14,6 +14,7 @@ class TCompCollider : public TCompBase {
 	void onTriggerEnter(const TMsgTriggerEnter& msg);
 	void onTriggerExit(const TMsgTriggerExit& msg);
 	void onMovingObject(const TMsgGrabObject& msg);
+  void renderColliders();
 
 	CHandle lastMovedObject;
 
@@ -29,6 +30,7 @@ public:
 
 	~TCompCollider();
 	void debugInMenu();
+  void renderDebug();
 	void load(const json& j, TEntityParseContext& ctx);
 	void update(float dt);
 

@@ -342,6 +342,10 @@ void CModuleRender::generateFrame() {
 
     if (_showWireframe)
       renderWireframeLayer(_hideBackground);
+
+    getObjectManager<TCompCollider>()->forEach([](TCompCollider* c) {
+      c->renderDebug();
+    });
   }
 
   {

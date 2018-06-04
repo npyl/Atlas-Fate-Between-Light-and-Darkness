@@ -5,6 +5,9 @@
 #include "physics/physics_collider.h"
 #include "modules\system\module_logic.h"
 #include "components\comp_tags.h"
+#include "render/texture/material.h"
+#include "render/render_objects.h"
+
 
 DECL_OBJ_MANAGER("collider", TCompCollider);
 
@@ -23,6 +26,20 @@ TCompCollider::~TCompCollider() {
 void TCompCollider::debugInMenu() {
 
 	config->debugInMenu();
+}
+
+void TCompCollider::renderDebug() {
+  activateRSConfig(RSCFG_WIREFRAME);
+  renderColliders();
+  activateRSConfig(RSCFG_DEFAULT);
+}
+
+void TCompCollider::renderColliders() {
+  const CMaterial* material = Resources.get("data/materials/solid.material")->as<CMaterial>();
+  auto mesh = Resources.get("wired_unit_cube.mesh")->as<CRenderMesh>();
+  TCompTransform* mypos = get<TCompTransform>();
+  renderMesh(mesh, mypos->asMatrix());
+
 }
 
 void TCompCollider::load(const json& j, TEntityParseContext& ctx) {
