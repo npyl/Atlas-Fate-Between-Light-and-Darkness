@@ -137,8 +137,9 @@ void CModuleLogic::publishClasses() {
 	m->set("shadowsToggle", SLB::FuncCall::create(&shadowsToggle));
 	m->set("cg_drawlights", SLB::FuncCall::create(&cg_drawlights));
 
-  //drawing mode hacks
-  m->set("wireframeToggle", SLB::FuncCall::create(&wireframeToggle));
+	//drawing mode hacks
+	m->set("wireframeToggle", SLB::FuncCall::create(&wireframeToggle));
+	m->set("collidersToggle", SLB::FuncCall::create(&collidersToggle));
 
 
 	//postfx hacks
@@ -391,7 +392,12 @@ void shadowsToggle() {
 }
 
 void wireframeToggle() {
-  EngineRender.setShowWireframe(!EngineRender.getShowWireframe());
+	EngineRender.setShowWireframe(!EngineRender.getShowWireframe());
+
+}
+
+void collidersToggle() {
+	EngineRender.setShowColliders(!EngineRender.getShowColliders());
 
 }
 
@@ -419,7 +425,7 @@ void animationsToggle() {
 
 void noClipToggle() {
 	CHandle player_h = getEntityByName("The Player");
-	
+
 
 	CEntity* player = player_h;
 	TCompCollider* collider = player->get<TCompCollider>();

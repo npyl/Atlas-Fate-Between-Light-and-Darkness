@@ -95,6 +95,7 @@ void noClipToggle();
 void move(const std::string& entityName, VEC3 pos, VEC3 lookat = VEC3::Zero);
 void spawn(const std::string& type, VEC3 pos, VEC3 lookat = VEC3::Zero);
 void wireframeToggle();
+void collidersToggle();
 
 void bind(const std::string& key, const std::string& script);
 void loadscene(const std::string &level);

@@ -135,10 +135,22 @@ physx::PxVec3 ToPxVec3(VEC3 vector) {
 	PxVec3 result = physx::PxVec3(vector.x, vector.y, vector.z);
 	return result;
 }
+
+ VEC3 ToVec3(physx::PxVec3 vector) {
+	VEC3 result = VEC3(vector.x, vector.y, vector.z);
+	return result;
+}
+
 physx::PxQuat ToPxQuat(QUAT quaternion) {
 	physx::PxQuat q = physx::PxQuat(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 	return q;
 }
+
+QUAT ToPxQuat(physx::PxQuat quaternion) {
+	QUAT q = QUAT(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+	return q;
+}
+
 
 void getFileNameFromPath(std::string& nameWithPath) {
 	size_t startPos = nameWithPath.find_last_of("/\\") + 1;

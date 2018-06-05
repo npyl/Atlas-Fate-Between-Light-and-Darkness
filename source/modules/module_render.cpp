@@ -262,6 +262,15 @@ void CModuleRender::renderWireframeLayer(bool hideBackground) {
 
 }
 
+void CModuleRender::renderCollidersLayer() {
+	CTraceScoped gpu_scope("renderColliderLayer");
+	PROFILE_FUNCTION("renderColliderLayer");
+
+	getObjectManager<TCompCollider>()->forEach([](TCompCollider* c) {
+		c->renderDebug();
+	});
+}
+
 
 //void CModuleRender::renderFlatShading() {
 //  CTraceScoped gpu_scope("renderFlatShading");
@@ -343,9 +352,9 @@ void CModuleRender::generateFrame() {
     if (_showWireframe)
       renderWireframeLayer(_hideBackground);
 
-    getObjectManager<TCompCollider>()->forEach([](TCompCollider* c) {
-      c->renderDebug();
-    });
+	if (_showColliders)
+		renderCollidersLayer();
+    
   }
 
   {

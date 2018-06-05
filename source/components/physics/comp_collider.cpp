@@ -7,6 +7,7 @@
 #include "components\comp_tags.h"
 #include "render/texture/material.h"
 #include "render/render_objects.h"
+#include "utils\utils.h"
 
 
 DECL_OBJ_MANAGER("collider", TCompCollider);
@@ -29,16 +30,72 @@ void TCompCollider::debugInMenu() {
 }
 
 void TCompCollider::renderDebug() {
-  activateRSConfig(RSCFG_WIREFRAME);
-  renderColliders();
-  activateRSConfig(RSCFG_DEFAULT);
+	activateRSConfig(RSCFG_WIREFRAME);
+	renderColliders();
+	activateRSConfig(RSCFG_DEFAULT);
 }
 
 void TCompCollider::renderColliders() {
-  const CMaterial* material = Resources.get("data/materials/solid.material")->as<CMaterial>();
-  auto mesh = Resources.get("wired_unit_cube.mesh")->as<CRenderMesh>();
-  TCompTransform* mypos = get<TCompTransform>();
-  renderMesh(mesh, mypos->asMatrix());
+	const CMaterial* material = Resources.get("data/materials/solid.material")->as<CMaterial>();
+	auto mesh = Resources.get("wired_unit_cube.mesh")->as<CRenderMesh>();
+	TCompTransform* mypos = get<TCompTransform>();
+	if (!mypos)
+		return;
+	CTransform pos = *mypos;
+
+	//If the component has a shape
+	if (config->shape) {
+
+		if (physx::PxGeometryType::eBOX == this->config->shape->getGeometryType()) {
+			physx::PxBoxGeometry box;
+			this->config->shape->getBoxGeometry(box);
+			VEC3 Extents = VEC3(box.halfExtents.x *2, box.halfExtents.y * 2, box.halfExtents.z * 2);
+
+			VEC3 p = VEC3(pos.getPosition().x, pos.getPosition().y + box.halfExtents.y, pos.getPosition().z);
+			pos.setPosition(p);
+			MAT44 m = MAT44::CreateScale(Extents) * pos.asMatrix();
+			renderMesh(mesh, m);
+		}
+		else if (physx::PxGeometryType::eCAPSULE == this->config->shape->getGeometryType()) {
+			physx::PxCapsuleGeometry capsule;
+			this->config->shape->getCapsuleGeometry(capsule);
+
+			VEC3 p = VEC3(pos.getPosition().x, pos.getPosition().y + capsule.halfHeight, pos.getPosition().z);
+			pos.setPosition(p);
+			MAT44 m = MAT44::CreateScale(capsule.radius, capsule.halfHeight * 2, capsule.radius) * pos.asMatrix();
+			renderMesh(mesh, m);
+		}
+	}
+	else if (config->actor) {	//If the component is a controller, we will retrieve the shape from the actor.
+		const physx::PxU32 numShapes = this->config->actor->getNbShapes();
+		assert(numShapes == 1); //At the moment, we are retrieving the shapes as if they were only one. If this changes, we have to update this as well.
+
+		//Retrieving controller shape from the actor
+		std::vector<physx::PxShape*> shapes;
+		shapes.resize(numShapes);
+		this->config->actor->getShapes(&shapes[0], numShapes);
+		physx::PxShape* player_shape = shapes[0];
+
+		if (physx::PxGeometryType::eBOX == player_shape->getGeometryType()) {
+			physx::PxBoxGeometry box;
+			player_shape->getBoxGeometry(box);
+
+			VEC3 Extents = VEC3(box.halfExtents.x * 2, box.halfExtents.y * 2, box.halfExtents.z * 2);
+			VEC3 p = VEC3(pos.getPosition().x, pos.getPosition().y + box.halfExtents.y, pos.getPosition().z);
+			pos.setPosition(p);
+			MAT44 m = MAT44::CreateScale(Extents) * pos.asMatrix();
+			renderMesh(mesh, m);
+		}
+		else if (physx::PxGeometryType::eCAPSULE == player_shape->getGeometryType()) {
+			physx::PxCapsuleGeometry capsule;
+			player_shape->getCapsuleGeometry(capsule);
+
+			VEC3 p = VEC3(pos.getPosition().x, pos.getPosition().y + capsule.halfHeight, pos.getPosition().z);
+			pos.setPosition(p);
+			MAT44 m = MAT44::CreateScale(capsule.radius, capsule.halfHeight * 2, capsule.radius) * pos.asMatrix();
+			renderMesh(mesh, m);
+		}
+	}
 
 }
 
