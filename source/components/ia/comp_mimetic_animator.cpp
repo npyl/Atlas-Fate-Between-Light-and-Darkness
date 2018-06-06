@@ -166,6 +166,7 @@ void TCompMimeticAnimator::initializeAnimations() {
 	1.0f,
 	true
 	);
+	//MAT44::CreateScale() * pos;
 }
 
 void TCompMimeticAnimator::registerMsgs() {
