@@ -262,12 +262,11 @@ void CModuleRender::renderWireframeLayer(bool hideBackground) {
 
 }
 
-void CModuleRender::renderCollidersLayer() {
+void CModuleRender::renderCollidersLayer(bool onlyDynamics) {
 	CTraceScoped gpu_scope("renderColliderLayer");
 	PROFILE_FUNCTION("renderColliderLayer");
-
-	getObjectManager<TCompCollider>()->forEach([](TCompCollider* c) {
-		c->renderDebug();
+	getObjectManager<TCompCollider>()->forEach([onlyDynamics](TCompCollider* c) {
+		c->renderDebug(onlyDynamics);
 	});
 }
 
@@ -352,8 +351,14 @@ void CModuleRender::generateFrame() {
     if (_showWireframe)
       renderWireframeLayer(_hideBackground);
 
-	if (_showColliders)
-		renderCollidersLayer();
+	if (_showAllColliders) {
+
+		renderCollidersLayer(false);
+	}
+	else if (_showDynamicColliders) {
+
+		renderCollidersLayer(true);
+	}
     
   }
 

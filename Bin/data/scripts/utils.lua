@@ -105,6 +105,6 @@ function wireframeToggle()
 	SLB.wireframeToggle()
 end
 
-function collidersToggle()
-	SLB.collidersToggle()
+function collidersToggle(onlyDynamics)
+	SLB.collidersToggle(onlyDynamics)
 end

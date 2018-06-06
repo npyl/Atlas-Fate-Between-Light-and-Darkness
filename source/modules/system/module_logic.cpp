@@ -396,8 +396,15 @@ void wireframeToggle() {
 
 }
 
-void collidersToggle() {
-	EngineRender.setShowColliders(!EngineRender.getShowColliders());
+void collidersToggle(bool onlyDynamics) {
+	//Default function. Draw all colliders
+	if (!onlyDynamics) {
+		EngineRender.setShowAllColliders(!EngineRender.getShowAllColliders());
+	}
+	else if (onlyDynamics) {
+		//Draw only dynamic colliders
+		EngineRender.setShowDynamicColliders(!EngineRender.getShowDynamicColliders());
+	}
 
 }
 

@@ -12,7 +12,7 @@ class CModuleRender : public IModule
   CDeferredRenderer deferred;
   CRenderToTexture* rt_main = nullptr;
   //console variables
-  bool _debugMode = true, _generateShadows = true, _generatePostFX = true, _showWireframe = false, _hideBackground = false, _showColliders = false;
+  bool _debugMode = true, _generateShadows = true, _generatePostFX = true, _showWireframe = false, _hideBackground = false, _showAllColliders = false, _showDynamicColliders = false;
   //bool show_flat_shading = false;
 
 public:
@@ -27,7 +27,7 @@ public:
   void generateFrame();
   void activateMainCamera();
   void renderWireframeLayer(bool onTop);
-  void renderCollidersLayer();
+  void renderCollidersLayer(bool onlyDynamics);
   //void renderFlatShading();
 
   void configure(int xres, int yres);
@@ -43,8 +43,10 @@ public:
   void setGeneratePostFX(bool val) { _generatePostFX = val; }
   bool const getShowWireframe() { return _showWireframe; }
   void setShowWireframe(bool val) { _showWireframe = val; }
-  bool const getShowColliders() { return _showColliders; }
-  void setShowColliders(bool val) { _showColliders = val; }
+  bool const getShowAllColliders() { return _showAllColliders; }
+  void setShowAllColliders(bool val) { _showAllColliders = val; }
+  bool const getShowDynamicColliders() { return _showDynamicColliders; }
+  void setShowDynamicColliders(bool val) { _showDynamicColliders = val; }
 
   LRESULT OnOSMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
 
