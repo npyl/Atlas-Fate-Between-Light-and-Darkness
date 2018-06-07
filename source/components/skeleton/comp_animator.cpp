@@ -49,7 +49,7 @@ bool TCompAnimator::initializeAnimation(EAnimation animation, EAnimationType ani
 
 void TCompAnimator::update(float dt)
 {
-
+	//dbg("%f		%f		%f\n",getbonePosById(0).x, getbonePosById(0).y, getbonePosById(0).z);
 }
 
 void TCompAnimator::registerMsgs() {
@@ -73,16 +73,17 @@ bool TCompAnimator::playAnimationConverted(EAnimation animation, float speed) {
 	int anim2id = animSet.secondAnimationId;
 	float weight = animSet.weight;
 	float aux_speed = animSet.speed;
+	bool rootMove = animSet.rootMoved;
 	if (speed != 1.0f) aux_speed = speed;
 
 	switch (animSet.animationType)
 	{
 	case EAnimationType::CYCLIC:
-		compSkeleton->changeCyclicAnimation(anim1id, aux_speed, anim2id, weight);
+		compSkeleton->changeCyclicAnimation(anim1id, aux_speed, anim2id, weight, rootMove);
 		break;
 
 	case EAnimationType::ACTION:
-		compSkeleton->executeActionAnimation(anim1id, aux_speed);
+		compSkeleton->executeActionAnimation(anim1id, aux_speed, rootMove);
 		break;
 	}
 
@@ -170,4 +171,12 @@ bool TCompAnimator::isPlayingAnimation(EAnimation animation) {
 TCompAnimator::EAnimation TCompAnimator::getAnimationByName(std::string animation_name) {
 
 	return stringToAnimationsMap[animation_name];
+}
+
+Vector3 TCompAnimator::getbonePosById(int boneId) {
+	CEntity* e = ownHandle;
+	TCompSkeleton * compSkeleton = e->get<TCompSkeleton>();
+	Vector3 bone_pos;
+	bone_pos = compSkeleton->getBonePosById(boneId);
+	return bone_pos;
 }

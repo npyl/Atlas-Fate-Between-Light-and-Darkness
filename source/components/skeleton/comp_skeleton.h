@@ -16,6 +16,9 @@ struct TCompSkeleton : public TCompBase {
 	float lastFrameCyclicAnimationWeight;
 	CRenderCte<CCteSkinBones> cb_bones;
 	CalModel* model = nullptr;
+	bool rootMovementAction = false;
+	bool rootMovementCyclic = false;
+	Vector3 lastFrameRootPos;
 
 	TCompSkeleton();
 	~TCompSkeleton();
@@ -25,8 +28,8 @@ struct TCompSkeleton : public TCompBase {
 	void renderDebug();
 	void updateCtesBones();
 
-	void changeCyclicAnimation(int anim1Id, float speed = 1.0f, int anim2Id = -1, float weight = 1.0f, float in_delay = 0.15f, float out_delay = 0.15f);
-	void executeActionAnimation(int animId, float speed = 1.0f, float in_delay = 0.15f, float out_delay = 0.15f);
+	void changeCyclicAnimation(int anim1Id, float speed = 1.0f, int anim2Id = -1, float weight = 1.0f, bool rootMoved = false, float in_delay = 0.15f, float out_delay = 0.15f);
+	void executeActionAnimation(int animId, float speed = 1.0f, bool rootMoved = false, float in_delay = 0.15f, float out_delay = 0.15f);
 
 	void setCyclicAnimationWeight(float new_value);
 	float getCyclicAnimationWeight();
@@ -38,6 +41,7 @@ struct TCompSkeleton : public TCompBase {
 	void guessFeetBonesId(int feetNum);
 	void setFeetId(std::vector<int> feetId);
 	std::vector<VEC3> getFeetPositions();
+	Vector3 getBonePosById(int bone_id);
 
 	DECL_SIBLING_ACCESS();
 };
