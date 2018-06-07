@@ -17,7 +17,7 @@ class TCompLightSpot : public TCompCamera {
 	int               shadows_resolution = 256;
 	float             shadows_step = 1.f;
 	CRenderToTexture* shadows_rt = nullptr;
-	AABB			  aabb;
+	AABB			        aabb;
 
 	void onCreate(const TMsgEntityCreated& msg);
 	void onDestroy(const TMsgEntityDestroyed& msg);
