@@ -22,9 +22,16 @@ void TCompLightSpot::debugInMenu() {
 
 void TCompLightSpot::renderDebug() {
 
-    // Render a wire sphere
-    auto mesh = Resources.get("data/meshes/UnitCone.mesh")->as<CRenderMesh>();
-    renderMesh(mesh, getWorld(), VEC4(1, 1, 1, 1));
+    //// Render a wire sphere
+    //auto mesh = Resources.get("data/meshes/UnitCone.mesh")->as<CRenderMesh>();
+    //renderMesh(mesh, getWorld(), VEC4(1, 1, 1, 1));
+
+	TCompTransform* mypos = get<TCompTransform>();
+	VEC3 p = VEC3(mypos->getPosition().x, mypos->getPosition().y - (range / 2), mypos->getPosition().z);
+	CTransform pos = *mypos;
+	pos.setPosition(p);
+	renderWiredAABB(aabb, pos.asMatrix(), VEC4(0, 1, 0, 1));
+
 }
 
 void TCompLightSpot::load(const json& j, TEntityParseContext& ctx) {
@@ -100,6 +107,16 @@ void TCompLightSpot::registerMsgs() {
 }
 
 void TCompLightSpot::onCreate(const TMsgEntityCreated& msg) {
+
+	TCompTransform* mypos = get<TCompTransform>();
+	VEC3 p = VEC3(mypos->getPosition().x, mypos->getPosition().y - (range / 2), mypos->getPosition().z);
+	CTransform pos = *mypos;
+	pos.setPosition(p);
+	aabb.Transform(aabb, pos.asMatrix());
+	aabb.Center = VEC3(0,0,0);
+	aabb.Extents = VEC3(tan(deg2rad(angle * .5f)), range / 2, tan(deg2rad(angle * .5f)));
+
+
 
 }
 
