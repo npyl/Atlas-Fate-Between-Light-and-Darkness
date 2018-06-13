@@ -6,6 +6,7 @@
 #include "render/render_objects.h"
 #include "entity/entity.h"
 #include "comp_transform.h"
+#include "lighting\comp_light_spot.h"
 
 DECL_OBJ_MANAGER("abs_aabb", TCompAbsAABB);
 DECL_OBJ_MANAGER("local_aabb", TCompLocalAABB);
@@ -51,14 +52,27 @@ AABB getRotatedBy(AABB src, const MAT44 &model) {
 }
 
 // ------------------------------------------------------
-void TCompAbsAABB::onCreate(const TMsgEntityCreated&) {
+void TCompAbsAABB::onCreate(const TMsgSceneCreated&) {
 	updateFromSiblingsLocalAABBs(CHandle(this).getOwner());
-	TCompTransform* c_trans = get<TCompTransform>();
-	AABB::Transform(*this, c_trans->asMatrix());
+
+	TCompLightSpot* spotlight = get<TCompLightSpot>();
+
+	if (spotlight) {
+		TCompLightSpot::result res = spotlight->createAABB();
+		Extents = res.extents;
+		Center = VEC3::Zero;
+		AABB::Transform(*this, res.transform.asMatrix());
+		//renderWiredAABB(*this, res.transform.asMatrix(), VEC4(0, 0, 1, 1));
+	}
+	else {
+		TCompTransform* c_trans = get<TCompTransform>();
+		AABB::Transform(*this, c_trans->asMatrix());
+		//renderWiredAABB(*this, c_trans->asMatrix(), VEC4(0, 0, 1, 1));
+	}
 }
 
 void TCompAbsAABB::registerMsgs() {
-	DECL_MSG(TCompAbsAABB, TMsgEntityCreated, onCreate);
+	DECL_MSG(TCompAbsAABB, TMsgSceneCreated, onCreate);
 }
 
 // ------------------------------------------------------

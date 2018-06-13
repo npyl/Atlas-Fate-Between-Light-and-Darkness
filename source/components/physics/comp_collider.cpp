@@ -68,6 +68,9 @@ void TCompCollider::renderColliders(bool onlyDynamics) {
 			MAT44 m = MAT44::CreateScale(Extents) * pos.asMatrix();
 			renderMesh(mesh, m, VEC4(0, 255, 0, 1));
 		}
+		else if (physx::PxGeometryType::eCONVEXMESH == this->config->shape->getGeometryType()) {
+			//To-Do
+		}
 	}
 	else if (config->is_controller) {	//If the component is a controller, we will retrieve the shape from the actor.
 		const physx::PxU32 numShapes = this->config->actor->getNbShapes();

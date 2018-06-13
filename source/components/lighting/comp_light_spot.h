@@ -17,15 +17,20 @@ class TCompLightSpot : public TCompCamera {
 	int               shadows_resolution = 256;
 	float             shadows_step = 1.f;
 	CRenderToTexture* shadows_rt = nullptr;
-	AABB			        aabb;
 
 	void onCreate(const TMsgEntityCreated& msg);
 	void onDestroy(const TMsgEntityDestroyed& msg);
+	void updateAABB(const TMsgSceneCreated& msg);
 
 	DECL_SIBLING_ACCESS();
 public:
 
 	const CTexture* projector = nullptr;
+
+	struct result {
+		VEC3 extents;
+		CTransform transform;
+	};
 
 	/* spotlight parameters */
 	float range;
@@ -35,6 +40,7 @@ public:
 
 	void debugInMenu();
 	void renderDebug();
+	result createAABB();
 	void load(const json& j, TEntityParseContext& ctx);
 	void update(float dt);
 
