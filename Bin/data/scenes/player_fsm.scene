@@ -138,10 +138,29 @@
 			"noise_emitter": {
 				"radius": -1
 			},
+			"skel_lookat" : {
+                "target_entity_name" : "Jugador Target"
+            },
 			"tags":
 			[
 				"player"
 			]
 		}
+    	
+
+	},{
+		
+	        "entity": {
+	            "name": "Jugador Target",
+	            "transform": {
+	                "pos": "3 2 3"
+	            },
+	            "render": [
+	                {
+	                  "mesh": "axis.mesh",
+	                  "materials": ["data/materials/solid.material"]
+	                }
+	            ]
+	        }
 	}
 ]

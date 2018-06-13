@@ -94,10 +94,12 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="C:\Users\mcv16_alumne\Desktop\Engine\engine\source\skeleton\bone_correction.cpp" />
     <ClCompile Include="camera\camera.cpp" />
     <ClCompile Include="checkpoints\checkpoint.cpp" />
     <ClCompile Include="components\camera_controller\comp_auxcamera_shadowmerge.cpp" />
     <ClCompile Include="components\camera_controller\comp_camera_flyover.cpp" />
+    <ClCompile Include="components\camera_controller\comp_camera_front_transform.cpp" />
     <ClCompile Include="components\camera_controller\comp_camera_orbit.cpp" />
     <ClCompile Include="components\camera_controller\comp_camera_shadowmerge.cpp" />
     <ClCompile Include="components\camera_controller\comp_camera_thirdperson.cpp" />
@@ -144,12 +146,14 @@
     <ClCompile Include="components\postfx\comp_render_ao.cpp" />
     <ClCompile Include="components\postfx\comp_render_bloom.cpp" />
     <ClCompile Include="components\postfx\comp_render_outlines.cpp" />
+    <ClCompile Include="components\skeleton\bone_correction.cpp" />
     <ClCompile Include="components\skeleton\comp_animator.cpp" />
     <ClCompile Include="components\postfx\comp_render_blur.cpp" />
     <ClCompile Include="components\postfx\comp_render_blur_radial.cpp" />
     <ClCompile Include="components\skeleton\comp_bone_tracker.cpp" />
     <ClCompile Include="components\ia\comp_mimetic_animator.cpp" />
     <ClCompile Include="components\skeleton\comp_skeleton.cpp" />
+    <ClCompile Include="components\skeleton\comp_skel_lookat.cpp" />
     <ClCompile Include="components\skeleton\game_core_skeleton.cpp" />
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="entity\entity.cpp" />
@@ -273,10 +277,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Bin\data\shaders\ctes.h" />
+    <ClInclude Include="C:\Users\mcv16_alumne\Desktop\Engine\engine\source\skeleton\bone_correction.h" />
     <ClInclude Include="camera\camera.h" />
     <ClInclude Include="checkpoints\checkpoint.h" />
     <ClInclude Include="components\camera_controller\comp_auxcamera_shadowmerge.h" />
     <ClInclude Include="components\camera_controller\comp_camera_flyover.h" />
+    <ClInclude Include="components\camera_controller\comp_camera_front_transform.h" />
     <ClInclude Include="components\camera_controller\comp_camera_orbit.h" />
     <ClInclude Include="components\camera_controller\comp_camera_shadowmerge.h" />
     <ClInclude Include="components\camera_controller\comp_camera_thirdperson.h" />
@@ -327,11 +333,13 @@
     <ClInclude Include="components\postfx\comp_render_blur.h" />
     <ClInclude Include="components\postfx\comp_render_blur_radial.h" />
     <ClInclude Include="components\postfx\comp_render_outlines.h" />
+    <ClInclude Include="components\skeleton\bone_correction.h" />
     <ClInclude Include="components\skeleton\cal3d2engine.h" />
     <ClInclude Include="components\skeleton\comp_animator.h" />
     <ClInclude Include="components\skeleton\comp_bone_tracker.h" />
     <ClInclude Include="components\ia\comp_mimetic_animator.h" />
     <ClInclude Include="components\skeleton\comp_skeleton.h" />
+    <ClInclude Include="components\skeleton\comp_skel_lookat.h" />
     <ClInclude Include="components\skeleton\game_core_skeleton.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="entity\common_msgs.h" />

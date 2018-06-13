@@ -1,5 +1,6 @@
 #include "mcv_platform.h"
 #include "comp_skeleton.h"
+#include "components/comp_name.h"
 #include "game_core_skeleton.h"
 #include "cal3d/cal3d.h"
 #include "resources/resources_manager.h"
@@ -95,8 +96,15 @@ void TCompSkeleton::update(float dt) {
   //dbg("%f	%f	 %f\n", model->getSkeleton()->getBone(0)->getTranslation().x, model->getSkeleton()->getBone(0)->getTranslation().y, model->getSkeleton()->getBone(0)->getTranslation().z);
   if (tmx != NULL) {
 	  Vector3 deltaMovement = lastFrameRootPos - getBonePosById(0);
-	  dbg("%f	%f	 %f\n", deltaMovement.x, deltaMovement.y, deltaMovement.z);
-	  tmx->setPosition(tmx->getPosition() + Vector3(deltaMovement.x, 0, deltaMovement.z));
+	  TCompName * c_name = get<TCompName>();
+	  
+	  if (!strcmp(c_name->getName(), "Mimetic 1")) {
+		  dbg("%s : %f   %f	  %f\n", c_name->getName(), deltaMovement.x, deltaMovement.y, deltaMovement.z);
+		  dbg("LastFrame : x: %f	y: %f	z: %f		ActualFrame : x: %f		y: %f	z: %f\n\n", lastFrameRootPos.x, lastFrameRootPos.y, lastFrameRootPos.z, getBonePosById(0).x, getBonePosById(0).y, getBonePosById(0).z);
+		  //setBonePosById(0, tmx->getPosition().x, tmx->getPosition().y, tmx->getPosition().z);
+		  //tmx->setPosition(tmx->getPosition() + Vector3(deltaMovement.x, 0, deltaMovement.z));
+	  }
+	  
   }
   //Move Root
   if (rootMovementAction || rootMovementCyclic) {
@@ -117,6 +125,7 @@ void TCompSkeleton::update(float dt) {
 
   }
  // TCompTransform* tmx = get<TCompTransform>();
+  lastFrameRootPos = getBonePosById(0);
   if (tmx != NULL) {
 	  VEC3 pos = tmx->getPosition();
 	  QUAT rot = tmx->getRotation();
@@ -124,7 +133,7 @@ void TCompSkeleton::update(float dt) {
 	  model->update(dt);
   }
 
-  lastFrameRootPos = getBonePosById(0);
+  
   lastFrameCyclicAnimationWeight = cyclicAnimationWeight;
 }
 
@@ -429,4 +438,10 @@ Vector3 TCompSkeleton::getBonePosById(int bone_id) {
 	bone_pos.y = model->getSkeleton()->getBone(bone_id)->getTranslation().y;
 	bone_pos.z = model->getSkeleton()->getBone(bone_id)->getTranslation().z;
 	return bone_pos;
+}
+
+void TCompSkeleton::setBonePosById(int bone_id, float x_b, float y_b, float z_b) {
+
+	model->getSkeleton()->getBone(bone_id)->setTranslation(CalVector(x_b,y_b,z_b));
+
 }

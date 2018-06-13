@@ -55,9 +55,12 @@
 				"amount": 0.6,
 				"lut": "data/textures/lut/RGBTable16x1.dds"
 			},
-						"render_outlines" : {
-        "enabled" : true
-      },
+			"render_outlines" : {
+        		"enabled" : true
+      		},
+			"comp_camera_front_transform" : {
+        		"target_name" : "Jugador Target"
+      		},
 			"tags": ["main_camera"]
 		}
 	}, {
