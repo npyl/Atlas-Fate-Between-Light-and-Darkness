@@ -55,20 +55,8 @@ AABB getRotatedBy(AABB src, const MAT44 &model) {
 void TCompAbsAABB::onCreate(const TMsgSceneCreated&) {
 	updateFromSiblingsLocalAABBs(CHandle(this).getOwner());
 
-	TCompLightSpot* spotlight = get<TCompLightSpot>();
-
-	if (spotlight) {
-		TCompLightSpot::result res = spotlight->createAABB();
-		Extents = res.extents;
-		Center = VEC3::Zero;
-		AABB::Transform(*this, res.transform.asMatrix());
-		//renderWiredAABB(*this, res.transform.asMatrix(), VEC4(0, 0, 1, 1));
-	}
-	else {
 		TCompTransform* c_trans = get<TCompTransform>();
 		AABB::Transform(*this, c_trans->asMatrix());
-		//renderWiredAABB(*this, c_trans->asMatrix(), VEC4(0, 0, 1, 1));
-	}
 }
 
 void TCompAbsAABB::registerMsgs() {
@@ -83,7 +71,7 @@ void TCompLocalAABB::update(float dt) {
 	TCompAbsAABB *abs_aabb = get<TCompAbsAABB>();
 
 	// AbsAABB = transform( LocalAABB )
-	if (in_tmx && abs_aabb)
+	if (in_tmx && abs_aabb && enabled)
 		*(AABB*)abs_aabb = getRotatedBy(*this, in_tmx->asMatrix());
 }
 

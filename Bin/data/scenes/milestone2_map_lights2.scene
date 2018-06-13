@@ -635,7 +635,8 @@
         "casts_shadows": true,
         "shadows_step": 1.0,
         "shadows_resolution": 256,
-        "shadows_fmt": "R32_TYPELESS"
+        "shadows_fmt": "R32_TYPELESS",
+        "is_moving": false
       },
       "collider": {
         "shape": "convex",

@@ -8,6 +8,7 @@ struct TMsgEntityCreated;
 
 // Component base to derivce the AbsAABB & LocalAABB
 struct TCompAABB : public AABB, public TCompBase {
+  bool enabled = true;
   void load(const json& j, TEntityParseContext& ctx);
   void debugInMenu();
   void renderDebug();
