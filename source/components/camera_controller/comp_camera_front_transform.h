@@ -13,5 +13,6 @@ public:
 private:
 	std::string target_transorm_name;
 	CEntity * target_transform;
+	CEntity * player_transform;
 };
 

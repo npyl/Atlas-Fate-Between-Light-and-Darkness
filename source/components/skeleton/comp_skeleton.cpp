@@ -99,8 +99,8 @@ void TCompSkeleton::update(float dt) {
 	  TCompName * c_name = get<TCompName>();
 	  
 	  if (!strcmp(c_name->getName(), "Mimetic 1")) {
-		  dbg("%s : %f   %f	  %f\n", c_name->getName(), deltaMovement.x, deltaMovement.y, deltaMovement.z);
-		  dbg("LastFrame : x: %f	y: %f	z: %f		ActualFrame : x: %f		y: %f	z: %f\n\n", lastFrameRootPos.x, lastFrameRootPos.y, lastFrameRootPos.z, getBonePosById(0).x, getBonePosById(0).y, getBonePosById(0).z);
+		  //dbg("%s : %f   %f	  %f\n", c_name->getName(), deltaMovement.x, deltaMovement.y, deltaMovement.z);
+		  //dbg("LastFrame : x: %f	y: %f	z: %f		ActualFrame : x: %f		y: %f	z: %f\n\n", lastFrameRootPos.x, lastFrameRootPos.y, lastFrameRootPos.z, getBonePosById(0).x, getBonePosById(0).y, getBonePosById(0).z);
 		  //setBonePosById(0, tmx->getPosition().x, tmx->getPosition().y, tmx->getPosition().z);
 		  //tmx->setPosition(tmx->getPosition() + Vector3(deltaMovement.x, 0, deltaMovement.z));
 	  }

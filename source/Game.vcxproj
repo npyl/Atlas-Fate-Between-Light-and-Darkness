@@ -94,7 +94,6 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\mcv16_alumne\Desktop\Engine\engine\source\skeleton\bone_correction.cpp" />
     <ClCompile Include="camera\camera.cpp" />
     <ClCompile Include="checkpoints\checkpoint.cpp" />
     <ClCompile Include="components\camera_controller\comp_auxcamera_shadowmerge.cpp" />
@@ -277,7 +276,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Bin\data\shaders\ctes.h" />
-    <ClInclude Include="C:\Users\mcv16_alumne\Desktop\Engine\engine\source\skeleton\bone_correction.h" />
     <ClInclude Include="camera\camera.h" />
     <ClInclude Include="checkpoints\checkpoint.h" />
     <ClInclude Include="components\camera_controller\comp_auxcamera_shadowmerge.h" />
