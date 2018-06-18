@@ -10,6 +10,7 @@
 #include "ctes.h"                     // texture slots
 #include "physics/physics_collider.h"
 #include "components\comp_aabb.h"
+#include "components/comp_culling.h"
 
 DECL_OBJ_MANAGER("light_spot", TCompLightSpot);
 
@@ -206,6 +207,27 @@ void TCompLightSpot::generateShadowMap() {
 
   if (!shadows_rt || !shadows_enabled || !isEnabled)
     return;
+
+  CEntity* e_camera = getEntityByName("main_camera");
+  const TCompCulling* culling = nullptr;
+  if (e_camera)
+    culling = e_camera->get<TCompCulling>();
+  const TCompCulling::TCullingBits* culling_bits = culling ? &culling->bits : nullptr;
+
+  // Do the culling
+  if (culling_bits) {
+    TCompAbsAABB* aabb = get<TCompAbsAABB>();
+    if (aabb) {
+      CHandle h = aabb;
+      auto idx = h.getExternalIndex();
+      if (!culling_bits->test(idx)) {
+        CEntity* e = CHandle(this).getOwner();
+        std::string name = e->getName();
+        //dbg("Culling al shadow map de la luz %s \n ", name.c_str());
+        return;
+      }
+    }
+  }
 
   // In this slot is where we activate the render targets that we are going
   // to update now. You can't be active as texture and render target at the
