@@ -4,6 +4,7 @@
 #include "ctes.h"                     // texture slots
 #include "render/render_manager.h" 
 #include "render/render_objects.h" 
+#include "components\comp_aabb.h"
 
 DECL_OBJ_MANAGER("light_point", TCompLightPoint);
 
@@ -16,6 +17,40 @@ void TCompLightPoint::debugInMenu() {
     ImGui::ColorEdit3("Color", &color.x);
     ImGui::DragFloat("Radius", &radius, 0.01f, 0.f, 100.f);
     ImGui::Checkbox("Enabled", &isEnabled);
+	ImGui::Checkbox("Is moving", &is_moving);
+
+}
+void TCompLightPoint::registerMsgs() {
+
+	DECL_MSG(TCompLightPoint, TMsgSceneCreated, onCreate);
+	DECL_MSG(TCompLightPoint, TMsgEntityDestroyed, onDestroy);
+
+}
+
+void TCompLightPoint::onCreate(const TMsgSceneCreated& msg) {
+	TCompAbsAABB* absAABB = get<TCompAbsAABB>();
+	TCompLocalAABB* localAABB = get<TCompLocalAABB>();
+
+	if (absAABB && localAABB) {
+
+		createAABB();
+		absAABB->Extents = aabb.Extents;
+		absAABB->Center = aabb.Center;
+		localAABB->enabled = false;
+
+	}
+
+}
+
+void TCompLightPoint::onDestroy(const TMsgEntityDestroyed& msg) {
+
+}
+
+void TCompLightPoint::createAABB() {
+	//Absolute aabb
+	TCompTransform* mypos = get<TCompTransform>();
+	aabb.Extents = VEC3(radius, radius, radius);
+	aabb.Center = mypos->getPosition();
 }
 
 MAT44 TCompLightPoint::getWorld() {
@@ -42,6 +77,8 @@ void TCompLightPoint::load(const json& j, TEntityParseContext& ctx) {
         color = loadVEC4(j["color"]);
     intensity = j.value("intensity", intensity);
     radius = j.value("radius", radius);
+	is_moving = j.value("is_moving", false);
+
 
     if (j.count("projector")) {
         std::string projector_name = j.value("projector", "");
@@ -71,6 +108,23 @@ void TCompLightPoint::activate() {
     cb_light.light_view_proj_offset = MAT44::Identity;
     cb_light.light_angle = 0;
     cb_light.updateGPU();
+}
+
+void TCompLightPoint::update(float dt) {
+	if (is_moving) {
+		TCompAbsAABB* absAABB = get<TCompAbsAABB>();
+		TCompLocalAABB* localAABB = get<TCompLocalAABB>();
+
+		if (absAABB && localAABB) {
+
+			createAABB();
+			absAABB->Extents = aabb.Extents;
+			absAABB->Center = aabb.Center;
+			localAABB->enabled = false;
+
+		}
+	}
+
 }
 
 

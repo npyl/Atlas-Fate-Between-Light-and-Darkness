@@ -8,10 +8,16 @@ class TCompLightPoint : public TCompBase {
 	VEC4            color = VEC4(1, 1, 1, 1);
 	float           intensity = 1.0f;
 	float           radius = 1.0f;
+	AABB            aabb;
+	bool			is_moving;
+
+
+	void onCreate(const TMsgSceneCreated& msg);
+	void onDestroy(const TMsgEntityDestroyed& msg);
 
 public:
 
-    bool isEnabled;
+	bool isEnabled;
 	const CTexture* projector = nullptr;
 
 	void debugInMenu();
@@ -19,6 +25,11 @@ public:
 	void load(const json& j, TEntityParseContext& ctx);
 	DECL_SIBLING_ACCESS();
 
+	void createAABB();
 	void activate();
 	MAT44 getWorld();
+	void update(float dt);
+
+	static void registerMsgs();
+
 };
