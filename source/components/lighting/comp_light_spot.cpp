@@ -32,24 +32,27 @@ void TCompLightSpot::renderDebug() {
   TCompTransform* mypos = get<TCompTransform>();
   CTransform posAABB = CTransform();
   TCompCollider* mycollider = get<TCompCollider>();
-  physx::PxConvexMeshGeometry colliderMesh;
-  mycollider->config->shape->getConvexMeshGeometry(colliderMesh);
-  physx::PxBounds3 bounds = colliderMesh.convexMesh->getLocalBounds();
-  const physx::PxVec3* vertexs = colliderMesh.convexMesh->getVertices();
-  //float y = mypos->getPosition().y + (mypos->getUp() * (range / 2));
-  //physx::PxVec3 aa = bounds.getExtents();
-  //float a = tan(deg2rad(angle / 2)) * range;
-  //VEC3 pf = VEC3(pos.getPosition().x, p.y, pos.getPosition().z);
-  //VEC3 p = mypos->getPosition() + mypos->getFront() * (range / 2);
-  VEC3 p = mypos->getPosition() + mypos->getFront() * (bounds.getExtents().y);
 
+  if (mycollider) {
 
+	  physx::PxConvexMeshGeometry colliderMesh;
+	  mycollider->config->shape->getConvexMeshGeometry(colliderMesh);
+	  physx::PxBounds3 bounds = colliderMesh.convexMesh->getLocalBounds();
+	  VEC3 extents = VEC3(ToVec3(bounds.getExtents()));
+	  VEC3 p = mypos->getPosition() + mypos->getFront() * (extents.y);
 
-  AABB aabb;
-  posAABB.setPosition(p);
-  aabb.Center = VEC3(0, 0, 0);
-  aabb.Extents = VEC3(ToVec3(bounds.getExtents()));
-  //aabb.Extents = VEC3(tan(deg2rad(angle / 2)) * range, range / 2, tan(deg2rad(angle / 2)) * range);
+	  posAABB.setPosition(p);
+	  aabb.Center = VEC3::Zero;
+	  aabb.Extents = extents;
+  }
+  else {
+	  VEC3 p = mypos->getPosition() + mypos->getFront() * (range / 2);
+	  posAABB.setPosition(p);
+
+	  // aabb.Transform(aabb, posAABB.asMatrix());
+	  aabb.Extents = VEC3(tan(deg2rad(angle / 2)) * range, range / 2, tan(deg2rad(angle / 2)) * range);
+	  aabb.Center = VEC3::Zero;
+  }
 
   renderWiredAABB(aabb, posAABB.asMatrix(), VEC4(0, 1, 0, 1));
 }
@@ -219,7 +222,7 @@ void TCompLightSpot::generateShadowMap() {
     activateCamera(*this, shadows_rt->getWidth(), shadows_rt->getHeight());
   }
 
-  CRenderManager::get().setEntityCamera(CHandle(this).getOwner());
+  CRenderManager::get().setEntityCamera(getEntityByName("main_camera"));
   CRenderManager::get().renderCategory("shadows");
 }
 
