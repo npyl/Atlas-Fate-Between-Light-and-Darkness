@@ -16,17 +16,15 @@ class TCompCollider : public TCompBase {
 	void onMovingObject(const TMsgGrabObject& msg);
 	void renderColliders(bool onlyDynamics = false);
 
-	CHandle lastMovedObject;
-
-	DECL_SIBLING_ACCESS();
+    DECL_SIBLING_ACCESS();
 
 public:
 
-	bool player_inside;
-	std::map<uint32_t, TCompTransform*> handles;
+    bool player_inside;
+    std::map<uint32_t, TCompTransform*> handles;
 
-	// Collider parameter description
-	CPhysicsCollider * config;
+    // Collider parameter description
+    CPhysicsCollider * config;
 
 	~TCompCollider();
 	void debugInMenu();
@@ -55,5 +53,7 @@ public:
 	bool collisionDistance(const VEC3 & org, const VEC3 & dir, float maxDistance);
 	void setGlobalPose(VEC3 newPos, VEC4 newRotation, bool autowake = false);
 
-	static void registerMsgs();
+    //void enableCollisionsAndQueries(bool disable);    /* To be tested (and understood :')) */
+
+    static void registerMsgs();
 };

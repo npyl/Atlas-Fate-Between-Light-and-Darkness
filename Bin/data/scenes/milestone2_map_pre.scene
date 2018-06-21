@@ -32,6 +32,14 @@
           [
             "data/materials/mtl_tubo_capsulas.material"
           ]
+        },
+				{
+          "mesh": "data/meshes/mesh_tubocapsula.mesh"
+          ,
+          "materials":
+          [
+            "data/materials/mtl_tubo_capsulas_post.material"
+          ]
         }
       ]
       ,
@@ -628,7 +636,6 @@
   {
     "entity":
     {
-      "prefab" : "data/prefabs/lod_house2_start.prefab",
       "name": "mesh_house2_start"
       ,
       "transform":
@@ -637,6 +644,24 @@
         ,
         "rotation": "0.0 -0.707107 0.0 -0.707107"
       }
+      ,
+      "render":
+      [
+        {
+          "mesh": "data/meshes/mesh_house2_start.mesh"
+          ,
+          "materials":
+          [
+            "data/materials/mtl_HouseA_Wall.material"
+            ,
+            "data/materials/mtl_houseA_door.material"
+          ]
+        }
+      ]
+      ,
+      "abs_aabb": true
+      ,
+      "local_aabb": true
     }
   }
   ,
@@ -8889,62 +8914,61 @@
   }
   ,
   {
-    "entity": {
-      "name": "mesh_caja015",
-      "transform": {
-        "pos": "-18.0244 -0.5 -1.92534",
+    "entity":
+    {
+      "name": "mesh_caja015"
+      ,
+      "transform":
+      {
+        "pos": "-18.0244 -0.322258 -1.92534"
+        ,
         "rotation": "0.0 0.461749 0.0 -0.887011"
-      },
-      "render": [
+      }
+      ,
+      "render":
+      [
         {
-          "mesh": "data/meshes/mesh_caja015.mesh",
-          "materials": [
+          "mesh": "data/meshes/mesh_caja015.mesh"
+          ,
+          "materials":
+          [
             "data/materials/mtl_caja.material"
           ]
         }
-      ],
-      "collider": {
-        "shape": "box",
-        "xsize": "0.482931 0.475179 0.630642",
-        "size": "0.482931 0.7 0.630642",
-        "group": "movable"
-      },
-      "rigidbody": {
-        "is_gravity": true,
-        "is_movable": true
-      },
-      "tags": [ "movable" ],
-      "abs_aabb": true,
+      ]
+      ,
+      "abs_aabb": true
+      ,
       "local_aabb": true
     }
   }
   ,
   {
-    "entity": {
-      "name": "mesh_caja016",
-      "transform": {
-        "pos": "-17.7197 -0.0336673 0.097084",
+    "entity":
+    {
+      "name": "mesh_caja016"
+      ,
+      "transform":
+      {
+        "pos": "-17.7197 -0.0336673 0.097084"
+        ,
         "rotation": "0.0 0.707107 0.0 -0.707107"
-      },
-      "tags": [ "movable" ],
-      "render": [
+      }
+      ,
+      "render":
+      [
         {
-          "mesh": "data/meshes/mesh_caja016.mesh",
-          "materials": [
+          "mesh": "data/meshes/mesh_caja016.mesh"
+          ,
+          "materials":
+          [
             "data/materials/mtl_caja.material"
           ]
         }
-      ],
-      "collider": {
-        "shape": "box",
-        "size": "1.02751 0.778982 1.18989",
-        "group": "movable"
-      },
-      "rigidbody": {
-        "is_gravity": true,
-        "is_movable": true
-      },
-      "abs_aabb": true,
+      ]
+      ,
+      "abs_aabb": true
+      ,
       "local_aabb": true
     }
   }

@@ -10,8 +10,10 @@
 	"update": [
 		"circular_controller",
 		"player_tempcontroller",
+		"noclip_controller",
 		"ai_patrol",
 		"ai_mimetic",
+		"instance",
 		"dynamic_capsule",
 		"shadow_controller",
 		"skeleton",
@@ -31,6 +33,7 @@
 		"camera_flyover",
 		"curve_controller",
 		"trigger_camera",
+		"trigger_checkpoint",
 		"camera_thirdperson",
 		"camera_shadowmerge",
 		"auxcamera_shadowmerge",
@@ -38,9 +41,10 @@
 		"fsm",
 		"player_animator",
 		"player_input",
+		"movable_object",
 		"emission_controller",
-    "rotator",
-    "lod"
+		"rotator",
+		"lod"
 	],
 	"render_debug": [
 		"player_tempcontroller",

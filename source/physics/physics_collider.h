@@ -19,7 +19,6 @@ public:
 	bool is_trigger = false;
 	bool is_controller = false;
 	physx::PxRigidActor* actor;
-	physx::PxRigidDynamic* rigid_actor;
 	physx::PxShape* shape;
 
 	physx::PxU32 group;
@@ -33,7 +32,7 @@ public:
 	virtual void debugInMenu() = 0;
 
 	void createStatic(physx::PxShape* actor_shape, TCompTransform * c_transform);
-	void createDynamic(physx::PxShape* actor_shape, TCompTransform * c_transform, bool isMovable = false);
+	void createDynamic(physx::PxShape* actor_shape, TCompTransform * c_transform, float mass);
 
 	void setupFiltering(physx::PxShape* shape, physx::PxU32 filterGroup, physx::PxU32 filterMask);
 	void setupFiltering(physx::PxRigidActor* actor, physx::PxU32 filterGroup, physx::PxU32 filterMask);
@@ -44,6 +43,7 @@ struct CPhysicsBox : public CPhysicsCollider{
 
 public:
 	physx::PxVec3 size;
+  float step_offset;
 
 	physx::PxShape*  createShape() override;
 	physx::PxController* createController(TCompTransform * c_transform) override;
@@ -77,6 +77,7 @@ struct CPhysicsCapsule : public CPhysicsCollider{
 public:
 	float height;
 	float radius;
+  float step_offset;
 
 	physx::PxShape*  createShape() override;
 	physx::PxController* createController(TCompTransform * c_transform) override;

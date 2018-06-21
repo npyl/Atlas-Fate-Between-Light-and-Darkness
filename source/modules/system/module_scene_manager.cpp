@@ -3,6 +3,7 @@
 #include "handle/handle.h"
 #include "entity/entity.h"
 #include "entity/entity_parser.h"
+#include "modules/game/module_game_manager.h"
 
 // for convenience
 using json = nlohmann::json;
@@ -13,6 +14,8 @@ CModuleSceneManager::CModuleSceneManager(const std::string& name)
 
 /* Pre-load all the scenes from boot.json */
 void CModuleSceneManager::loadJsonScenes(const std::string filepath) {
+
+    sceneCount = 0;
 
     json jboot = loadJson(filepath);
     for (auto it = jboot.begin(); it != jboot.end(); ++it) {
@@ -26,6 +29,7 @@ void CModuleSceneManager::loadJsonScenes(const std::string filepath) {
         scene->groups_subscenes = groups_subscenes;
         auto& data = jboot[scene_name]["static_data"];
         scene->navmesh = data.value("navmesh", "data/navmeshes/milestone2_navmesh.bin");
+        scene->initial_script_name = data.value("initial_script", "");
 
         _scenes.insert(std::pair<std::string, Scene*>(scene_name, scene));
     }
@@ -60,6 +64,7 @@ Scene* CModuleSceneManager::createScene(const std::string& name) {
     Scene* scene = new Scene();
     scene->name = name;
     scene->navmesh = "UNDEFINED";
+    scene->initial_script_name = "UNDEFINED";
     scene->isLoaded = false;
 
     return scene;
@@ -85,7 +90,7 @@ bool CModuleSceneManager::loadScene(const std::string & name) {
             dbg("Autoloading scene %s\n", name2.c_str());
             TEntityParseContext ctx;
 			if (parseScene(scene_name, ctx)) {
-				//EngineLogic.execEvent(CModuleLogic::Events::SCENE_START, name2);
+				EngineLogic.execEvent(CModuleLogic::Events::SCENE_START, name2);
 			}
         }
 
@@ -109,7 +114,10 @@ bool CModuleSceneManager::loadScene(const std::string & name) {
             h_e.sendMsg(msg);
         });
 
-		EngineLogic.execEvent(CModuleLogic::Events::SCENE_START, "start_scenes_loaded");
+				CModuleGameManager gameManager = CEngine::get().getGameManager();
+				/* TODO: Comprobar que se sigue en la misma escena */
+				gameManager.loadCheckpoint();
+        Engine.getLogic().execEvent(EngineLogic.SCENE_START, current_scene->initial_script_name);
 
         return true;
     }
@@ -126,13 +134,16 @@ bool CModuleSceneManager::unLoadActiveScene() {
     // Warning: persistent data will need to avoid deletion
     if (_activeScene != nullptr) {
 
-        Engine.getEntities().destroyAllEntities();
-        Engine.getCameras().deleteAllCameras();
-        Engine.getIA().clearSharedBoards();
-        Engine.getNavmeshes().destroyNavmesh();
+        EngineEntities.destroyAllEntities();
+        EngineCameras.deleteAllCameras();
+        EngineIA.clearSharedBoards();
+        EngineNavmeshes.destroyNavmesh();
+        EngineInstancing.clearInstances();
 
         _activeScene->isLoaded = false;
         _activeScene = nullptr;
+
+				/* TODO: Delete checkpoint */
 
         return true;
     }

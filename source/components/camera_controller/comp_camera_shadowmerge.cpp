@@ -51,6 +51,7 @@ void TCompCameraShadowMerge::registerMsgs()
 	DECL_MSG(TCompCameraShadowMerge, TMsgCameraDeprecated, onMsgCameraDeprecated);
 	DECL_MSG(TCompCameraShadowMerge, TMsgSetCameraActive, onMsgActivateMyself);
   DECL_MSG(TCompCameraShadowMerge, TMsgScenePaused, onMsgScenePaused);
+  DECL_MSG(TCompCameraShadowMerge, TMsgCameraReset, onMsgCameraReset);
 }
 
 void TCompCameraShadowMerge::onMsgCameraActive(const TMsgCameraActivated &msg)
@@ -86,6 +87,11 @@ void TCompCameraShadowMerge::onMsgScenePaused(const TMsgScenePaused & msg)
   paused = msg.isPaused;
 }
 
+void TCompCameraShadowMerge::onMsgCameraReset(const TMsgCameraReset & msg)
+{
+  _current_euler = _original_euler;
+}
+
 void TCompCameraShadowMerge::update(float dt)
 {
 	if (!paused) {
@@ -106,11 +112,6 @@ void TCompCameraShadowMerge::update(float dt)
 		vertical_delta = -EngineInput.mouse()._position_delta.y;
 		if (btRHorizontal.isPressed()) horizontal_delta = btRHorizontal.value;
 		if (btRVertical.isPressed()) vertical_delta = btRVertical.value;
-
-		//VEC2 current_clamp = VEC2::Zero;
-		//float c_angle = rad2deg(cos(target_transform->getUp().Dot(-EnginePhysics.gravity)));
-		//if (target_transform->getFront().Dot(-EnginePhysics.gravity) > 0) current_clamp = VEC2(_clamp_angle.x - c_angle, _clamp_angle.y - c_angle);
-		//else current_clamp = VEC2(_clamp_angle.x + c_angle, _clamp_angle.y + c_angle);
 
 		// Verbose code
 		_current_euler.x -= horizontal_delta * _speed * dt;
@@ -149,6 +150,6 @@ float TCompCameraShadowMerge::CameraClipping(const VEC3 & origin, const VEC3 & d
 
 void TCompCameraShadowMerge::setCurrentEuler(float x, float y)
 {
-	_current_euler.x = x;
-	_current_euler.y = y;
+  if (x != INFINITY) _current_euler.x = x;
+  if (y != INFINITY) _current_euler.y = y;
 }

@@ -4,33 +4,31 @@
 
 class TCompPlayerAttackCast : public TCompBase
 {
-	DECL_SIBLING_ACCESS();
+  DECL_SIBLING_ACCESS();
 
 public:
-	void debugInMenu();
-	void load(const json& j, TEntityParseContext& ctx);
-	void update(float dt);
+  void debugInMenu();
+  void load(const json& j, TEntityParseContext& ctx);
+  void update(float dt);
 
-	static void registerMsgs();
+  static void registerMsgs();
 
-	const std::vector<CHandle> getEnemiesInRange();
-	const std::vector<CHandle> getMovableObjectsInRange();
-	const bool canAttackEnemiesInRange(CHandle& closestEnemyToAttack = CHandle());
-	CHandle closestEnemyToMerge();
-	CHandle closestObjectToMove();
+  const std::vector<CHandle> getEnemiesInRange();
+  const bool canAttackEnemiesInRange(CHandle& closestEnemyToAttack = CHandle());
+  CHandle closestEnemyToMerge();
 
-	CHandle movable;
-	CHandle stunnedEnemy;
-
-	physx::PxQueryFilterData PxPlayerAttackQueryFilterData;
-	physx::PxQueryFilterData PxPlayerMovableObjectsQueryFilterData;
-	physx::PxQueryFilterData PxMovingObjectQuery;
+  const std::vector<CHandle> getMovableObjectsInRange();
+  CHandle getClosestMovableObjectInRange();
 
 private:
 
-	physx::PxSphereGeometry geometry;
-	float attack_fov, grabObject_fov;
+  physx::PxQueryFilterData PxPlayerAttackQueryFilterData;
+  physx::PxQueryFilterData PxPlayerMoveObjectsQueryFilterData;
+  physx::PxSphereGeometry geometryAttack;
+  physx::PxSphereGeometry geometryMoveObjects;
+  float attack_fov;
+  float moveObjects_fov;
 
-	void onMsgScenePaused(const TMsgScenePaused & msg);
+  void onMsgScenePaused(const TMsgScenePaused & msg);
 };
 

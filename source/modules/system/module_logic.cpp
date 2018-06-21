@@ -22,6 +22,8 @@
 #include "components/lighting/comp_light_dir.h"
 #include "components/lighting/comp_light_spot.h"
 #include "components/lighting/comp_light_point.h"
+#include "components/postfx/comp_render_ao.h"
+#include "components/player_controller/comp_player_tempcontroller.h"
 
 using namespace physx;
 
@@ -113,12 +115,17 @@ void CModuleLogic::publishClasses() {
 		.property("y", &VEC3::y)
 		.property("z", &VEC3::z);
 
+	SLB::Class< TCompTempPlayerController >("PlayerController", m)
+		.comment("This is our wrapper of the player controller component")
+		.property("inhibited", &TCompTempPlayerController::isInhibited);
+
 
 	/* Global functions */
 
 	//game hacks
 	m->set("pauseGame", SLB::FuncCall::create(&pauseGame));
 	m->set("loadscene", SLB::FuncCall::create(&loadscene));
+	m->set("loadCheckpoint", SLB::FuncCall::create(&loadCheckpoint));
 	m->set("move", SLB::FuncCall::create(&move));
 	m->set("spawn", SLB::FuncCall::create(&spawn));
 
@@ -171,6 +178,7 @@ void CModuleLogic::publishClasses() {
 
 }
 
+/* Check if it is a fast format command */
 void CModuleLogic::execCvar(std::string& script) {
 
 	// Only backslash commands fetched.
@@ -278,6 +286,16 @@ void CModuleLogic::printLog()
 
 /* Auxiliar functions */
 CModuleLogic * getLogic() { return EngineLogic.getPointer(); }
+
+TCompTempPlayerController * getPlayerController()
+{
+  TCompTempPlayerController * playerController = nullptr;
+  CEntity* e = getEntityByName("The Player");
+  if (e) {
+    playerController = e->get<TCompTempPlayerController>();
+  }
+  return playerController;
+}
 CModuleGameConsole * getConsole() { return EngineConsole.getPointer(); }
 
 void execDelayedScript(const std::string& script, float delay)
@@ -551,4 +569,10 @@ void cg_drawlights(int type) {
 	getObjectManager<TCompLightPoint>()->forEach([&](TCompLightPoint* c) {
 		c->isEnabled = point;
 	});
+}
+
+void loadCheckpoint()
+{
+	CModuleGameManager gameManager = CEngine::get().getGameManager();
+	gameManager.loadCheckpoint();
 }

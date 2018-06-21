@@ -91,6 +91,11 @@ struct TMsgTriggerExit {
 	DECL_MSG_ID();
 };
 
+struct TMsgPhysxContact {
+	CHandle other_entity;
+	DECL_MSG_ID();
+};
+
 struct TMsgSetCameraActive {
 	std::string previousCamera;
 	std::string actualCamera;
@@ -112,6 +117,10 @@ struct TMsgCameraDeprecated {
 
 struct TMsgCameraFullyActivated {
 	DECL_MSG_ID();
+};
+
+struct TMsgCameraReset {
+  DECL_MSG_ID();
 };
 
 struct TMsgTimeOut {
@@ -138,17 +147,21 @@ struct TMsgScenePaused {
 };
 
 struct TMsgAIPaused {
-	DECL_MSG_ID();
-};
-
-struct TMsgSetVisible {
-	bool visible;
-	DECL_MSG_ID();
+    bool isPaused;
+    DECL_MSG_ID();
 };
 
 struct TMsgConsoleOn {
 	bool isConsoleOn;
 	DECL_MSG_ID();
+};
+
+struct TMsgSystemNoClipToggle {
+    DECL_MSG_ID();
+};
+
+struct TMsgNoClipToggle {
+    DECL_MSG_ID();
 };
 
 struct TMsgNoiseMade {
@@ -158,44 +171,8 @@ struct TMsgNoiseMade {
 	DECL_MSG_ID();
 };
 
-struct TMsgMakeNoise {
-	float noiseRadius;
-	bool isOnlyOnce;
-	float timeToRepeat;
-	bool isNoise;
-	bool isArtificial;
-	DECL_MSG_ID();
-};
-struct TMsgInfiniteStamina {
-	DECL_MSG_ID();
-};
-struct TMsgPlayerImmortal {
-	DECL_MSG_ID();
-};
-struct TMsgPlayerMove {
-	DECL_MSG_ID();
-	VEC3 pos;
-};
-
-struct TMsgPlayerInShadows {
-	DECL_MSG_ID();
-};
-
 struct TMsgShadowChange {
 	bool is_shadowed;
-	DECL_MSG_ID();
-};
-
-struct TMsgSpeedBoost {
-	float speedBoost;
-	DECL_MSG_ID();
-};
-
-struct TMsgPlayerInvisible {
-	DECL_MSG_ID();
-};
-
-struct TMsgSpotlightsToggle {
 	DECL_MSG_ID();
 };
 
@@ -203,12 +180,49 @@ struct TMsgSceneLoaded {
     std::string scene_name;
     DECL_MSG_ID();
 };
-struct TMsgGrabObject {
-	bool moving;
-	CHandle object = CHandle();
-	DECL_MSG_ID();
 
+struct TMsgSetVisible {
+    bool visible;
+    DECL_MSG_ID();
 };
+
+struct TMsgObjectBeingMoved {
+  bool isBeingMoved;
+  CHandle hMovingObject;
+  VEC3 direction;
+  float speed;
+  DECL_MSG_ID();
+};
+
+struct TMsgInfiniteStamina {
+    DECL_MSG_ID();
+};
+
+struct TMsgSpeedBoost {
+    float speedBoost;
+    DECL_MSG_ID();
+};
+
+struct TMsgPlayerInvisible {
+    DECL_MSG_ID();
+};
+
+struct TMsgPlayerImmortal {
+    DECL_MSG_ID();
+};
+
+struct TMsgPlayerInShadows {
+    DECL_MSG_ID();
+};
+
+struct TMsgLanternsDisable {
+    bool disable;
+    DECL_MSG_ID();
+};
+
+//struct TMsgSpotlightsToggle {
+//    DECL_MSG_ID();
+//};
 
 #endif
 

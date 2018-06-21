@@ -18,6 +18,7 @@ public:
 	physx::PxRigidBody* rigidbody = nullptr;
 	physx::PxController* controller = nullptr;
 	physx::PxControllerFilters filters;
+  physx::PxJoint* joint = nullptr; /* Only one joint at a time at the moment */
 
 	float mass;
 	float drag;
@@ -27,9 +28,8 @@ public:
 	bool is_kinematic;
 	bool is_controller;
 	bool is_grounded;
-	bool is_movable;
 
-
+    VEC3 offset;
 	VEC3 lastFramePosition;
 	VEC3 normal_gravity = VEC3(0, -9.8f, 0);
 
@@ -45,7 +45,20 @@ public:
 	void Jump(VEC3 forceUp);
 	void setNormalGravity(VEC3 newGravity);
 
+  void setGlobalPose(VEC3 pos, QUAT rot);
+
 	static void registerMsgs();
+
+  void setLinearVelocity(VEC3 vel, bool autowake = false);
+  void setKinematic(bool isKinematic);
+
+  void createJoint(CHandle entityToJoin);
+  void releaseJoint();
+
+  void createController();
+  void createDynamicRigidbody();
+  void destroyController();
+  void destroyDynamicRigidbody();
 
 	//class CustomQueryFilterCallback : public physx::PxQueryFilterCallback {
 

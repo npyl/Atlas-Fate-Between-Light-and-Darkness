@@ -5,6 +5,7 @@
 #include <SLB/SLB.hpp>
 #include "modules/system/module_game_console.h"
 #include "input/button.h"
+#include "components/player_controller/comp_player_tempcontroller.h"
 
 class CModuleLogic : public IModule
 {
@@ -72,6 +73,7 @@ private:
 /* Auxiliar functions */
 CModuleGameConsole* getConsole();
 CModuleLogic* getLogic();
+TCompTempPlayerController* getPlayerController();
 void execDelayedScript(const std::string& script, float delay);
 void pauseGame(bool pause);
 void fpsToggle();
@@ -100,3 +102,4 @@ void collidersToggle(bool onlyDynamics = false);
 void bind(const std::string& key, const std::string& script);
 void loadscene(const std::string &level);
 void cg_drawlights(int type);
+void loadCheckpoint();

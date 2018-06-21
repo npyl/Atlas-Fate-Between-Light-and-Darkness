@@ -12,10 +12,10 @@
 
 DECL_OBJ_MANAGER("collider", TCompCollider);
 
-TCompCollider::~TCompCollider() {
+TCompCollider::~TCompCollider(){
 
 	// In case it's a controller, delegate it's destruction to the rigidbody.
-	if (config->actor != nullptr) {
+	if (config->actor != nullptr){
 
 		if (!config->is_controller) {
 			config->actor->release();
@@ -154,15 +154,13 @@ void TCompCollider::registerMsgs() {
 	DECL_MSG(TCompCollider, TMsgTriggerEnter, onTriggerEnter);
 	DECL_MSG(TCompCollider, TMsgTriggerExit, onTriggerExit);
 	DECL_MSG(TCompCollider, TMsgEntityDestroyed, onDestroy);
-	DECL_MSG(TCompCollider, TMsgGrabObject, onMovingObject);
-
 }
 
 void TCompCollider::onCreate(const TMsgEntityCreated& msg) {
 
 	CEntity* e = CHandle(this).getOwner();
 	TCompRigidbody * c_rigidbody = e->get<TCompRigidbody>();
-
+	
 	// Let the rigidbody handle the creation if it exists..
 	if (c_rigidbody == nullptr)
 	{
@@ -182,16 +180,16 @@ void TCompCollider::onDestroy(const TMsgEntityDestroyed & msg)
 
 void TCompCollider::onTriggerEnter(const TMsgTriggerEnter& msg) {
 
-	CEntity* e = CHandle(this).getOwner();
-	std::string name_trigger = e->getName();
+    CEntity* e = CHandle(this).getOwner();
+    std::string trigger_name = e->getName();
 	std::map<uint32_t, TCompTransform*>::iterator it = handles.begin();
 	uint32_t ext_index = msg.h_other_entity.getExternalIndex();
-	if (handles.find(ext_index) == handles.end()) {
+	if (handles.find(ext_index) == handles.end()){
 		CEntity * c_other = msg.h_other_entity;
-		TCompTags* tags = c_other->get<TCompTags>();
-		std::string name_collision = c_other->getName();
 		TCompCollider * c_collider = c_other->get<TCompCollider>();
 		TCompTransform * c_transform = c_other->get<TCompTransform>();
+
+        TCompTags* tags = c_other->get<TCompTags>();
 		assert(c_transform);
 
 		handles[ext_index] = c_transform;
@@ -200,20 +198,18 @@ void TCompCollider::onTriggerEnter(const TMsgTriggerEnter& msg) {
 		{
 			player_inside = true;
 		}
-		if (tags) {
-			if (tags->hasTag(getID("player"))) {
-				std::string params = "onTriggerEnter_" + name_trigger + "_" + name_collision;
-				dbg("Event launch: %s \n", params.c_str());
-				params = name_trigger + "_" + name_collision;
-				EngineLogic.execEvent(CModuleLogic::Events::TRIGGER_ENTER, params);
-			}
-			else if (tags->hasTag(getID("enemy"))) {
-				std::string params = "onTriggerEnter_" + name_trigger + "_" + name_collision;
-				dbg("Event launch: %s \n", params.c_str());
-				params = name_trigger + "_" + name_collision;
-				EngineLogic.execEvent(CModuleLogic::Events::TRIGGER_ENTER, params);
-			}
-		}
+
+        if (tags) {
+            if (tags->hasTag(getID("player"))) {
+                std::string params = trigger_name + "_player()";
+                EngineLogic.execEvent(CModuleLogic::Events::TRIGGER_ENTER, params);
+            }
+            else {
+                std::string other_name = c_other->getName();
+                std::string params = trigger_name + "_enemy(" + other_name + ")";
+                EngineLogic.execEvent(CModuleLogic::Events::TRIGGER_ENTER, params);
+            }
+        }
 	}
 
 	// Get all entities with given tag to test with
@@ -222,64 +218,33 @@ void TCompCollider::onTriggerEnter(const TMsgTriggerEnter& msg) {
 
 void TCompCollider::onTriggerExit(const TMsgTriggerExit& msg) {
 
-	CEntity* e = CHandle(this).getOwner();
-	std::string name_trigger = e->getName();
+    CEntity* e = CHandle(this).getOwner();
+    std::string trigger_name = e->getName();
+
 	auto it = handles.find(msg.h_other_entity.getExternalIndex());
 	if (it != handles.end())
 	{
 		handles.erase(it);
 		CEntity * c_other = msg.h_other_entity;
-		std::string name_collision = c_other->getName();
+        TCompTags* tags = c_other->get<TCompTags>();
 		TCompCollider * c_collider = c_other->get<TCompCollider>();
-		TCompTags* tags = c_other->get<TCompTags>();
 
 		if (c_collider->config->group & FilterGroup::Player)
 		{
 			player_inside = false;
 		}
-		if (tags) {
-			if (tags->hasTag(getID("player"))) {
-				std::string params = "onTriggerExit_" + name_trigger + "_" + name_collision;
-				dbg("Event launch: %s \n", params.c_str());
-				EngineLogic.execEvent(CModuleLogic::Events::TRIGGER_EXIT, params);
-			}
-			else if (tags->hasTag(getID("enemy"))) {
-				std::string params = "onTriggerExit_" + name_trigger + "_" + name_collision;
-				dbg("Event launch: %s \n", params.c_str());
-				EngineLogic.execEvent(CModuleLogic::Events::TRIGGER_EXIT, params);
-			}
-		}
-	}
-}
-void TCompCollider::onMovingObject(const TMsgGrabObject& msg) {
-	if (msg.moving) {
-		CEntity* e = msg.object;
-		TCompCollider* collider = e->get<TCompCollider>();
-		collider->config->group = FilterGroup::IgnoreMovable;
-		physx::PxShape* shape = collider->config->shape;
-		physx::PxU32 group = collider->config->group;
-		physx::PxU32 mask = collider->config->mask;
-		collider->config->setupFiltering(shape, group, mask);
-		collider->config->shape = shape;
-		collider->config->group = group;
-		collider->config->mask = mask;
 
-		lastMovedObject = msg.object;
-	}
-	else {
-		if (lastMovedObject.isValid()) {
-			CEntity* e = lastMovedObject;
-			TCompCollider* collider = e->get<TCompCollider>();
-			collider->config->group = FilterGroup::Movable;
-			physx::PxShape* shape = collider->config->shape;
-			physx::PxU32 group = collider->config->group;
-			physx::PxU32 mask = collider->config->mask;
-			collider->config->setupFiltering(shape, group, mask);
-			collider->config->shape = shape;
-			collider->config->group = group;
-			collider->config->mask = mask;
-		}
-
+        if (tags) {
+            if (tags->hasTag(getID("player"))) {
+                std::string params = trigger_name + "_player()";
+                EngineLogic.execEvent(CModuleLogic::Events::TRIGGER_EXIT, params);
+            }
+            else {
+                std::string other_name = c_other->getName();
+                std::string params = trigger_name + "_enemy(" + other_name + ")";
+                EngineLogic.execEvent(CModuleLogic::Events::TRIGGER_EXIT, params);
+            }
+        }
 	}
 }
 
@@ -300,8 +265,8 @@ bool TCompCollider::collisionDistance(const VEC3 & org, const VEC3 & dir, float 
 
 void TCompCollider::setGlobalPose(VEC3 newPos, VEC4 newRotation, bool autowake)
 {
-	physx::PxTransform transform(physx::PxVec3(newPos.x, newPos.y, newPos.z), physx::PxQuat(newRotation.x, newRotation.y, newRotation.z, newRotation.w));
-	config->actor->setGlobalPose(transform, autowake);
+  physx::PxTransform transform(physx::PxVec3(newPos.x, newPos.y, newPos.z), physx::PxQuat(newRotation.x, newRotation.y, newRotation.z, newRotation.w));
+  config->actor->setGlobalPose(transform, autowake);
 }
 
 TCompCollider::result TCompCollider::collisionSweep(VEC3 dir, float distance, physx::PxQueryFlags flags, physx::PxQueryFilterData queryFilterData, Controllers controller) {

@@ -181,6 +181,21 @@ namespace FSM
 		std::string _animationName;
 	};
 
+  class ExitMergeCrouchedState : public IState
+  {
+    virtual void onStart(CContext& ctx) const override;
+    virtual void onFinish(CContext& ctx) const override;
+    virtual bool load(const json& jData);
+
+  private:
+    TargetCamera * _target = nullptr;
+    Noise * _noise = nullptr;
+    float _size = 1.f;
+    float _speed = 1.f;
+    float _radius = 0.3f;
+    std::string _animationName;
+  };
+
 	class SoftLandState : public IState
 	{
 		virtual void onStart(CContext& ctx) const override;
@@ -240,7 +255,7 @@ namespace FSM
 		std::string _animationName;
 	};
 
-	class InhibitorRemoved : public IState
+	class InhibitorRemovedState : public IState
 	{
 		virtual void onStart(CContext& ctx) const override;
 		virtual void onFinish(CContext& ctx) const override;
@@ -254,21 +269,7 @@ namespace FSM
 		std::string _animationName;
 	};
 
-	class InhibitorTryToRemove : public IState
-	{
-		virtual void onStart(CContext& ctx) const override;
-		virtual void onFinish(CContext& ctx) const override;
-		virtual bool load(const json& jData);
-	private:
-		TargetCamera * _target = nullptr;
-		Noise * _noise = nullptr;
-		float _size = 1.f;
-		float _speed = 2.f;
-		float _radius = 0.3f;
-		std::string _animationName;
-	};
-
-	class RemoveInhibitor : public IState
+	class InhibitorTryToRemoveState : public IState
 	{
 		virtual void onStart(CContext& ctx) const override;
 		virtual void onFinish(CContext& ctx) const override;
@@ -309,7 +310,7 @@ namespace FSM
 		float _radius = 0.3f;
 		std::string _animationName;
 	};
-	class GrabEnemy : public IState
+	class GrabEnemyState : public IState
 	{
 		virtual void onStart(CContext& ctx) const override;
 		virtual void onFinish(CContext& ctx) const override;
@@ -322,30 +323,17 @@ namespace FSM
 		float _radius = 0.3f;
 		std::string _animationName;
 	};
-	class GrabObject : public IState
-	{
-		virtual void onStart(CContext& ctx) const override;
-		virtual void onFinish(CContext& ctx) const override;
-		virtual bool load(const json& jData);
-	private:
-		TargetCamera * _target = nullptr;
-		Noise * _noise = nullptr;
-		float _size = 1.f;
-		float _speed = 2.f;
-		float _radius = 0.3f;
-		std::string _animationName;
-	};
-	class noClip : public IState
-	{
-		virtual void onStart(CContext& ctx) const override;
-		virtual void onFinish(CContext& ctx) const override;
-		virtual bool load(const json& jData);
-	private:
-		TargetCamera * _target = nullptr;
-		Noise * _noise = nullptr;
-		float _size = 1.f;
-		float _speed = 2.f;
-		float _radius = 0.3f;
-		std::string _animationName;
-	};
+  class MovingObjectState : public IState
+  {
+    virtual void onStart(CContext& ctx) const override;
+    virtual void onFinish(CContext& ctx) const override;
+    virtual bool load(const json& jData);
+  private:
+    TargetCamera * _target = nullptr;
+    Noise * _noise = nullptr;
+    float _size = 1.f;
+    float _speed = 2.f;
+    float _radius = 0.3f;
+    std::string _animationName;
+  };
 }

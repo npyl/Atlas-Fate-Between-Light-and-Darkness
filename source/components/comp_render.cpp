@@ -14,62 +14,65 @@ DECL_OBJ_MANAGER("render", TCompRender);
 
 
 TCompRender::~TCompRender() {
-	// Delete all references of me in the render manager
-	CRenderManager::get().delRenderKeys(CHandle(this));
+    // Delete all references of me in the render manager
+    CRenderManager::get().delRenderKeys(CHandle(this));
 }
 
 // --------------------------------------------
 void TCompRender::onDefineLocalAABB(const TMsgDefineLocalAABB& msg) {
-	AABB::CreateMerged(*msg.aabb, *msg.aabb, aabb);
+    AABB::CreateMerged(*msg.aabb, *msg.aabb, aabb);
 }
 
+// --------------------------------------------
 void TCompRender::onSetVisible(const TMsgSetVisible& msg) {
-	// If the flag has not changed, nothing to change 
-	if (global_enabled == msg.visible)
-		return;
 
-	// Now keep the new value 
-	global_enabled = msg.visible;
+    // If the flag has not changed, nothing to change
+    if (global_enabled == msg.visible)
+        return;
 
-	// This means we were visible, so we only need to remove my self 
-	if (!global_enabled) {
-		CRenderManager::get().delRenderKeys(CHandle(this));
-	}
-	else {
-		// We come from being invisible, so just add my render keys 
-		refreshMeshesInRenderManager(false);
-	}
+    // Now keep the new value
+    global_enabled = msg.visible;
+
+    // This means we were visible, so we only need to remove my self
+    if (!global_enabled) {
+        CRenderManager::get().delRenderKeys(CHandle(this));
+    }
+    else {
+        // We come from being invisible, so just add my render keys
+        refreshMeshesInRenderManager(false);
+    }
 }
 
 void TCompRender::registerMsgs() {
-	DECL_MSG(TCompRender, TMsgDefineLocalAABB, onDefineLocalAABB);
-	DECL_MSG(TCompRender, TMsgSetVisible, onSetVisible);
+    DECL_MSG(TCompRender, TMsgDefineLocalAABB, onDefineLocalAABB);
+    DECL_MSG(TCompRender, TMsgSetVisible, onSetVisible);
 }
 
 void TCompRender::debugInMenu() {
 
-	ImGui::ColorEdit4("Color", &color.x);
-	ImGui::ColorEdit4("Self Color", &self_color.x);
-	ImGui::DragFloat("Self Intensity", &self_intensity, 0.01f, 0.f, 50.f);
+    ImGui::ColorEdit4("Color", &color.x);
+    ImGui::ColorEdit4("Self Color", &self_color.x);
+    ImGui::DragFloat("Self Intensity", &self_intensity, 0.01f, 0.f, 50.f);
 
-	ImGui::ColorEdit4("Color", &color.x);
+    bool changed = false;
+    for (auto& mwm : meshes) {
+        ImGui::PushID(&mwm);
+        // if the users changed the 'enabled' flag, save it
+        changed |= ImGui::Checkbox("Enabled", &mwm.enabled);
+        ImGui::LabelText("Mesh", "%s", mwm.mesh->getName().c_str());
+        for (auto &m : mwm.materials) {
+            if (m)
+                ((CMaterial*)m)->debugInMenu();
+        }
+        ImGui::PopID();
+    }
 
-	bool changed = false;
-	for (auto& mwm : meshes) {
-		ImGui::PushID(&mwm);
-		// if the users changed the 'enabled' flag, save it
-		changed |= ImGui::Checkbox("Enabled", &mwm.enabled);
-		ImGui::LabelText("Mesh", "%s", mwm.mesh->getName().c_str());
-		for (auto &m : mwm.materials) {
-			if (m)
-				((CMaterial*)m)->debugInMenu();
-		}
-		ImGui::PopID();
-	}
-
-	// Notify the rendermanager that we should regenerate our contents
-	if (changed)
-		refreshMeshesInRenderManager(true);
+    // Notify the rendermanager that we should regenerate our contents
+    if (changed) {
+        TMsgSetVisible msg = { false };
+        CHandle(this).getOwner().sendMsg(msg);
+    }
+        //refreshMeshesInRenderManager(true);
 }
 
 void TCompRender::renderMeshes() {
@@ -163,10 +166,8 @@ void TCompRender::load(const json& j, TEntityParseContext& ctx) {
 
 // Parameter is used only when we know we were globally disabled 
 void TCompRender::refreshMeshesInRenderManager(bool delete_me_from_keys) {
-	CHandle h_me = CHandle(this);
-
-	if (delete_me_from_keys)
-		CRenderManager::get().delRenderKeys(h_me);
+    CHandle h_me = CHandle(this);
+    CRenderManager::get().delRenderKeys(h_me);
 
 	// The house and the trees..
 	for (auto& mwm : meshes) {
@@ -175,19 +176,19 @@ void TCompRender::refreshMeshesInRenderManager(bool delete_me_from_keys) {
 		if (!mwm.enabled || !global_enabled)
 			continue;
 
-		// All materials of the house...
-		uint32_t idx = 0;
-		for (auto& m : mwm.materials) {
-			// Supporting null materials to discard submeshes
-			if (m) {
-				CRenderManager::get().addRenderKey(
-					h_me,
-					mwm.mesh,
-					m,
-					idx
-				);
-			}
-			++idx;
-		}
-	}
+        // All materials of the house...
+        uint32_t idx = 0;
+        for (auto& m : mwm.materials) {
+            // Supporting null materials to discard submeshes
+            if (m) {
+                CRenderManager::get().addRenderKey(
+                    h_me,
+                    mwm.mesh,
+                    m,
+                    idx
+                );
+            }
+            ++idx;
+        }
+    }
 }

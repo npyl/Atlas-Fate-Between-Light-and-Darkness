@@ -41,6 +41,10 @@ function movePlayer(pos)
 	SLB.movePlayer(pos)
 end
 
+function loadCheckpoint()
+	SLB.loadCheckpoint();
+end
+
 function staminaInfinite()
 	SLB.staminaInfinite()
 end

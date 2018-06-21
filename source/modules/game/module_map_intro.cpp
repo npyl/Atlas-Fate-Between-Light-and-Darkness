@@ -17,30 +17,22 @@
 #include "input/devices/mouse.h"
 #include "input/enums.h"
 #include "modules/system/module_sound.h"
+#include "modules/system/module_gui.h"
 
 bool CModuleMapIntro::start() {
 
-    EngineScene.loadScene("scene_alex");
+#ifdef _DEBUG
+    EngineScene.loadScene("scene_brian");
+#else
+    EngineScene.loadScene("scene_brian");
+#endif
 
 	Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
 	mouse->setLockMouse(true);
+	dbg("MODULE MAP START\n");
+	CEngine::get().getGUI().activateWidget(CModuleGUI::EGUIWidgets::INGAME_STAMINA_BAR);
 
-	//CHandle h_camera = getEntityByName("TPCamera");
-	//if (h_camera.isValid())
-	//	Engine.getCameras().setDefaultCamera(h_camera);
-
-	//h_camera = getEntityByName("main_camera");
-	//if (h_camera.isValid())
-	//	Engine.getCameras().setOutputCamera(h_camera);
-
-	//auto om = getObjectManager<CEntity>();
-	//om->forEach([](CEntity* e) {
-	//	TMsgSceneCreated msg;
-	//	CHandle h_e(e);
-	//	h_e.sendMsg(msg);
-	//});
-
-	Engine.getGUI().activateWidget("ingame");
+	//Engine.getGUI().activateWidget("ingame");
 	Engine.getSound().setAmbientSound("../bin/data/sounds/ambient.ogg");
 
 	return true;

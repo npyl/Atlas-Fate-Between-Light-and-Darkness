@@ -30,8 +30,8 @@ public:
 	void  debugInMenu();
 	const CTexture* compute(CTexture* linear_depth_texture);
 
-	bool const getState() { return enabled; }
-	void setState(bool state) { enabled = state; }
+    bool const getState() { return enabled; }
+    void setState(bool state) { enabled = state; }
 };
 
 #endif

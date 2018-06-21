@@ -11,6 +11,7 @@
 #include "render/texture/texture.h"
 #include "resources/json_resource.h"
 #include "components/skeleton/game_core_skeleton.h"
+#include "components/postfx/comp_render_outlines.h"
 #include "physics/physics_mesh.h"
 #include "camera/camera.h"
 #include "geometry/curve.h"
@@ -283,21 +284,21 @@ void CModuleRender::renderCollidersLayer(bool onlyDynamics) {
 
 void CModuleRender::generateFrame() {
 
-  {
-    PROFILE_FUNCTION("CModuleRender::shadowsMapsGeneration");
-    CTraceScoped gpu_scope("shadowsMapsGeneration");
-    if (_generateShadows) {
-      // Generate the shadow map for each active light
-      getObjectManager<TCompLightDir>()->forEach([](TCompLightDir* c) {
-        c->generateShadowMap();
-      });
+	{
+		PROFILE_FUNCTION("CModuleRender::shadowsMapsGeneration");
+		CTraceScoped gpu_scope("shadowsMapsGeneration");
+        if (_generateShadows) {
+            // Generate the shadow map for each active light
+            getObjectManager<TCompLightDir>()->forEach([](TCompLightDir* c) {
+                c->generateShadowMap();
+            });
 
-      // Generate the shadow map for each active light
-      getObjectManager<TCompLightSpot>()->forEach([](TCompLightSpot* c) {
-        c->generateShadowMap();
-      });
-    }
-  }
+            // Generate the shadow map for each active light
+            getObjectManager<TCompLightSpot>()->forEach([](TCompLightSpot* c) {
+                c->generateShadowMap();
+            });
+        }
+	}
 
   {
     CTraceScoped gpu_scope("Frame");
@@ -307,7 +308,8 @@ void CModuleRender::generateFrame() {
     cb_globals.updateGPU();
     deferred.render(rt_main, h_e_camera);
 
-    CRenderManager::get().renderCategory("distorsions");
+        CRenderManager::get().renderCategory("particles");
+		CRenderManager::get().renderCategory("distorsions");
 
     // Apply postFX
     CTexture * curr_rt = rt_main;
@@ -331,25 +333,33 @@ void CModuleRender::generateFrame() {
       if (c_render_blur_radial)
         curr_rt = c_render_blur_radial->apply(curr_rt);
 
-      // Check if we have a color grading component
-      TCompColorGrading* c_color_grading = e_cam->get< TCompColorGrading >();
-      if (c_color_grading)
-        curr_rt = c_color_grading->apply(curr_rt);
-    }
+            // Check if we have a color grading component
+            TCompColorGrading* c_color_grading = e_cam->get< TCompColorGrading >();
+            if (c_color_grading)
+                curr_rt = c_color_grading->apply(curr_rt);
 
-    if (_debugMode && CApp::get().readyToRender) {
+            TCompRenderOutlines* c_render_outlines = e_cam->get< TCompRenderOutlines >();
+            if (c_render_outlines)
+                c_render_outlines->apply();
+		}
 
-      debugDraw();
-    }
+		Render.startRenderInBackbuffer();
+		renderFullScreenQuad("dump_texture.tech", curr_rt);
+	}
 
-    Render.startRenderInBackbuffer();
-    renderFullScreenQuad("dump_texture.tech", curr_rt);
+    // Reset the technique, or we won't be able to render outside here...
+    auto* tech = Resources.get("solid.tech")->as<CRenderTechnique>();
+    assert(tech);
+    tech->activate();
 
-    /*if (show_flat_shading)
-      renderFlatShading();*/
+    if (_debugMode && CApp::get().readyToRender)
+        debugDraw();
 
-    if (_showWireframe)
-      renderWireframeLayer(_hideBackground);
+	*if (show_flat_shading)
+		renderFlatShading(); */
+
+		if (_showWireframe)
+			renderWireframeLayer(_hideBackground);
 
 	if (_showAllColliders) {
 
@@ -359,16 +369,21 @@ void CModuleRender::generateFrame() {
 
 		renderCollidersLayer(true);
 	}
-    
-  }
 
-  {
-    PROFILE_FUNCTION("GUI");
-    CTraceScoped gpu_scope("GUI");
+    // Finally render it
+    {
+        PROFILE_FUNCTION("ImGui::Render");
+        CTraceScoped gpu_scope("ImGui");
+        ImGui::Render();
+    }
 
-    activateRSConfig(RSCFG_CULL_NONE);
-    activateZConfig(ZCFG_DISABLE_ALL);
-    activateBlendConfig(BLEND_CFG_COMBINATIVE);
+	{
+		PROFILE_FUNCTION("GUI");
+		CTraceScoped gpu_scope("GUI");
+		
+		activateRSConfig(RSCFG_CULL_NONE);
+		activateZConfig(ZCFG_DISABLE_ALL);
+		activateBlendConfig(BLEND_CFG_COMBINATIVE);
 
     activateCamera(CEngine::get().getGUI().getCamera(), Render.width, Render.height);
     CEngine::get().getModules().renderGUI();
@@ -387,32 +402,25 @@ void CModuleRender::generateFrame() {
 
 void CModuleRender::debugDraw() {
 
-  // Main Inspector window
-  {
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.149f, 0.1607f, 0.188f, 0.8f));
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255.0f, 255.0f, 255.0f, 255.0f));
-    ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.0, 0.0f, 0.0f, 0.75f));
-    ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0, 0.0f, 0.0f, 0.75f));
-    ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, ImVec4(0.219, 0.349f, 0.501f, 0.75f));
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 4);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1);
-
-    // Render each render GUI explicit in order.
-    ImGui::Begin("Inspector", NULL);
+    // Main Inspector window
     {
-      PROFILE_FUNCTION("Modules");
-      CTraceScoped gpu_scope("Modules");
-      CEngine::get().getModules().render();
-    }
-    ImGui::End();
-    ImGui::PopStyleVar(2);
-    ImGui::PopStyleColor(5);
-  }
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.149f, 0.1607f, 0.188f, 0.8f));
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255.0f, 255.0f, 255.0f, 255.0f));
+        ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.0, 0.0f, 0.0f, 0.75f));
+        ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0, 0.0f, 0.0f, 0.75f));
+        ImGui::PushStyleColor(ImGuiCol_TitleBgCollapsed, ImVec4(0.219f, 0.349f, 0.501f, 0.75f));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 4);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1);
 
-  // Finally render it
-  {
-    PROFILE_FUNCTION("ImGui::Render");
-    CTraceScoped gpu_scope("ImGui");
-    ImGui::Render();
-  }
+        // Render each render GUI explicit in order.
+        ImGui::Begin("Inspector", NULL);
+        {
+            PROFILE_FUNCTION("Modules");
+            CTraceScoped gpu_scope("Modules");
+            CEngine::get().getModules().render();
+        }
+        ImGui::End();
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor(5);
+    }
 }
