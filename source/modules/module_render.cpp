@@ -162,7 +162,7 @@ bool CModuleRender::stop()
 void CModuleRender::update(float delta)
 {
   (void)delta;
-  if (_debugMode) {
+  if (_debugMode && CApp::get().readyToRender) {
 
     // Notify ImGUI that we are starting a new frame
     ImGui_ImplDX11_NewFrame();
@@ -337,7 +337,7 @@ void CModuleRender::generateFrame() {
         curr_rt = c_color_grading->apply(curr_rt);
     }
 
-    if (_debugMode) {
+    if (_debugMode && CApp::get().readyToRender) {
 
       debugDraw();
     }

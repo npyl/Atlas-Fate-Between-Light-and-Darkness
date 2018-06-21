@@ -5,7 +5,7 @@
 #include "utils/directory_watcher.h"
 
 class CApp {
-
+	float MS_PER_UPDATE = 1.0 / 60.0;
 	// FPS Counter to be displayed per screen
 	struct FPSCounter {
 
@@ -25,7 +25,7 @@ class CApp {
 	static CApp* app_instance;
 
 public:
-
+	bool readyToRender;
 	int fps = 0;
 
 	int  xres = 0;

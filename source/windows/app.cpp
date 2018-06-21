@@ -40,8 +40,8 @@ LRESULT CALLBACK CApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
 	case WM_KILLFOCUS:
 		if (app_instance)
-      app_instance->lostFocus = true;
-			app_instance->has_focus = false;
+			app_instance->lostFocus = true;
+		app_instance->has_focus = false;
 		break;
 
 	case WM_DESTROY:
@@ -207,10 +207,11 @@ void CApp::mainLoop() {
 //--------------------------------------------------------------------------------------
 bool CApp::readConfig() {
 	// ...
-	xres = 1080;
+	xres = 1280;
 	yres = 720;
 
 	time_since_last_render.reset();
+	time_since_last_render.lag = 0.0;
 	CEngine::get().getRender().configure(xres, yres);
 
 	return true;
@@ -230,9 +231,46 @@ bool CApp::stop() {
 
 //--------------------------------------------------------------------------------------
 void CApp::doFrame() {
+	/*
+	double previous = getCurrentTime();
+	double lag = 0.0;
+	while (true)
+	{
+	double current = getCurrentTime();
+	double elapsed = current - previous;
+	previous = current;
+	lag += elapsed;
 
+	processInput();
+
+	while (lag >= MS_PER_UPDATE)
+	{
+	update();
+	lag -= MS_PER_UPDATE;
+	}
+
+	render();
+	}
+	*/
 	PROFILE_FRAME_BEGINS();
 	PROFILE_FUNCTION("App::doFrame");
+
+	//Fixed update time step, variable rendering:
+	//readyToRender = false;
+	//float dt = time_since_last_render.elapsedAndReset();
+	//time_since_last_render.lag += dt;
+	////float dt = 1.0 / 60.0;
+
+	//while (time_since_last_render.lag >= MS_PER_UPDATE) {
+
+	//	time_since_last_render.lag -= MS_PER_UPDATE;
+	//	if (time_since_last_render.lag < MS_PER_UPDATE) {
+	//		readyToRender = true;
+	//	}
+	//	CEngine::get().update(dt);
+	//}
+
+	readyToRender = true;
 	float dt = time_since_last_render.elapsedAndReset();
 	CEngine::get().update(dt);
 	CEngine::get().render();
