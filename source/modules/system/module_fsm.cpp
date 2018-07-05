@@ -40,11 +40,14 @@ bool CModuleFSM::start()
 	_factory.registerInstancer("DeadState", new FSM::StateInstancer<FSM::DeadState>());
 	_factory.registerInstancer("GrabEnemyState", new FSM::StateInstancer<FSM::GrabEnemyState>());
 	_factory.registerInstancer("MovingObjectState", new FSM::StateInstancer<FSM::MovingObjectState>());
+	_factory.registerInstancer("PressingButtonState", new FSM::StateInstancer<FSM::PressingButtonState>());
+
+
 	_factory.registerInstancer("VariableTransition", new FSM::TransitionInstancer<FSM::VariableTransition>());
 	_factory.registerInstancer("TimeTransition", new FSM::TransitionInstancer<FSM::TimeTransition>());
 	_factory.registerInstancer("MultipleVariableTransition", new FSM::TransitionInstancer<FSM::MultipleVariableTransition>());
 	_factory.registerInstancer("AnimationTransition", new FSM::TransitionInstancer<FSM::AnimationTransition>());
-
+    _factory.registerInstancer("SonarState", new FSM::StateInstancer<FSM::SonarState>());
 
 	//const FSM::CMachine* myFsm = Resources.get("data/fsm/character.fsm")->as<FSM::CMachine>();
 	//assert(myFsm);

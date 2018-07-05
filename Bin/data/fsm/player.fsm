@@ -86,7 +86,7 @@
 			"animation": "crouch",
 			"speed": 1.5,
 			"rotationSpeed": 5.0,
-			"size": 0.25,
+			"size": 0.15,
 			"camera": {
 				"target": "TPCameraCrouched",
 				"blendOut": 0.4,
@@ -99,7 +99,7 @@
 			"animation": "crouch_walk",
 			"speed": 1.75,
 			"rotationSpeed": 5.0,
-			"size": 0.25,
+			"size": 0.15,
 			"camera": {
 				"target": "TPCameraCrouched",
 				"blendOut": 0.4,
@@ -112,7 +112,7 @@
 			"animation": "crouch_walk_slow",
 			"speed": 1.5,
 			"rotationSpeed": 5.0,
-			"size": 0.25,
+			"size": 0.15,
 			"camera": {
 				"target": "TPCameraCrouched",
 				"blendOut": 0.4,
@@ -289,6 +289,12 @@
 			"size": 1
 		},
 		{
+			"name": "sonarEnemy",
+			"type": "SonarState",
+			"animation": "inhibitorRemoved",
+			"speed": 0
+		},
+		{
 			"name": "movingObject",
 			"type": "MovingObjectState",
 			"animation": "idle",
@@ -300,7 +306,14 @@
 				"time_to_repeat": 0.75,
 				"is_artificial": true
 			}
-		}
+		},
+    {
+      "name": "pressingButton",
+      "type": "PressingButtonState",
+      "animation": "idle",
+      "speed": 0,
+      "size": 1
+    }
 	],
 	"transitions": [{
 			"type": "VariableTransition",
@@ -510,6 +523,32 @@
 			}
 		},
 		{
+		  "type": "VariableTransition",
+		  "source": "walk",
+		  "target": "sonarEnemy",
+		  "variable": {
+			"name": "sonar",
+			"type": "bool",
+			"value": true
+		  }
+		},
+		{
+			"type": "VariableTransition",
+			"source": "crouch",
+			"target": "sonarEnemy",
+			"variable": {
+			"name": "sonar",
+			"type": "bool",
+			"value": true
+			}
+		},
+		{
+			"type": "TimeTransition",
+			"source": "sonarEnemy",
+			"target": "crouch",
+			"time": 1
+		},
+		{
 			"type": "VariableTransition",
 			"source": "crouch",
 			"target": "fall",
@@ -685,6 +724,36 @@
 		},
 		{
 			"type": "VariableTransition",
+			"source": "crouch",
+			"target": "inhibitorTryToRemove",
+			"variable": {
+				"name": "inhibitorTryToRemove",
+				"type": "bool",
+				"value": true
+			}
+		},
+		{
+			"type": "VariableTransition",
+			"source": "inhibitorTryToRemove",
+			"target": "die",
+			"variable": {
+				"name": "onDead",
+				"type": "bool",
+				"value": true
+			}
+		},
+		{
+			"type": "VariableTransition",
+			"source": "inhibitorRemoved",
+			"target": "die",
+			"variable": {
+				"name": "onDead",
+				"type": "bool",
+				"value": true
+			}
+		},
+		{
+			"type": "VariableTransition",
 			"source": "inhibitorTryToRemove",
 			"target": "inhibitorRemoved",
 			"variable": {
@@ -839,6 +908,16 @@
 			"target": "attack",
 			"variable": {
 				"name": "attack",
+				"type": "bool",
+				"value": true
+			}
+		},
+		{
+			"type": "VariableTransition",
+			"source": "attack",
+			"target": "die",
+			"variable": {
+				"name": "onDead",
 				"type": "bool",
 				"value": true
 			}
@@ -1104,7 +1183,23 @@
 				"type": "bool",
 				"value": true
 			}
-		}
+		},
+		    {
+      "type": "VariableTransition",
+      "source": "idle",
+      "target": "pressingButton",
+      "variable": {
+        "name": "buttonPressed",
+        "type": "bool",
+        "value": true
+      }
+    },
+    {
+      "type": "AnimationTransition",
+      "source": "pressingButton",
+      "target": "idle",
+      "animation_name": "metralla_finish"
+    }
 	],
 	"variables": [{
 			"name": "speed",
@@ -1123,6 +1218,11 @@
 		},
 		{
 			"name": "crouch",
+			"type": "bool",
+			"value": false
+		},
+		{
+			"name": "sonar",
 			"type": "bool",
 			"value": false
 		},
@@ -1185,6 +1285,11 @@
 			"name": "staminaBarFactor",
 			"type": "float",
 			"value": 1.0
-		}
+		},
+    {
+      "name": "buttonPressed",
+      "type": "bool",
+      "value": false
+    }
 	]
 }

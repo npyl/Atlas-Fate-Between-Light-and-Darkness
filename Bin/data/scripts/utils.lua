@@ -13,12 +13,20 @@ function pauseGame(pause)
 	SLB.pauseGame(pause)
 end
 
+function pausePlayerToggle()
+	SLB.pausePlayerToggle()
+end
+
 function blendInCamera(cameraName, blendInTime)
 	SLB.blendInCamera(cameraName, blendInTime)
 end
 
 function blendOutCamera(cameraName, blendOutTime)
 	SLB.blendOutCamera(cameraName, blendOutTime)
+end
+
+function blendOutActiveCamera(blendOutTime)
+	SLB.blendOutActiveCamera(blendOutTime)
 end
 
 function fpsToggle()
@@ -81,8 +89,12 @@ function postFXToggle()
 	SLB.postFXToggle()
 end
 
-function loadscene(level)
-	SLB.loadscene(level)
+function loadScene(level)
+	SLB.loadScene(level)
+end
+
+function unloadScene()
+	SLB.unloadScene()
 end
 
 function cg_drawlights(type)
@@ -115,4 +127,24 @@ end
 
 function setPlayerInhibited(inhibited)
 	playerController.inhibited = inhibited;
+end
+
+function renderNavmeshToggle()
+	SLB.renderNavmeshToggle()
+end
+
+function playSound2D(soundName)
+	SLB.playSound2D(soundName)
+end
+
+function exeShootImpactSound()
+	SLB.exeShootImpactSound()
+end
+
+function sendOrderToDrone(name, position)
+	SLB.sendOrderToDrone(name, position)
+end
+
+function probando(level)
+	SLB.probando(level)
 end

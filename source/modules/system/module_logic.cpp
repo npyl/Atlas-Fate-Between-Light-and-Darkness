@@ -23,6 +23,7 @@
 #include "components/lighting/comp_light_point.h"
 #include "components/postfx/comp_render_ao.h"
 #include "components/player_controller/comp_player_tempcontroller.h"
+#include <thread>
 
 using namespace physx;
 
@@ -123,13 +124,15 @@ void CModuleLogic::publishClasses() {
 
 	//game hacks
 	m->set("pauseGame", SLB::FuncCall::create(&pauseGame));
-	m->set("loadscene", SLB::FuncCall::create(&loadscene));
+	m->set("loadScene", SLB::FuncCall::create(&loadScene));
+	m->set("unloadScene", SLB::FuncCall::create(&unloadScene));
 	m->set("loadCheckpoint", SLB::FuncCall::create(&loadCheckpoint));
 	m->set("move", SLB::FuncCall::create(&move));
 	m->set("spawn", SLB::FuncCall::create(&spawn));
 
 
 	//player hacks
+	m->set("pausePlayerToggle", SLB::FuncCall::create(&pausePlayerToggle));
 	m->set("getPlayerController", SLB::FuncCall::create(&getPlayerController));
 	m->set("movePlayer", SLB::FuncCall::create(&movePlayer));
 	m->set("staminaInfinite", SLB::FuncCall::create(&staminaInfinite));
@@ -156,6 +159,7 @@ void CModuleLogic::publishClasses() {
 	//camera hacks
 	m->set("blendInCamera", SLB::FuncCall::create(&blendInCamera));
 	m->set("blendOutCamera", SLB::FuncCall::create(&blendOutCamera));
+	m->set("blendOutActiveCamera", SLB::FuncCall::create(&blendOutActiveCamera));
 
 	//system hacks
 	m->set("pauseEnemies", SLB::FuncCall::create(&pauseEnemies));
@@ -171,10 +175,16 @@ void CModuleLogic::publishClasses() {
 	//debug hacks
 	m->set("fpsToggle", SLB::FuncCall::create(&fpsToggle));
 	m->set("debugToggle", SLB::FuncCall::create(&debugToggle));
-
+	m->set("sendOrderToDrone", SLB::FuncCall::create(&sendOrderToDrone));
 
 	//others
 	m->set("bind", SLB::FuncCall::create(&bind));
+	m->set("renderNavmeshToggle", SLB::FuncCall::create(&renderNavmeshToggle));
+	m->set("playSound2D", SLB::FuncCall::create(&playSound2D));
+	m->set("exeShootImpactSound", SLB::FuncCall::create(&exeShootImpactSound));
+	m->set("sleep", SLB::FuncCall::create(&sleep));
+	m->set("probando", SLB::FuncCall::create(&probando));
+
 
 }
 
@@ -310,6 +320,15 @@ void pauseGame(bool pause)
 	EngineEntities.broadcastMsg(msg);
 }
 
+void pausePlayerToggle() {
+	CEntity* p = getEntityByName("The Player");	
+	TCompTempPlayerController* player = p->get<TCompTempPlayerController>();
+
+	TMsgScenePaused stopPlayer;
+	stopPlayer.isPaused = !player->paused;
+	EngineEntities.broadcastMsg(stopPlayer);
+}
+
 void fpsToggle() {
 	Engine.getGameManager().config.drawfps = !Engine.getGameManager().config.drawfps;
 }
@@ -332,6 +351,10 @@ void blendOutCamera(const std::string & cameraName, float blendOutTime) {
 	if (camera.isValid()) {
 		EngineCameras.blendOutCamera(camera, blendOutTime);
 	}
+}
+
+void blendOutActiveCamera(float blendOutTime) {
+	EngineCameras.blendOutCamera(EngineCameras.getCurrentCamera(), blendOutTime);
 }
 
 void staminaInfinite() {
@@ -524,9 +547,30 @@ void unbind(const std::string& key, const std::string& script) {
 	it = EngineLogic._bindings.find(id);
 	EngineLogic._bindings.erase(it, EngineLogic._bindings.end());
 }
-void loadscene(const std::string &level) {
+void loadScene(const std::string &level) {
 
 	EngineScene.loadScene(level);
+}
+
+void unloadScene() {
+
+	EngineScene.unLoadActiveScene();
+}
+
+void sleep(float time) {
+	Sleep(time);
+}
+
+void probando(const std::string &level) {
+	//std::thread newScene(SceneManager.loadScene);
+	//newScene.join();
+	/*EngineScene.prepareToLoadScene(level);
+	EngineScene.unLoadActiveScene();
+	EngineScene.setActiveScene(EngineScene.getSceneByName(level));*/
+}
+
+void activateScene(const std::string& scene) {
+	//EngineScene.setActiveScene()
 }
 
 void loadCheckpoint()
@@ -558,4 +602,25 @@ void cg_drawlights(int type) {
 	getObjectManager<TCompLightPoint>()->forEach([&](TCompLightPoint* c) {
 		c->isEnabled = point;
 	});
+}
+
+void playSound2D(const std::string& soundName) {
+	EngineSound.playSound2D(soundName);
+}
+
+void exeShootImpactSound() {
+	EngineSound.exeShootImpactSound();
+}
+
+void sendOrderToDrone(const std::string & droneName, VEC3 position)
+{
+	CEntity* drone = getEntityByName(droneName);
+	TMsgOrderReceived msg;
+	msg.position = position;
+	msg.hOrderSource = getEntityByName("The Player");
+	drone->sendMsg(msg);
+}
+
+void renderNavmeshToggle() {
+	EngineNavmeshes.renderNamvesh = !EngineNavmeshes.renderNamvesh;
 }

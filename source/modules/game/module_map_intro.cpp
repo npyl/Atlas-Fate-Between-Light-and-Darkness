@@ -22,18 +22,17 @@
 bool CModuleMapIntro::start() {
 
 #ifdef _DEBUG
-    EngineScene.loadScene("scene_alex");
+    EngineScene.loadScene("scene_map_intro");
 #else
-    EngineScene.loadScene("scene_alex");
+    EngineScene.loadScene("scene_map_intro");
 #endif
-
 	Input::CMouse* mouse = static_cast<Input::CMouse*>(EngineInput.getDevice("mouse"));
 	mouse->setLockMouse(true);
-	dbg("MODULE MAP START\n");
+	dbg("MODULE MAP INTRO START \n");
 	CEngine::get().getGUI().activateWidget(CModuleGUI::EGUIWidgets::INGAME_STAMINA_BAR);
 
 	//Engine.getGUI().activateWidget("ingame");
-	Engine.getSound().setAmbientSound("../bin/data/sounds/ambient.ogg");
+	Engine.getSound().setAmbientSound("../bin/data/sounds/music/ambient.ogg");
 
 	return true;
 }

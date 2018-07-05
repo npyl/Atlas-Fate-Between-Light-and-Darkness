@@ -44,6 +44,11 @@ struct TMsgEntitiesGroupCreated {
 	DECL_MSG_ID();
 };
 
+struct TMsgHierarchyGroupCreated {
+  const TEntityParseContext& ctx;
+  DECL_MSG_ID();
+};
+
 struct TMsgPlayerDead {
 	CHandle h_sender;
 	DECL_MSG_ID();
@@ -57,6 +62,12 @@ struct TMsgEnemyStunned {
 struct TMsgPlayerHit {
 	CHandle h_sender;
 	DECL_MSG_ID();
+};
+
+struct TMsgBulletHit {
+    CHandle h_sender;
+    float damage;
+    DECL_MSG_ID();
 };
 
 struct TMsgInhibitorShot {
@@ -79,6 +90,18 @@ struct TMsgPlayerIlluminated {
 	CHandle h_sender;
   bool isIlluminated;
 	DECL_MSG_ID();
+};
+
+struct TMsgSonarActive {
+    float value;
+
+    DECL_MSG_ID();
+};
+
+struct TMsgFadeBody {
+    bool is_exit;
+
+    DECL_MSG_ID();
 };
 
 struct TMsgTriggerEnter {
@@ -108,6 +131,7 @@ struct TMsgSetCameraCancelled {
 };
 
 struct TMsgCameraActivated {
+    CHandle previousCamera;
 	DECL_MSG_ID();
 };
 
@@ -120,6 +144,8 @@ struct TMsgCameraFullyActivated {
 };
 
 struct TMsgCameraReset {
+  bool both_angles;
+  bool only_y;
   DECL_MSG_ID();
 };
 
@@ -171,6 +197,12 @@ struct TMsgNoiseMade {
 	DECL_MSG_ID();
 };
 
+struct TMsgOrderReceived {
+	CHandle hOrderSource;
+	VEC3 position;
+	DECL_MSG_ID();
+};
+
 struct TMsgShadowChange {
 	bool is_shadowed;
 	DECL_MSG_ID();
@@ -217,6 +249,10 @@ struct TMsgPlayerInShadows {
 
 struct TMsgPlayerMove {
 	VEC3 pos;
+	DECL_MSG_ID();
+};
+
+struct TMsgButtonActivated {
 	DECL_MSG_ID();
 };
 
