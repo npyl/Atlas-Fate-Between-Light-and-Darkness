@@ -21,6 +21,7 @@ CEngine::CEngine()
 	, _module_ia("ia")
 	, _module_input("input")
 	, _module_physics("physics")
+	, _module_multithread("multithread")
 	, _module_cameras("cameras")
 	, _module_fsm("fsm")
 	, _module_sound("sound")
@@ -49,6 +50,7 @@ bool CEngine::start() {
 	_modules.registerSystemModule(&_module_ia);
 	_modules.registerSystemModule(&_module_input);
 	_modules.registerSystemModule(&_module_physics);
+	_modules.registerSystemModule(&_module_multithread);
 	_modules.registerSystemModule(&_module_cameras);
 	_modules.registerSystemModule(&_module_fsm);
 	_modules.registerSystemModule(&_module_sound);

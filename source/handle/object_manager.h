@@ -2,10 +2,10 @@
 #define INC_OBJECT_MANAGER_H_
 
 #include "handle_manager.h"
-//#include "tbb/tbb.h"
+#include "tbb/tbb.h"
 
 // Declared in module_multithreading
-extern bool is_multithreaded_enabled;
+//extern bool is_multithreaded_enabled;
 
 // This is a Handle manager which stores objects of
 // type TObj
@@ -16,7 +16,6 @@ class CObjectManager : public CHandleManager
   std::vector< uint8_t > allocated_memory;
 
   TObj* objs = nullptr;
-  bool multithreaded = false;
 
   void createObj(uint32_t internal_idx) override {
     TObj* addr_to_use = objs + internal_idx;
@@ -123,19 +122,23 @@ public:
 
     if (!num_objs_used)
         return;
-    /*
-    if ( multithreaded && is_multithreaded_enabled ) {
+    
+    if ( multithreaded /*&& is_multithreaded_enabled*/ ) {
       int nDefThreads = tbb::task_scheduler_init::default_num_threads();
       size_t step = num_objs_used / nDefThreads;
+	  if (step == 0 && num_objs_used > 0)
+	  {
+		  step = 1;
+	  }
       tbb::parallel_for(size_t(0), size_t(num_objs_used), step, [&, dt](size_t i) {
         objs[i].update(dt); }
       );
     }
     else {
-      */
+      
       for (uint32_t i = 0; i < num_objs_used; ++i) 
         objs[i].update(dt);
-    //}
+    }
   }
 
   // ---------------------------------------- 
