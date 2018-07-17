@@ -6,11 +6,19 @@
 				"scale": 3
 			},
 			"render":
-			[{
+			[
+				{
 					"mesh": "data/meshes/Drone.mesh",
 					"materials":
 					[
 						"data/materials/mtl_drone.material"
+					]
+				},
+				{
+					"mesh": "data/meshes/Drone.mesh",
+					"materials":
+					[
+						"data/materials/mtl_drone_post.material"
 					]
 				}
 			],
@@ -67,10 +75,12 @@
 			"light_spot": {
 				"type": "spotlight",
 				"proj_type": "perspective",
-				"range": 30,
+				"range": 20,
 				"angle": 20,
 				"inner_cut": 15,
 				"outer_cut": 20,
+				"n_samples": 200,
+				"volume_intensity" : 0.1,
 				"color": "0.3 1.0 1.0 1.0",
 				"intensity": 5.0,
 				"shadows": true,
@@ -82,7 +92,7 @@
 			"cone_of_light": {
 				"hor_fov": 20,
 				"ver_fov": 20,
-				"dist": 30,
+				"dist": 20,
 				"target": "The Player"
 			},
 			"shooter": {
@@ -90,7 +100,10 @@
 				"firing_rate_cooldown": 1.0,
 				"bullet_damage": 10,
 				"bullet_speed": 10
-			}
+			},
+			"abs_aabb": true
+			,
+			"local_aabb": true
 		}
 	}, {
 		"entity": {

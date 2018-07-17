@@ -28,7 +28,9 @@ private:
 	float _time = 0.f;
   float _timerRemoveInhibitor = 0.f;
   float _timeOffsetToRemoveInhibitor;
-  bool _moveObject = false, _enemyStunned = false, _buttonPressed = false;
+  bool _moveObject = false;
+  bool _enemyStunned = false;
+  bool _buttonPressed = false;
 
   void onMsgNoClipToggle(const TMsgNoClipToggle& msg);
 };

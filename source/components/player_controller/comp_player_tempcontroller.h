@@ -56,8 +56,7 @@ class TCompTempPlayerController : public TCompBase
         VEC4 colorMerge;
         VEC4 colorDead;
         VEC4 colorInhib;
-
-    }playerColor;
+    } playerColor;
 
     physx::PxFilterData * pxPlayerFilterData;
     physx::PxFilterData * pxShadowFilterData;
@@ -125,9 +124,9 @@ class TCompTempPlayerController : public TCompBase
     void onPlayerInShadows(const TMsgPlayerInShadows& msg);
     void onSpeedBoost(const TMsgSpeedBoost& msg);
     void onPlayerInvisible(const TMsgPlayerInvisible& msg);
-	void onPlayerMove(const TMsgPlayerMove& msg);
     void onMsgNoClipToggle(const TMsgNoClipToggle& msg);
     void onMsgBulletHit(const TMsgBulletHit& msg);
+    void onMsgPlayerMove(const TMsgPlayerMove& msg);
 
 
     DECL_SIBLING_ACCESS();
@@ -189,6 +188,8 @@ public:
     bool isDead();
     void upButtonReselased();
     void invertAxis(VEC3 old_up, bool type);
+    void getDamage(float dmg);
+    void die();
 
     VEC3 getMotionDir(const VEC3 & front, const VEC3 & left);
 

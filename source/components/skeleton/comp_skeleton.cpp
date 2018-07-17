@@ -86,9 +86,9 @@ void TCompSkeleton::update(float dt) {
     PROFILE_FUNCTION("updateSkel");
     assert(model);
 
-	if (!EngineEntities.getAnimationsEnabled()) {
-		dt = 0.f;
-	}
+    if (!EngineEntities.getAnimationsEnabled()) {
+      dt = 0.f;
+    }
 
     if (actualCycleAnimId[1] != -1 && lastFrameCyclicAnimationWeight != cyclicAnimationWeight) {
         model->getMixer()->blendCycle(actualCycleAnimId[0], cyclicAnimationWeight, 0.f);
@@ -389,6 +389,13 @@ std::vector<VEC3> TCompSkeleton::getFeetPositions() {
     }
     dbg("");
     return feetPositions;
+}
+
+VEC3 TCompSkeleton::getBonePosition(const std::string & name) {
+
+    VEC3 bonePos;
+    int bone_id = model->getCoreModel()->getCoreSkeleton()->getCoreBoneId(name);
+    return Cal2DX(model->getSkeleton()->getBone(bone_id)->getTranslationAbsolute());
 }
 
 float TCompSkeleton::getAnimationDuration(int animId) {

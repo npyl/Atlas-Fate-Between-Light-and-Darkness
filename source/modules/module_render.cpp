@@ -26,7 +26,8 @@
 #include "components/postfx/comp_fog.h"
 #include "components/postfx/comp_antialiasing.h"
 #include "components/postfx/comp_chrom_aberration.h"
-#include "components\comp_render.h"
+#include "components/comp_render.h"
+
 //--------------------------------------------------------------------------------------
 
 CModuleRender::CModuleRender(const std::string& name)
@@ -213,7 +214,7 @@ void CModuleRender::render()
 		ImGui::DragFloat("Time Factor", &EngineEntities.time_scale_factor, 0.01f, 0.f, 1.0f);
 		ImGui::TreePop();
 	}
-
+		
 	if (ImGui::TreeNode("Lighting")) {
 
 		ImGui::DragFloat("Exposure Adjustment", &cb_globals.global_exposure_adjustment, 0.01f, 0.1f, 32.f);
@@ -237,11 +238,10 @@ void CModuleRender::render()
 			"\0";
 
 		ImGui::Combo("Output", &cb_globals.global_render_output, render_output_str);
-		ImGui::Checkbox("Wireframe", &_showWireframe);
 		ImGui::TreePop();
 	}
 
-	ImGui::Separator();
+    ImGui::Separator();
 }
 
 void CModuleRender::configure(int xres, int yres)
@@ -275,26 +275,26 @@ void CModuleRender::activateMainCamera() {
 }
 
 void CModuleRender::renderWireframeLayer(bool hideBackground) {
-	CTraceScoped gpu_scope("renderWireframeLayer");
-	PROFILE_FUNCTION("renderWireframeLayer");
-	if (hideBackground) {
-		/*Render.ctx->ClearRenderTargetView(Render.renderTargetView, &_backgroundColor.x);
-		Render.ctx->ClearDepthStencilView(Render.depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);*/
-	}
-	auto solid = Resources.get("data/materials/solid.material")->as<CMaterial>();
-	solid->activate();
-	getObjectManager<TCompRender>()->forEach([](TCompRender* c) {
-		c->renderDebug();
-	});
+  CTraceScoped gpu_scope("renderWireframeLayer");
+  PROFILE_FUNCTION("renderWireframeLayer");
+  if (hideBackground) {
+    /*Render.ctx->ClearRenderTargetView(Render.renderTargetView, &_backgroundColor.x);
+    Render.ctx->ClearDepthStencilView(Render.depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);*/
+  }
+  auto solid = Resources.get("data/materials/solid.material")->as<CMaterial>();
+  solid->activate();
+  getObjectManager<TCompRender>()->forEach([](TCompRender* c) {
+    c->renderDebug();
+  });
 
 }
 
 void CModuleRender::renderCollidersLayer(bool onlyDynamics) {
-	CTraceScoped gpu_scope("renderColliderLayer");
-	PROFILE_FUNCTION("renderColliderLayer");
-	getObjectManager<TCompCollider>()->forEach([onlyDynamics](TCompCollider* c) {
-		c->renderDebug(onlyDynamics);
-	});
+  CTraceScoped gpu_scope("renderColliderLayer");
+  PROFILE_FUNCTION("renderColliderLayer");
+  getObjectManager<TCompCollider>()->forEach([onlyDynamics](TCompCollider* c) {
+    c->renderDebug(onlyDynamics);
+  });
 }
 
 void CModuleRender::generateFrame() {
@@ -327,7 +327,7 @@ void CModuleRender::generateFrame() {
         cb_globals.updateGPU();
         deferred.render(rt_main, h_e_camera);
 
-        CRenderManager::get().renderCategory("particles");
+        Engine.get().getParticles().renderDeferred();
         CRenderManager::get().renderCategory("distorsions");
     }
 
@@ -355,19 +355,19 @@ void CModuleRender::generateFrame() {
             if (c_render_blur_radial)
                 curr_rt = c_render_blur_radial->apply(curr_rt);
 
-			// Check if we have a color grading component
-			TCompColorGrading* c_color_grading = e_cam->get< TCompColorGrading >();
-			if (c_color_grading)
-				curr_rt = c_color_grading->apply(curr_rt);
+            // Check if we have a color grading component
+            TCompColorGrading* c_color_grading = e_cam->get< TCompColorGrading >();
+            if (c_color_grading)
+                curr_rt = c_color_grading->apply(curr_rt);
 
             // Check if we have a color grading component
             TCompFog * c_render_fog = e_cam->get< TCompFog >();
             if (c_render_fog)
                 curr_rt = c_render_fog->apply(curr_rt);
 
-            TCompChromaticAberration* c_chroma_aberration = e_cam->get< TCompChromaticAberration >();
-            if (c_chroma_aberration)
-                curr_rt = c_chroma_aberration->apply(curr_rt);
+            //TCompChromaticAberration* c_chroma_aberration = e_cam->get< TCompChromaticAberration >();
+            //if (c_chroma_aberration)
+            //    curr_rt = c_chroma_aberration->apply(curr_rt);
 
             TCompRenderOutlines* c_render_outlines = e_cam->get< TCompRenderOutlines >();
             if (c_render_outlines)
@@ -388,27 +388,34 @@ void CModuleRender::generateFrame() {
         assert(tech);
         tech->activate();
 
-	if (_debugMode)
-		debugDraw();
+        {
+            // Debug render other modules
+            Engine.get().getParticles().renderMain(); // particle editor
+            Engine.get().getInstancing().renderMain(); // instancing
+            Engine.get().getGameManager().renderMain(); // manager editor
+            Engine.get().getGameConsole().renderMain(); // console
+        }
 
-	if (_showWireframe)
-		renderWireframeLayer(_hideBackground);
+        // Debug render main modules
+        if (_debugMode) debugDraw();
 
-	if (_showAllColliders) {
+        if (_showWireframe) renderWireframeLayer(_hideBackground);
 
-		renderCollidersLayer(false);
-	}
-	else if (_showDynamicColliders) {
+        if (_showAllColliders) {
 
-		renderCollidersLayer(true);
-	}
+          renderCollidersLayer(false);
+        }
+        else if (_showDynamicColliders) {
 
-	// Finally render it
-	{
-		PROFILE_FUNCTION("ImGui::Render");
-		CTraceScoped gpu_scope("ImGui");
-		ImGui::Render();
-	}
+          renderCollidersLayer(true);
+        }
+
+        {
+            // RENDER IMGUI
+            PROFILE_FUNCTION("ImGui::Render");
+            CTraceScoped gpu_scope("ImGui");
+            ImGui::Render();
+        }
 
         {
             // RENDER UI

@@ -86,10 +86,10 @@ void TCompAIMimetic::load(const json& j, TEntityParseContext& ctx) {
     addChild("managePatrol", "waitInWpt", BTNode::EType::ACTION, nullptr, (BTAction)&TCompAIMimetic::actionWaitInWpt, (BTAssert)&TCompAIMimetic::assertNotPlayerInFovNorNoise);
     addChild("managePatrol", "nextWpt", BTNode::EType::ACTION, nullptr, (BTAction)&TCompAIMimetic::actionNextWpt, nullptr);
 
-	addChild("mimetic", "manageChase", BTNode::EType::SEQUENCE, (BTCondition)&TCompAIMimetic::conditionPlayerSeenForSure, nullptr, nullptr);
-	addChild("manageChase", "jumpFloor", BTNode::EType::ACTION, nullptr, (BTAction)&TCompAIMimetic::actionJumpFloor, nullptr);
-	addChild("manageChase", "resetVariablesChase", BTNode::EType::ACTION, nullptr, (BTAction)&TCompAIMimetic::actionResetVariablesChase, nullptr);
-	addChild("manageChase", "chasePlayerWithNoise", BTNode::EType::ACTION, nullptr, (BTAction)&TCompAIMimetic::actionChasePlayerWithNoise, nullptr);
+    addChild("mimetic", "manageChase", BTNode::EType::SEQUENCE, (BTCondition)&TCompAIMimetic::conditionPlayerSeenForSure, nullptr, nullptr);
+    addChild("manageChase", "jumpFloor", BTNode::EType::ACTION, nullptr, (BTAction)&TCompAIMimetic::actionJumpFloor, nullptr);
+    addChild("manageChase", "resetVariablesChase", BTNode::EType::ACTION, nullptr, (BTAction)&TCompAIMimetic::actionResetVariablesChase, nullptr);
+    addChild("manageChase", "chasePlayerWithNoise", BTNode::EType::ACTION, nullptr, (BTAction)&TCompAIMimetic::actionChasePlayerWithNoise, nullptr);
 
     addChild("mimetic", "manageArtificialNoise", BTNode::EType::SEQUENCE, (BTCondition)&TCompAIMimetic::conditionHasHeardArtificialNoise, nullptr, nullptr);
     addChild("manageArtificialNoise", "markArtificialNoiseAsInactive", BTNode::EType::ACTION, nullptr, (BTAction)&TCompAIMimetic::actionMarkNoiseAsInactive, nullptr);
@@ -322,86 +322,30 @@ const std::string TCompAIMimetic::getStateForCheckpoint()
     }
 }
 
-void TCompAIMimetic::onMsgPlayerInvisible(const TMsgPlayerInvisible& msg) {
-	playerInvisible = !playerInvisible;
-}
-
 void TCompAIMimetic::registerMsgs()
 {
     DECL_MSG(TCompAIMimetic, TMsgScenePaused, onMsgScenePaused);
     DECL_MSG(TCompAIMimetic, TMsgAIPaused, onMsgAIPaused);
-	DECL_MSG(TCompAIMimetic, TMsgEntityCreated, onMsgEntityCreated);
-	DECL_MSG(TCompAIMimetic, TMsgPlayerDead, onMsgPlayerDead);
-	DECL_MSG(TCompAIMimetic, TMsgEnemyStunned, onMsgMimeticStunned);
-	DECL_MSG(TCompAIMimetic, TMsgNoiseMade, onMsgNoiseListened);
-	DECL_MSG(TCompAIMimetic, TMsgPhysxContact, onMsgPhysxContact);
-	DECL_MSG(TCompAIMimetic, TMsgPlayerInvisible, onMsgPlayerInvisible);
+    DECL_MSG(TCompAIMimetic, TMsgEntityCreated, onMsgEntityCreated);
+    DECL_MSG(TCompAIMimetic, TMsgPlayerDead, onMsgPlayerDead);
+    DECL_MSG(TCompAIMimetic, TMsgEnemyStunned, onMsgMimeticStunned);
+    DECL_MSG(TCompAIMimetic, TMsgNoiseMade, onMsgNoiseListened);
+    DECL_MSG(TCompAIMimetic, TMsgPhysxContact, onMsgPhysxContact);
 }
 
 void TCompAIMimetic::loadActions() {
-	actions_initializer.clear();
-	
-	/*actions_initializer["actionStunned"] = (BTAction)&TCompAIMimetic::actionStunned;
-	actions_initializer["actionExplode"] = (BTAction)&TCompAIMimetic::actionExplode;
-	actions_initializer["actionResetObserveVariables"] = (BTAction)&TCompAIMimetic::actionResetObserveVariables;
-	actions_initializer["actionObserveLeft"] = (BTAction)&TCompAIMimetic::actionObserveLeft;
-	actions_initializer["actionObserveRight"] = (BTAction)&TCompAIMimetic::actionObserveRight;
-	actions_initializer["actionWaitObserving"] = (BTAction)&TCompAIMimetic::actionWaitObserving;
-	actions_initializer["actionSetActive"] = (BTAction)&TCompAIMimetic::actionSetActive;
-	actions_initializer["actionGenerateNavmeshWpt"] = (BTAction)&TCompAIMimetic::actionGenerateNavmeshWpt;
-	actions_initializer["actionGoToWpt"] = (BTAction)&TCompAIMimetic::actionGoToWpt;
-	actions_initializer["actionResetTimerWaiting"] = (BTAction)&TCompAIMimetic::actionResetTimerWaiting;
-	actions_initializer["actionWaitInWpt"] = (BTAction)&TCompAIMimetic::actionWaitInWpt;
-	actions_initializer["actionNextWpt"] = (BTAction)&TCompAIMimetic::actionNextWpt;
-	actions_initializer["actionSleep"] = (BTAction)&TCompAIMimetic::actionSleep;
-	actions_initializer["actionWakeUp"] = (BTAction)&TCompAIMimetic::actionWakeUp;
-	actions_initializer["actionJumpFloor"] = (BTAction)&TCompAIMimetic::actionJumpFloor;
-	actions_initializer["actionResetVariablesChase"] = (BTAction)&TCompAIMimetic::actionResetVariablesChase;
-	actions_initializer["actionChasePlayerWithNoise"] = (BTAction)&TCompAIMimetic::actionChasePlayerWithNoise;
-	actions_initializer["actionMarkNoiseAsInactive"] = (BTAction)&TCompAIMimetic::actionMarkNoiseAsInactive;
-	actions_initializer["actionGenerateNavmeshNoiseSource"] = (BTAction)&TCompAIMimetic::actionGenerateNavmeshNoiseSource;
-	actions_initializer["actionGoToNoiseSource"] = (BTAction)&TCompAIMimetic::actionGoToNoiseSource;
-	actions_initializer["actionWaitInNoiseSource"] = (BTAction)&TCompAIMimetic::actionWaitInNoiseSource;
-	actions_initializer["actionSuspect"] = (BTAction)&TCompAIMimetic::actionSuspect;
-	actions_initializer["actionRotateToNoiseSource"] = (BTAction)&TCompAIMimetic::actionRotateToNoiseSource;
-	actions_initializer["actionGenerateNavmeshPlayerLastPos"] = (BTAction)&TCompAIMimetic::actionGenerateNavmeshPlayerLastPos;
-	actions_initializer["actionGoToPlayerLastPos"] = (BTAction)&TCompAIMimetic::actionGoToPlayerLastPos;
-	actions_initializer["actionWaitInPlayerLastPos"] = (BTAction)&TCompAIMimetic::actionWaitInPlayerLastPos;
-	actions_initializer["actionSetGoInactive"] = (BTAction)&TCompAIMimetic::actionSetGoInactive;
-	actions_initializer["actionGenerateNavmeshInitialPos"] = (BTAction)&TCompAIMimetic::actionGenerateNavmeshInitialPos;
-	actions_initializer["actionGoToInitialPos"] = (BTAction)&TCompAIMimetic::actionGoToInitialPos;
-	actions_initializer["actionRotateToInitialPos"] = (BTAction)&TCompAIMimetic::actionRotateToInitialPos;
-	actions_initializer["actionJumpWall"] = (BTAction)&TCompAIMimetic::actionJumpWall;
-	actions_initializer["actionHoldOnWall"] = (BTAction)&TCompAIMimetic::actionHoldOnWall;
-	actions_initializer["actionSetInactive"] = (BTAction)&TCompAIMimetic::actionSetInactive;
-	actions_initializer["actionClosestWpt"] = (BTAction)&TCompAIMimetic::actionClosestWpt;*/
+    actions_initializer.clear();
+
 }
 
 void TCompAIMimetic::loadConditions() {
     conditions_initializer.clear();
 
-	//conditions_initializer["conditionHasBeenStunned"] = (BTCondition)&TCompAIMimetic::conditionHasBeenStunned;
-	//conditions_initializer["conditionIsTypeWall"] = (BTCondition)&TCompAIMimetic::conditionIsTypeWall;
-	//conditions_initializer["conditionIsNotPlayerInFovAndNotNoise"] = (BTCondition)&TCompAIMimetic::conditionIsNotPlayerInFovAndNotNoise;
-	//conditions_initializer["conditionIsNotActive"] = (BTCondition)&TCompAIMimetic::conditionIsNotActive;
-	//conditions_initializer["conditionHasWpts"] = (BTCondition)&TCompAIMimetic::conditionHasWpts;
-	//conditions_initializer["conditionIsTypeFloor"] = (BTCondition)&TCompAIMimetic::conditionIsTypeFloor;
-	//conditions_initializer["conditionIsSlept"] = (BTCondition)&TCompAIMimetic::conditionIsSlept;
-	//conditions_initializer["conditionHasNotWaypoints"] = (BTCondition)&TCompAIMimetic::conditionHasNotWaypoints;
-	//conditions_initializer["conditionNotListenedNoise"] = (BTCondition)&TCompAIMimetic::conditionNotListenedNoise;
-	//conditions_initializer["conditionPlayerSeenForSure"] = (BTCondition)&TCompAIMimetic::conditionPlayerSeenForSure;
-	//conditions_initializer["conditionHasHeardArtificialNoise"] = (BTCondition)&TCompAIMimetic::conditionHasHeardArtificialNoise;
-	//conditions_initializer["conditionNotSurePlayerInFov"] = (BTCondition)&TCompAIMimetic::conditionNotSurePlayerInFov;
-	//conditions_initializer["conditionHasHeardNaturalNoise"] = (BTCondition)&TCompAIMimetic::conditionHasHeardNaturalNoise;
-	//conditions_initializer["conditionIsPlayerInFov"] = (BTCondition)&TCompAIMimetic::conditionIsPlayerInFov;
-	//conditions_initializer["conditionNotGoingInactive"] = (BTCondition)&TCompAIMimetic::conditionNotGoingInactive;
 }
 
 void TCompAIMimetic::loadAsserts() {
     asserts_initializer.clear();
 
-	//asserts_initializer["assertNotPlayerInFovNorNoise"] = (BTCondition)&TCompAIMimetic::assertNotPlayerInFovNorNoise;
-	//asserts_initializer["assertNotPlayerInFov"] = (BTCondition)&TCompAIMimetic::assertNotPlayerInFov;
 }
 
 /* ACTIONS */
@@ -923,11 +867,7 @@ bool TCompAIMimetic::conditionNotListenedNoise(float dt)
 
 bool TCompAIMimetic::conditionNotSurePlayerInFov(float dt)
 {
-	if (!playerInvisible)
-	{
-		return suspectO_Meter < 1.f && (suspectO_Meter > 0.f || isEntityInFov(entityToChase, fov, maxChaseDistance));
-	}
-	return false;
+    return suspectO_Meter < 1.f && (suspectO_Meter > 0.f || isEntityInFov(entityToChase, fov, maxChaseDistance));
 }
 
 bool TCompAIMimetic::conditionHasHeardNaturalNoise(float dt)

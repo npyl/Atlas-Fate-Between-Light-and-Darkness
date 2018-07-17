@@ -118,11 +118,11 @@ CB_DEF(CCteCamera, CB_CAMERA)   // Generates the b0
 
 CB_DEF(CCteObject, CB_OBJECT)   // Generates the b1
 {
-    MAT44 obj_world;
-    VEC4  obj_color;
+    MAT44  obj_world;
+    VEC4   obj_color;
     VEC4   self_color;
     float  self_intensity;
-    float  self_fade_value;
+    float  self_opacity;
     float  self_dummy2;
     float  self_dummy3;
 };
@@ -144,7 +144,12 @@ CB_DEF(CCteLight, CB_LIGHT)
     float light_angle;
     float light_inner_cut;
     float light_outer_cut;
-    float dummy2;
+    float far_atten;
+    
+    float inner_atten;
+    float dummy_light1;
+    float dummy_light2;
+    float dummy_light3;
 
     MAT44 light_view_proj_offset;
     MAT44 light_view_proj;
@@ -160,7 +165,7 @@ CB_DEF(CCteGlobals, CB_GLOBALS)   // Generates the b1
     float global_tone_mapping_mode;
     int   global_render_output;
     float global_fog_density;
-    VEC3 global_fog_color;
+    VEC3  global_fog_color;
 
     float global_shared_fx_amount;
     float global_shared_fx_val1;

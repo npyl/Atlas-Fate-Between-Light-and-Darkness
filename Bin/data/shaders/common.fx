@@ -8,6 +8,7 @@ Texture2D    txNormal         SLOT(TS_NORMAL);
 Texture2D    txMetallic       SLOT(TS_METALLIC);
 Texture2D    txRoughness      SLOT(TS_ROUGHNESS);
 Texture2D    txEmissive       SLOT(TS_EMISSIVE);
+Texture2D    txAOcclusion     SLOT(TS_AOCCLUSION);
 Texture2D    txHeight         SLOT(TS_HEIGHT);
 Texture2D    txNoiseMap       SLOT(TS_NOISE_MAP);
 Texture2D    txNoiseMap2       SLOT(TS_NOISE_MAP2);
@@ -279,6 +280,12 @@ float4 projectColor(float3 wPos) {
   // Fade to zero in the last 1% of the zbuffer of the light
   //light_projector_color *= smoothstep(1.0f, 0.15f, pos_in_light_homo_space.z);
   return light_projector_color;
+}
+
+
+// ----------------------------------------
+float randNoise2D(float2 c){
+  return frac(sin(dot(c.xy,float2(12.9898,78.233))) * 43758.5453);
 }
 
 float2 parallaxMappingB(float2 texCoords, float3 view_dir) {

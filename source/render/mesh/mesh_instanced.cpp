@@ -2,9 +2,8 @@
 #include "mesh_instanced.h"
 
 CRenderMesh* loadMeshInstanced(const std::string& name) {
-	std::string name2 = name;
-	getFileNameFromPath(name2);
-    dbg("Creating instanced mesh %s\n", name2.c_str());
+
+    dbg("Creating instanced mesh %s\n", name.c_str());
     auto mesh = new CRenderMeshInstanced();
     json j = loadJson(name);
     mesh->configure(j);

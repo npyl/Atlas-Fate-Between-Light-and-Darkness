@@ -3,8 +3,6 @@
 
 // -----------------------------------------
 #include "murmur3/murmur3.h"
-#include "PxPhysicsAPI.h"
-
 #define E_ROUND(f) (f * 100) / 100
 
 uint32_t getID(const char* txt);
@@ -41,13 +39,6 @@ std::string stringify(VEC3 pos);
 std::string stringify(VEC4 pos);
 
 //float lerpAngle(float a, float b, float t);
-
-physx::PxVec3 ToPxVec3(VEC3);
-VEC3 ToVec3(physx::PxVec3);
-physx::PxQuat ToPxQuat(QUAT);
-QUAT ToQuat(physx::PxQuat);
-
-void getFileNameFromPath(std::string&);
 
 #endif
 

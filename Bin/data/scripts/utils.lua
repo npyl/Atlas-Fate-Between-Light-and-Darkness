@@ -5,8 +5,12 @@ function printLogicLog()
 	logic:printLog()
 end
 
-function execDelayedScript(script, delay)
-	SLB.execDelayedScript(script, delay)
+function printAllScripts()
+	console:printAllScripts()
+end
+
+function execScriptDelayed(script, delay)
+	SLB.execScriptDelayed(script, delay)
 end
 
 function pauseGame(pause)
@@ -15,6 +19,18 @@ end
 
 function pausePlayerToggle()
 	SLB.pausePlayerToggle()
+end
+
+function pauseEnemies(pause)
+	SLB.pauseEnemies(pause)
+end
+
+function deleteEnemies()
+	SLB.deleteEnemies()
+end
+
+function postFXToggle()
+	SLB.postFXToggle()
 end
 
 function blendInCamera(cameraName, blendInTime)
@@ -29,24 +45,8 @@ function blendOutActiveCamera(blendOutTime)
 	SLB.blendOutActiveCamera(blendOutTime)
 end
 
-function fpsToggle()
-	SLB.fpsToggle()
-end
-
-function debugToggle()
-	SLB.debugToggle()
-end
-
-function pauseEnemies()
-	SLB.pauseEnemies()
-end
-
-function deleteEnemies()
-	SLB.deleteEnemies()
-end
-
-function movePlayer(pos)
-	SLB.movePlayer(pos)
+function setPlayerInhibited(inhibited)
+	playerController.inhibited = inhibited;
 end
 
 function loadCheckpoint()
@@ -77,16 +77,24 @@ function spotlightsToggle()
 	SLB.spotlightsToggle()
 end
 
-function lanternToggle()
-	SLB.lanternToggle()
+function noClipToggle()
+	SLB.noClipToggle()
+end
+
+function spotlightsToggle()
+	SLB.spotlightsToggle()
+end
+
+function lanternsDisable(disable)
+	SLB.lanternsDisable(disable)
 end
 
 function shadowsToggle()
 	SLB.shadowsToggle()
 end
 
-function postFXToggle()
-	SLB.postFXToggle()
+function debugToggle()
+	SLB.debugToggle()
 end
 
 function loadScene(level)
@@ -109,10 +117,6 @@ function animationsToggle()
 	SLB.animationsToggle()
 end
 
-function noClipToggle()
-	SLB.noClipToggle()
-end
-
 function move(name, pos, lookAt)
 	SLB.move(name, pos, lookAt)
 end
@@ -125,8 +129,8 @@ function collidersToggle(onlyDynamics)
 	SLB.collidersToggle(onlyDynamics)
 end
 
-function setPlayerInhibited(inhibited)
-	playerController.inhibited = inhibited;
+function movePlayer(pos)
+	SLB.movePlayer(pos)
 end
 
 function renderNavmeshToggle()
@@ -141,10 +145,10 @@ function exeShootImpactSound()
 	SLB.exeShootImpactSound()
 end
 
-function sendOrderToDrone(name, position)
-	SLB.sendOrderToDrone(name, position)
+function cinematicModeToggle()
+	SLB.cinematicModeToggle()
 end
 
-function probando(level)
-	SLB.probando(level)
+function fpsToggle(bool)
+	SLB.fpsToggle(bool)
 end

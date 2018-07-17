@@ -35,7 +35,7 @@ private:
     bool goingInactive = false;
     VEC3 initialPos;
     VEC3 initialLookAt;
-    float rotationSpeedObservation = deg2rad(40.f);
+    float rotationSpeedObservation = deg2rad(50.f);
     float rotationSpeedPatrolling = deg2rad(80.f);
     float waitTimeInLasPlayerPos = 3.f;
     float chaseSpeed = 6.f;
@@ -56,18 +56,14 @@ private:
     void onMsgNoiseListened(const TMsgNoiseMade& msg);
     void onMsgPhysxContact(const TMsgPhysxContact& msg);
 
-	//Console hack and variables
-	bool playerInvisible = false;
-	void onMsgPlayerInvisible(const TMsgPlayerInvisible& msg);
+    /* Aux functions */
+    void setGravityToFaceWall();
+    EType parseStringMimeticType(const std::string& typeString);
 
-	/* Aux functions */
-	void setGravityToFaceWall();
-	EType parseStringMimeticType(const std::string& typeString);
-
-	//load
-	void loadActions() override;
-	void loadConditions() override;
-	void loadAsserts() override;
+    //load
+    void loadActions() override;
+    void loadConditions() override;
+    void loadAsserts() override;
 
 public:
     void preUpdate(float dt) override;

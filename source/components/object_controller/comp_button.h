@@ -2,25 +2,26 @@
 
 #include "components/comp_base.h"
 
-class CCurve;
-using namespace std;
+struct script {
+    std::string name;
+    float delay;
+};
 
 class TCompButton : public TCompBase
 {
-	DECL_SIBLING_ACCESS();
+    DECL_SIBLING_ACCESS();
 
 public:
-	void debugInMenu();
-	void load(const json& j, TEntityParseContext& ctx);
-	void update(float dt);
+    void debugInMenu();
+    void load(const json& j, TEntityParseContext& ctx);
+    void update(float dt);
 
-	static void registerMsgs();
+    static void registerMsgs();
+    bool canBePressed;
 
 private:
-	string _scriptName;
-	float _delay;
+    std::string _script;
 
-	void onMsgButtonActivated(const TMsgButtonActivated& msg);
-
+    void onMsgButtonActivated(const TMsgButtonActivated& msg);
 };
 

@@ -11,6 +11,8 @@ namespace Particles
 
     struct TCoreSystem : public IResource
     {
+        void onFileChanged(const std::string& filename) override;
+
         struct TNSystem 
         {
             float duration = 1.f;  
@@ -27,6 +29,8 @@ namespace Particles
             float gravity = 0.2f;
             float simulation_speed = 1.f;
             int   max_particles = 1; 
+
+            VEC3 offset;
         };
 
         struct TNEmission

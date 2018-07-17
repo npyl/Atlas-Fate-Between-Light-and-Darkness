@@ -1,6 +1,5 @@
 #include "mcv_platform.h"
 #include "windows/app.h"
-using namespace physx;
 
 void dbg(const char* format, ...) {
   va_list argptr;
@@ -156,31 +155,4 @@ std::string stringify(VEC4 pos) {
     std::to_string(E_ROUND(pos.y)) + " " +
     std::to_string(E_ROUND(pos.z)) + " " + 
     std::to_string(E_ROUND(pos.w));
-}
-
-PxVec3 ToPxVec3(VEC3 vector) {
-	PxVec3 result = PxVec3(vector.x, vector.y, vector.z);
-	return result;
-}
-
-VEC3 ToVec3(PxVec3 vector) {
-	VEC3 result = VEC3(vector.x, vector.y, vector.z);
-	return result;
-}
-
-PxQuat ToPxQuat(QUAT quaternion) {
-	physx::PxQuat q = PxQuat(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
-	return q;
-}
-
-QUAT ToPxQuat(PxQuat quaternion) {
-	QUAT q = QUAT(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
-	return q;
-}
-
-
-void getFileNameFromPath(std::string& nameWithPath) {
-	size_t startPos = nameWithPath.find_last_of("/\\") + 1;
-	size_t endPos = nameWithPath.find_last_of(".");
-	nameWithPath = nameWithPath.substr(startPos, endPos - startPos);
 }

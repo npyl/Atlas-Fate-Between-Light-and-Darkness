@@ -21,7 +21,7 @@
         "inner_cut": 39.9,
         "z_far": 57.6286,
         "color": "1.0 1.0 1.0 1.0",
-        "intensity": 1.0,
+        "intensity": 1.75,
         "casts_shadows": true,
         "shadows_step": 1.0,
         "shadows_resolution": 512,
@@ -38,7 +38,7 @@
     }
   },
   {
-    "xentity": {
+    "entity": {
       "name": "Spot002",
       "transform": {
         "pos": "134.124 44.4275 -439.499",
@@ -52,7 +52,7 @@
         "inner_cut": 39.9,
         "z_far": 53.2703,
         "color": "1.0 1.0 1.0 1.0",
-        "intensity": 1.0,
+        "intensity": 1.75,
         "casts_shadows": true,
         "shadows_step": 1.0,
         "shadows_resolution": 512,
@@ -83,7 +83,7 @@
         "inner_cut": 20.6,
         "z_far": 25.9113,
         "color": "1.0 1.0 1.0 1.0",
-        "intensity": 1.0,
+        "intensity": 1.75,
         "casts_shadows": true,
         "shadows_step": 1.0,
         "shadows_resolution": 512,
@@ -114,7 +114,7 @@
         "inner_cut": 20.6,
         "z_far": 25.9113,
         "color": "1.0 1.0 1.0 1.0",
-        "intensity": 1.0,
+        "intensity": 1.75,
         "casts_shadows": true,
         "shadows_step": 1.0,
         "shadows_resolution": 512,

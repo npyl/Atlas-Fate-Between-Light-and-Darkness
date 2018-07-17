@@ -26,6 +26,7 @@ class TCompCollider : public TCompBase {
 public:
 
     bool player_inside;
+    bool player_full_inside;
     std::map<uint32_t, TCompTransform*> handles;
 
     // Collider parameter description
@@ -33,8 +34,8 @@ public:
 
     ~TCompCollider();
     void debugInMenu();
-	void renderDebug(bool onlyDynamics = false);
-	void renderColliders(bool onlyDynamics);
+    void renderDebug(bool onlyDynamics = false);
+    void renderColliders(bool onlyDynamics);
     void load(const json& j, TEntityParseContext& ctx);
     void update(float dt);
 

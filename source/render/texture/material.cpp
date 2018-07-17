@@ -10,9 +10,7 @@ public:
 		extensions = { ".material" };
 	}
 	IResource* create(const std::string& name) const override {
-		std::string name2 = name;
-		getFileNameFromPath(name2);
-		dbg("Creating material %s\n", name2.c_str());
+		dbg("Creating material %s\n", name.c_str());
 
         auto j = loadJson(name);
         std::string mat_type = j.value("type", "std");
@@ -58,6 +56,8 @@ bool CMaterial::create(const json& j) {
 	// Setting default textures
 	textures[TS_EMISSIVE] = Resources.get("data/textures/default_emissive.dds")->as<CTexture>();
 	textures[TS_HEIGHT] = Resources.get("data/textures/default_white.dds")->as<CTexture>();
+    textures[TS_AOCCLUSION] = Resources.get("data/textures/default_white.dds")->as<CTexture>();
+    srvs[TS_AOCCLUSION] = textures[TS_AOCCLUSION]->getShaderResourceView();
 
     if (j.count("textures")) {
         auto& j_textures = j["textures"];
@@ -120,7 +120,8 @@ bool CMaterial::create(const json& j) {
 
 void CMaterial::onFileChanged(const std::string& filename) {
 	if (filename == getName()) {
-		create(filename);
+        auto j = loadJson(filename);
+        create(j);
 	}
 	else {
 		// Maybe a texture has been updated, get the new shader resource view
@@ -151,6 +152,11 @@ void CMaterial::setCBMaterial(float alpha_outline) {
     cb_material.mat_alpha_outline = alpha_outline;
     
     // Add the rest of the values.
+}
+
+void CMaterial::setSelfColor(VEC4 self_color) {
+
+    cb_material.color_emission = self_color;
 }
 
 void CMaterial::debugInMenu() {

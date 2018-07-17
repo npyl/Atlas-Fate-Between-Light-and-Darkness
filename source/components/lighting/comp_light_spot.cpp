@@ -7,31 +7,24 @@
 #include "render/render_manager.h" 
 #include "render/render_utils.h"
 #include "render/gpu_trace.h"
-#include "ctes.h"                     // texture slots
-#include "render/mesh/mesh_loader.h"
-#include "components/comp_aabb.h"
-#include "components/physics/comp_collider.h"
 #include "physics/physics_collider.h"
 
-#include "render/render_objects.h"
-#include "render/texture/texture.h"
-#include "render/texture/material.h"
-#include "render/render_utils.h"
-#include "render/render_manager.h"
-#include "entity/entity_parser.h"
+#include "components/comp_aabb.h"
 #include "components/comp_culling.h"
+#include "components/physics/comp_collider.h"
 
 DECL_OBJ_MANAGER("light_spot", TCompLightSpot);
 
 CRenderMeshInstanced* TCompLightSpot::volume_instance = nullptr;
 
 void TCompLightSpot::debugInMenu() {
+    ImGui::Checkbox("Enabled", &isEnabled);
     ImGui::ColorEdit3("Color", &color.x);
     ImGui::DragFloat("Intensity", &intensity, 0.01f, 0.f, 10.f);
     ImGui::DragFloat("Angle", &angle, 0.5f, 1.f, 160.f);
     ImGui::DragFloat("Cut Out", &inner_cut, 0.5f, 1.f, angle);
     ImGui::DragFloat("Range", &range, 0.5f, 1.f, 120.f);
-    ImGui::Checkbox("Enabled", &isEnabled);
+    ImGui::DragFloat("Shadow step", &shadows_step, 0.01f, 0.f, 10.f);
 }
 
 void TCompLightSpot::renderDebug() {
@@ -47,10 +40,12 @@ void TCompLightSpot::load(const json& j, TEntityParseContext& ctx) {
     TCompCamera::load(j, ctx);
 
     intensity = j.value("intensity", 1.0f);
+    volume_intensity = j.value("volume_intensity", 1.0f);
     color = loadVEC4(j["color"]);
 
     volume_enabled = j.value("volume", true);
     casts_shadows = j.value("shadows", true);
+    num_samples = j.value("n_samples", 80.f);
     angle = j.value("angle", 45.f);
     range = j.value("range", 10.f);
     inner_cut = j.value("inner_cut", angle);
@@ -104,6 +99,11 @@ void TCompLightSpot::update(float dt) {
     if (!c)
         return;
 
+    MAT44 view_proj = getViewProjection();
+    //e_owner->sendMsg(TMsgGetCullingViewProj{ &view_proj });
+    TCompCulling * c_culling = get<TCompCulling>();
+    c_culling->updateFromMatrix(view_proj);
+
     this->lookAt(c->getPosition(), c->getPosition() + c->getFront(), c->getUp());
     this->setPerspective(deg2rad(angle), 0.1f, range); // might change this znear in the future, hardcoded for clipping purposes.
 }
@@ -112,6 +112,7 @@ void TCompLightSpot::registerMsgs() {
 
     DECL_MSG(TCompLightSpot, TMsgEntityCreated, onCreate);
     DECL_MSG(TCompLightSpot, TMsgEntityDestroyed, onDestroy);
+    DECL_MSG(TCompLightSpot, TMsgEntitiesGroupCreated, onGroupCreated);
 }
 
 // Generate the AABB for the spotlight
@@ -121,7 +122,7 @@ void TCompLightSpot::onCreate(const TMsgEntityCreated& msg) {
     TCompLocalAABB * c_my_aabb_local = get<TCompLocalAABB>();
     TCompCollider * c_my_collider = get<TCompCollider>();
 
-    if (c_my_collider->config->shape) {
+    if (c_my_collider && c_my_collider->config->shape) {
         physx::PxConvexMeshGeometry colliderMesh;
         c_my_collider->config->shape->getConvexMeshGeometry(colliderMesh);
         physx::PxBounds3 bounds = colliderMesh.convexMesh->getLocalBounds();
@@ -142,6 +143,12 @@ void TCompLightSpot::onCreate(const TMsgEntityCreated& msg) {
         c_my_aabb_local->Center = VEC3(0, 0, range * .5f);
     }
 
+    CEntity* e = CHandle(this).getOwner();
+
+    // Add a particle component
+    CHandle h_comp = getObjectManager<TCompCulling>()->createHandle();
+    e->set(h_comp.getType(), h_comp);
+
     //for (int i = 0; i < num_samples; i++) {
     //    EngineInstancing.addInstance("data/meshes/quad_volume.instanced_mesh", MAT44::Identity);
     //}
@@ -149,6 +156,43 @@ void TCompLightSpot::onCreate(const TMsgEntityCreated& msg) {
 
 void TCompLightSpot::onDestroy(const TMsgEntityDestroyed & msg) {
 
+}
+
+void TCompLightSpot::onGroupCreated(const TMsgEntitiesGroupCreated & msg)
+{
+    TCompCulling* myCulling = get<TCompCulling>();
+    if (myCulling == nullptr) {
+        TCompAbsAABB * c_my_aabb = get<TCompAbsAABB>();
+        TCompLocalAABB * c_my_aabb_local = get<TCompLocalAABB>();
+        TCompCollider * c_my_collider = get<TCompCollider>();
+
+        if (c_my_collider && c_my_collider->config->shape) {
+            physx::PxConvexMeshGeometry colliderMesh;
+            c_my_collider->config->shape->getConvexMeshGeometry(colliderMesh);
+            physx::PxBounds3 bounds = colliderMesh.convexMesh->getLocalBounds();
+            VEC3 extents = PXVEC3_TO_VEC3(bounds.getExtents());
+
+            c_my_aabb->Center = VEC3::Zero;
+            c_my_aabb->Extents = extents;
+        }
+        else if (c_my_aabb && c_my_aabb_local) {
+
+            TCompTransform* c_my_transform = get<TCompTransform>();
+            VEC3 c_my_center = c_my_transform->getPosition() + range * .5f * c_my_transform->getFront();
+
+            c_my_aabb->Extents = VEC3(tan(deg2rad(angle / 2)) * range, tan(deg2rad(angle / 2)) * range, range *.5f);
+            c_my_aabb_local->Extents = VEC3(tan(deg2rad(angle / 2)) * range, tan(deg2rad(angle / 2)) * range, range *.5f);
+
+            c_my_aabb->Center = VEC3(0, 0, range * .5f);
+            c_my_aabb_local->Center = VEC3(0, 0, range * .5f);
+        }
+
+        CEntity* e = CHandle(this).getOwner();
+
+        // Add a particle component
+        CHandle h_comp = getObjectManager<TCompCulling>()->createHandle();
+        e->set(h_comp.getType(), h_comp);
+    }
 }
 
 void TCompLightSpot::activate() {
@@ -172,6 +216,8 @@ void TCompLightSpot::activate() {
     cb_light.light_direction = VEC4(c->getFront().x, c->getFront().y, c->getFront().z, 1);
     cb_light.light_inner_cut = cos(deg2rad(Clamp(inner_cut, 0.f, angle) * .5f));
     cb_light.light_outer_cut = spot_angle;
+    cb_light.far_atten = 0.98f;
+    cb_light.inner_atten = 0.9f;
 
     // If we have a ZTexture, it's the time to activate it
     if (shadows_rt) {
@@ -194,10 +240,6 @@ void TCompLightSpot::generateVolume() {
 
     if (!isEnabled || cull_enabled || !volume_enabled)
         return;
-
-    // Activate tech for the light dir 
-    auto technique = Resources.get("pbr_vol_lights.tech")->as<CRenderTechnique>();
-    technique->activate();
     
     CEntity* eCurrentCamera = Engine.getCameras().getOutputCamera();
     TCompCamera* camera = eCurrentCamera->get< TCompCamera >();
@@ -226,8 +268,8 @@ void TCompLightSpot::generateVolume() {
         MAT44 res = sc * bb;
 
         TInstanceLight t_struct = { res, VEC4(cpos.x, cpos.y, cpos.z, 1)
-            ,VEC4(c_transform->getFront().x, c_transform->getFront().y, c_transform->getFront().z, 0)
-            ,VEC4(spot_angle, cos(deg2rad(Clamp(inner_cut, 0.f, angle) * .5f)), spot_angle, 1), mtx_viewproj_offset };
+            ,VEC4(c_transform->getFront().x, c_transform->getFront().y, c_transform->getFront().z, 1)
+            ,VEC4(spot_angle, cos(deg2rad(Clamp(inner_cut, 0.f, angle) * .5f)), spot_angle, volume_intensity), mtx_viewproj_offset };
         volume_instances.push_back(t_struct);
     }
 
@@ -271,23 +313,26 @@ void TCompLightSpot::generateShadowMap() {
     if (cull_enabled || !shadows_rt || !shadows_enabled || !isEnabled)
         return;
 
-	// In this slot is where we activate the render targets that we are going
-	// to update now. You can't be active as texture and render target at the
-	// same time
-	CTexture::setNullTexture(TS_LIGHT_SHADOW_MAP);
+    // In this slot is where we activate the render targets that we are going
+    // to update now. You can't be active as texture and render target at the
+    // same time
+    CTexture::setNullTexture(TS_LIGHT_SHADOW_MAP);
 
-	CTraceScoped gpu_scope(shadows_rt->getName().c_str());
-	shadows_rt->activateRT();
+    CTraceScoped gpu_scope(shadows_rt->getName().c_str());
+    shadows_rt->activateRT();
 
-	{
-		PROFILE_FUNCTION("Clear&SetCommonCtes");
-		shadows_rt->clearZ();
-		// We are going to render the scene from the light position & orientation
-		activateCamera(*this, shadows_rt->getWidth(), shadows_rt->getHeight());
-	}
+    {
+        PROFILE_FUNCTION("Clear&SetCommonCtes");
+        shadows_rt->clearZ();
+        // We are going to render the scene from the light position & orientation
+        activateCamera(*this, shadows_rt->getWidth(), shadows_rt->getHeight());
+    }
 
-	CRenderManager::get().setEntityCamera(getEntityByName("main_camera"));
-	CRenderManager::get().renderCategory("shadows");
+    CRenderManager::get().setEntityCamera(CHandle(this).getOwner());
+    CRenderManager::get().renderCategory("shadows");
 }
 
+bool TCompLightSpot::isCulled() const {
 
+    return cull_enabled;
+}

@@ -11,9 +11,7 @@ public:
 		extensions = { ".collider" };
 	}
 	IResource* create(const std::string& name) const override {
-		std::string name2 = name;
-		getFileNameFromPath(name2);
-		dbg("Creating mesh %s\n", name2.c_str());
+		dbg("Creating mesh %s\n", name.c_str());
 		CPhysicsMesh* res = loadPhysicsMesh(name.c_str());
 		return res;
 	}

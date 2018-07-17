@@ -13,6 +13,7 @@
 #include "components/lighting/comp_emission_controller.h"
 #include "components/player_controller/comp_sonar_controller.h"
 #include "components/object_controller/comp_noise_emitter.h"
+#include "components/comp_particles.h"
 #include "physics/physics_collider.h"
 #include "render/mesh/mesh_loader.h"
 #include "components/comp_name.h"
@@ -23,6 +24,9 @@
 
 #include "render/render_objects.h"
 #include "render/render_utils.h"
+
+#include "components/ia/comp_bt_player.h"
+
 
 DECL_OBJ_MANAGER("player_tempcontroller", TCompTempPlayerController);
 
@@ -102,7 +106,8 @@ void TCompTempPlayerController::load(const json& j, TEntityParseContext& ctx) {
 /* Player controller main update */
 void TCompTempPlayerController::update(float dt) {
 
-    if (!paused && !isConsoleOn && !isInNoClipMode) {
+    TCompAIPlayer* playerAI = get<TCompAIPlayer>();
+    if (!paused && !isConsoleOn && !isInNoClipMode && !playerAI->enabledPlayerAI) {
 
         (this->*state)(dt);
 
@@ -141,9 +146,10 @@ void TCompTempPlayerController::registerMsgs() {
     DECL_MSG(TCompTempPlayerController, TMsgPlayerInShadows, onPlayerInShadows);
     DECL_MSG(TCompTempPlayerController, TMsgSpeedBoost, onSpeedBoost);
     DECL_MSG(TCompTempPlayerController, TMsgPlayerInvisible, onPlayerInvisible);
-	DECL_MSG(TCompTempPlayerController, TMsgPlayerMove, onPlayerMove);
     DECL_MSG(TCompTempPlayerController, TMsgNoClipToggle, onMsgNoClipToggle);
     DECL_MSG(TCompTempPlayerController, TMsgBulletHit, onMsgBulletHit);
+    DECL_MSG(TCompTempPlayerController, TMsgPlayerMove, onMsgPlayerMove);
+
 }
 
 void TCompTempPlayerController::onShadowChange(const TMsgShadowChange& msg) {
@@ -185,23 +191,12 @@ void TCompTempPlayerController::onMsgNoClipToggle(const TMsgNoClipToggle & msg)
 
 void TCompTempPlayerController::onMsgBulletHit(const TMsgBulletHit & msg)
 {
-    if (!isImmortal) {
-        life = Clamp(life - msg.damage, 0.f, maxLife);
-        timerSinceLastDamage = 0.f;
-
-        if (life <= 0.f) {
-            CEntity* e = CHandle(this).getOwner();
-            TMsgSetFSMVariable groundMsg;
-            groundMsg.variant.setName("onDead");
-            groundMsg.variant.setBool(true);
-            e->sendMsg(groundMsg);
-        }
-    }
+    getDamage(msg.damage);
 }
 
-void TCompTempPlayerController::onPlayerMove(const TMsgPlayerMove& msg) {
-	TCompTransform* my_transform = get<TCompTransform>();
-	my_transform->setPosition(msg.pos);
+void TCompTempPlayerController::onMsgPlayerMove(const TMsgPlayerMove& msg) {
+  TCompTransform* my_transform = get<TCompTransform>();
+  my_transform->setPosition(msg.pos);
 }
 
 void TCompTempPlayerController::onCreate(const TMsgEntityCreated& msg) {
@@ -236,6 +231,10 @@ void TCompTempPlayerController::onCreate(const TMsgEntityCreated& msg) {
 
     temp_deg = 0;
     temp_invert = VEC3::One;
+
+    TCompParticles * c_e_particle = get<TCompParticles>();
+    assert(c_e_particle);
+    c_e_particle->setSystemState(false);
 }
 
 /* Call this function once the state has been changed */
@@ -283,24 +282,12 @@ void TCompTempPlayerController::onStateFinish(const TMsgStateFinish& msg) {
 
 void TCompTempPlayerController::onPlayerHit(const TMsgPlayerHit & msg)
 {
-    if (!isImmortal) {
-        CEntity* e = CHandle(this).getOwner();
-        TMsgSetFSMVariable groundMsg;
-        groundMsg.variant.setName("onDead");
-        groundMsg.variant.setBool(true);
-        e->sendMsg(groundMsg);
-    }
+    die();
 }
 
 void TCompTempPlayerController::onPlayerKilled(const TMsgPlayerDead & msg)
 {
-    if (!isImmortal) {
-        CEntity* e = CHandle(this).getOwner();
-        TMsgSetFSMVariable groundMsg;
-        groundMsg.variant.setName("onDead");
-        groundMsg.variant.setBool(true);
-        e->sendMsg(groundMsg);
-    }
+    die();
 }
 
 void TCompTempPlayerController::onPlayerInhibited(const TMsgInhibitorShot & msg)
@@ -416,9 +403,9 @@ void TCompTempPlayerController::mergeState(float dt) {
     if (convexTest() || concaveTest()) {
 
         VEC3 postUp = p_transform->getUp();
-        angle_test = fabs(EnginePhysics.gravity.Dot(prevUp));
+        angle_test = fabs(EnginePhysics.gravity.Dot(postUp));
         float angle_amount = fabsf(acosf(prevUp.Dot(postUp)));
-        std::string target_name = angle_test > mergeAngle ? "SMCameraVer" : "SMCameraHor"; // WARN: Watch this if gives problems...  
+        std::string target_name = angle_test > mergeAngle ? "SMCameraHor" : "SMCameraVer"; // WARN: Watch this if gives problems...  
 
         if (angle_amount > deg2rad(30.f) || target_name.compare(dbCameraState) != 0) {
 
@@ -449,6 +436,15 @@ void TCompTempPlayerController::resetState(float dt) {
     TCompTransform * trans_camera = player_camera->get<TCompTransform>();
     physx::PxCapsuleController* c_capsule = (physx::PxCapsuleController*)rigidbody->controller;
 
+    // Check for ceiling collision!
+    if (fabs(EnginePhysics.gravity.Dot(c_my_transform->getUp())) < mergeAngle) {
+        physx::PxRaycastHit hit;
+        float offset_distance = 1.1f;
+        VEC3 desired_pos = c_my_transform->getPosition() + .1f * c_my_transform->getUp();
+        if (EnginePhysics.Raycast(desired_pos, VEC3::Up, offset_distance, hit, physx::PxQueryFlag::eSTATIC))
+            c_my_transform->setPosition(c_my_transform->getPosition() + VEC3(0, -(offset_distance - hit.distance), 0));
+    }
+
     VEC3 up = trans_camera->getFront();
     VEC3 proj = projectVector(up, -EnginePhysics.gravity);
     VEC3 dir = getMotionDir(proj, EnginePhysics.gravity.Cross(proj));
@@ -467,6 +463,7 @@ void TCompTempPlayerController::resetState(float dt) {
 }
 
 void TCompTempPlayerController::exitMergeState(float dt) {
+
     TMsgSetCameraCancelled msg;
     CEntity * eCamera = getEntityByName(auxCamera);
     eCamera->sendMsg(msg);
@@ -642,6 +639,31 @@ void TCompTempPlayerController::invertAxis(VEC3 old_up, bool type) {
     }
 }
 
+void TCompTempPlayerController::getDamage(float dmg)
+{
+
+    if (!isImmortal && !isDead()) {
+        life = Clamp(life - dmg, 0.f, maxLife);
+        timerSinceLastDamage = 0.f;
+
+        if (life <= 0.f) {
+            die();
+        }
+    }
+}
+
+void TCompTempPlayerController::die()
+{
+    if (!isImmortal && !isDead()) {
+        CEntity* e = CHandle(this).getOwner();
+        TMsgSetFSMVariable groundMsg;
+        groundMsg.variant.setName("onDead");
+        groundMsg.variant.setBool(true);
+        e->sendMsg(groundMsg);
+        life = 0;
+    }
+}
+
 /* Concave test, this determines if there is a surface normal change on concave angles */
 const bool TCompTempPlayerController::concaveTest(void) {
 
@@ -651,7 +673,7 @@ const bool TCompTempPlayerController::concaveTest(void) {
     VEC3 old_up = c_my_transform->getUp();
     VEC3 upwards_offset = c_my_transform->getPosition() + c_my_transform->getUp() * .01f;
 
-    if (EnginePhysics.Raycast(upwards_offset, c_my_transform->getFront(), 0.35f + .1f, hit, physx::PxQueryFlag::eSTATIC, PxPlayerDiscardQuery))
+    if (EnginePhysics.Raycast(upwards_offset, c_my_transform->getFront(), 0.175f, hit, physx::PxQueryFlag::eSTATIC, PxPlayerDiscardQuery))
     {
         VEC3 hit_normal = VEC3(hit.normal.x, hit.normal.y, hit.normal.z);
         VEC3 hit_point = VEC3(hit.position.x, hit.position.y, hit.position.z);
@@ -705,7 +727,7 @@ const bool TCompTempPlayerController::convexTest(void) {
             rigidbody->normal_gravity = EnginePhysics.gravityMod * -hit_normal;
 
             QUAT new_rotation = createLookAt(hit_point, target, hit_normal);
-            VEC3 new_pos = hit_point + 0.3f * new_forward;
+            VEC3 new_pos = hit_point + .1f * new_forward; // Adding little offset
             c_my_transform->setRotation(new_rotation);
             c_my_transform->setPosition(new_pos);
             invertAxis(old_up, false);
@@ -749,6 +771,7 @@ const bool TCompTempPlayerController::onMergeTest(float dt) {
 
     mergeTest &= EngineInput["btShadowMerging"].isPressed();
     mergeTest &= isGrounded;
+    mergeTest &= !isDead();
 
     // If the mergetest changed since last frame, update the fsm
     if (mergeTest != isMerged) {
@@ -785,6 +808,9 @@ const bool TCompTempPlayerController::groundTest(float dt) {
         TMsgSetFSMVariable hardLanded;
         hardLanded.variant.setName("onHardLanded");
         hardLanded.variant.setBool(c_my_collider->is_grounded & (fallingTime > hardFallingTime && fallingTime < maxFallingTime) & !isMerged);
+        if (hardLanded.variant.getBool()) {
+            getDamage(30.f);
+        }
         e->sendMsg(hardLanded);
 
         TMsgSetFSMVariable crouch;
@@ -857,12 +883,24 @@ void TCompTempPlayerController::updateStamina(float dt) {
 /* Attack state, kills the closest enemy if true*/
 void TCompTempPlayerController::attackState(float dt) {
 
+    if (attackTimer == 0) {
+        TCompPlayerAttackCast * cAttackCast = get<TCompPlayerAttackCast>();
+        CHandle closestEnemy;
+        bool enemyFound = cAttackCast->canAttackEnemiesInRange(closestEnemy);
+        
+        TMsgAIPaused msg;
+        closestEnemy.sendMsg(msg);
+    }
+
     if (attackTimer > 0.7f) {   //TODO: Remove this. Only a fix for milestone 2
         TCompPlayerAttackCast * cAttackCast = get<TCompPlayerAttackCast>();
         CHandle closestEnemy;
         bool enemyFound = cAttackCast->canAttackEnemiesInRange(closestEnemy);
 
         if (enemyFound) {
+            TMsgAIPaused msgPaused;
+            closestEnemy.sendMsg(msgPaused);
+
             TMsgEnemyStunned msg;
             msg.h_sender = CHandle(this).getOwner();
             closestEnemy.sendMsg(msg);
