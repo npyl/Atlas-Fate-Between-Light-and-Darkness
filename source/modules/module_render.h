@@ -11,10 +11,10 @@ class CModuleRender : public IModule
 {
   CDeferredRenderer deferred;
   CRenderToTexture* rt_main = nullptr;
+  bool _debugMode = true, _generateShadows = true, _generatePostFX = true, _showWireframe = false, _hideBackground = false, _showAllColliders = false, _showDynamicColliders = false;
 
 public:
 
-  bool _debugMode = true, _generateShadows = true, _generatePostFX = true, _showWireframe = false, _hideBackground = false, _showAllColliders = false, _showDynamicColliders = false;
 
   CModuleRender(const std::string& name);
   bool start() override;

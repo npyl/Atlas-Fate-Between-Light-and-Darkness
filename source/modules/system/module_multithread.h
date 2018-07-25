@@ -10,6 +10,8 @@ public:
 	CModuleMultithread(const std::string& aname) : IModule(aname) { }
 	virtual bool start() override;
 	virtual void update(float delta) override;
-private:
 
+	int const getThreadsNumber() { return _ndefThreads; }
+private:
+	int _ndefThreads;
 };

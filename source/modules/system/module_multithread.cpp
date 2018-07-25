@@ -4,8 +4,8 @@
 
 bool CModuleMultithread::start()
 {
-	int ndefThreads = tbb::task_scheduler_init::default_num_threads();
-	tbb::task_scheduler_init init(ndefThreads);
+	_ndefThreads = tbb::task_scheduler_init::default_num_threads();
+	tbb::task_scheduler_init init(_ndefThreads);
 	return true;
 }
 

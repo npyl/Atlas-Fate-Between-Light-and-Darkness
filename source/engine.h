@@ -96,3 +96,4 @@ private:
 #define EngineScene CEngine::get().getSceneManager()
 #define EngineInstancing CEngine::get().getInstancing()
 #define EngineDebug CEngine::get().getDebug()
+#define EngineMultithreading CEngine::get().getMultithread()
