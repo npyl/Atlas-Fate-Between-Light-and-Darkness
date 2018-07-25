@@ -35,4 +35,6 @@ private:
     std::vector<Particles::CSystem*> _activeSystems;
     VEC3                             _windVelocity = VEC3::Zero;
     Particles::TParticleHandle       _lastHandle;
+
+	bool multithreading = false;
 };

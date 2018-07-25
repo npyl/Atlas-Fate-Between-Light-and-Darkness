@@ -13,5 +13,6 @@ public:
 
 	int const getThreadsNumber() { return _ndefThreads; }
 private:
+
 	int _ndefThreads;
 };
