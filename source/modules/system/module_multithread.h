@@ -12,7 +12,10 @@ public:
 	virtual void update(float delta) override;
 
 	int const getThreadsNumber() { return _ndefThreads; }
+	bool const isMultithreadingEnabled() { return _enabledMultithreading; }
+
 private:
 
 	int _ndefThreads;
+	bool _enabledMultithreading = false;
 };

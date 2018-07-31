@@ -209,6 +209,7 @@ namespace Particles
 	bool CSystem::update(float delta)
 	{
 		if (!_enabled || !_entity.isValid()) return true;
+		PROFILE_FUNCTION("Update particle's system");
 
 		// Handle start delay
 		_deploy_time += delta;
@@ -225,36 +226,43 @@ namespace Particles
 
 		delta *= _core->n_system.simulation_speed;
 
-		//VParticles& p = _particles;
-		size_t step = 1;
-		tbb::parallel_for(size_t(0), size_t(_particles.size()), step, [&](size_t i)
-		{
-			/*if (i == 100) {
-				dbg("Particle position: \n x: %f y: %f, z: %f \n", _particles[i].position);
+		//If we have multithreading
+		if (EngineMultithreading.isMultithreadingEnabled()) {
+			size_t step = 1;
+
+			tbb::parallel_for(size_t(0), size_t(_particles.size()), step, [&](int i)
+			{
+				PROFILE_FUNCTION("Process Particle");
+				//If the particle is about to die, we save it in a list to delete it afterwards
+				if (!processParticle(_particles[i], kWindVelocity, fadeRatio, delta)) {
+					{
+						//Using mutex
+						FreeListMutexType::scoped_lock lock(FreeListMutex);
+						_particlesToDelete.emplace_back(i);
+
+					}
+				}
 			}
-			else {
-				dbg("i: %d \n", i);
-			}*/
-			PROFILE_FUNCTION("Process Particle");
-			if (!processParticle(_particles[i], kWindVelocity, fadeRatio, delta)) {
-				_particlesToDelete.push_back(i);
+			);
+		}
+		else {
+			for (auto it = 0; it != _particles.size(); it++)
+			{
+				PROFILE_FUNCTION("Process Particle");
+				if (!processParticle(_particles[it], kWindVelocity, fadeRatio, delta)) {
+					_particlesToDelete.emplace_back(it);
+				}
 			}
 		}
-		);
-		//dbg("Particles number %i \n", _particles.size());
-		//for (auto it = 0; it != _particles.size(); it++)
-		//{
-		//	PROFILE_FUNCTION("Process Particle");
-		//	processParticle(_particles[it], kWindVelocity, fadeRatio, delta);
-		//}
-		if (_particlesToDelete.size() > 100) {
 
+		//Deleting particles that were previously queued for destruction
+		if (_particlesToDelete.size() > 0) {
 			std::sort(_particlesToDelete.begin(), _particlesToDelete.end());
-			std::unique(_particlesToDelete.begin(), _particlesToDelete.end());
-			for (int it = 0; it < _particlesToDelete.size(); it++) {
-				//auto iterator = _particles.begin();
-				//iterator += _particlesToDelete[it];
-				//_particles.erase(iterator);
+			//std::unique(_particlesToDelete.begin(), _particlesToDelete.end());
+			for (int i = _particlesToDelete.size() - 1; i >= 0; i--) {
+				auto iterator = _particles.begin();
+				iterator += _particlesToDelete[i];
+				_particles.erase(iterator);
 			}
 			_particlesToDelete.clear();
 		}
@@ -292,6 +300,7 @@ namespace Particles
 	{
 		if (!_enabled || !_entity.isValid()) return;
 		if (_deploy_time < _core->n_system.start_delay) return;
+		PROFILE_FUNCTION("Render particle's system");
 
 		CEntity* eCurrentCamera = Engine.getCameras().getOutputCamera();
 		assert(eCurrentCamera);

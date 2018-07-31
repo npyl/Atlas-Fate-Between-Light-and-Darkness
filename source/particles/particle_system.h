@@ -203,7 +203,7 @@ namespace Particles
         CHandle             _entity;
         TParticlesHandle    _handle;
         VParticles          _particles;
-		std::vector<size_t>          _particlesToDelete;
+		std::vector<int>          _particlesToDelete;
 
         const TCoreSystem*  _core = nullptr;
 
@@ -217,6 +217,10 @@ namespace Particles
         VEC3 _lastSystemPosition;
 
         static TParticlesHandle _lastHandle;
+
+		//Multithreading mutex
+		typedef tbb::spin_mutex FreeListMutexType;
+		FreeListMutexType FreeListMutex;
     };
 
 }
