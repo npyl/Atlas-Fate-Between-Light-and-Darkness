@@ -35,15 +35,20 @@ bool CModuleParticles::stop()
 void CModuleParticles::update(float delta)
 {
 	if (multithreading) {
-
-		int nDefThreads = tbb::task_scheduler_init::default_num_threads();
+		PROFILE_FUNCTION("Update Particles");
+		int nDefThreads = EngineMultithreading.getThreadsNumber();
 		size_t step = _activeSystems.size() / nDefThreads;
 		if (step == 0 && _activeSystems.size() > 0)
 		{
 			step = 1;
 		}
+
+		if (step == 0) return;
+
+		auto it = _activeSystems.begin();
 		tbb::parallel_for(size_t(0), size_t(_activeSystems.size()), step, [&, delta](size_t i) {
-			auto it = _activeSystems.begin();
+			PROFILE_FUNCTION("Thread");
+			dbg("Thread %i \n", i);
 			Particles::CSystem* ps = *it;
 
 			bool active = ps->update(delta);
@@ -60,7 +65,7 @@ void CModuleParticles::update(float delta)
 		);
 	}
 	else {
-
+		PROFILE_FUNCTION("Update Particles");
 		for (auto it = _activeSystems.begin(); it != _activeSystems.end();)
 		{
 			Particles::CSystem* ps = *it;

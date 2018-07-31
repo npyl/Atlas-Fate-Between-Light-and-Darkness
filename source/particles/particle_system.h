@@ -180,7 +180,8 @@ namespace Particles
 
         CSystem(const TCoreSystem* core, CHandle entity);
 
-        bool update(float delta);
+		bool update(float delta);
+        bool processParticle(TParticle& p, const VEC3& kWindVelocity, float fadeRatio, float delta);
         void render();
         void launch();
         void debugInMenu();
@@ -202,6 +203,8 @@ namespace Particles
         CHandle             _entity;
         TParticlesHandle    _handle;
         VParticles          _particles;
+		std::vector<size_t>          _particlesToDelete;
+
         const TCoreSystem*  _core = nullptr;
 
         float               _time = 0.f;
