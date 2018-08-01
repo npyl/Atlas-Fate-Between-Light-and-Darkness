@@ -17,5 +17,5 @@ public:
 private:
 
 	int _ndefThreads;
-	bool _enabledMultithreading = false;
+	bool _enabledMultithreading = true;
 };

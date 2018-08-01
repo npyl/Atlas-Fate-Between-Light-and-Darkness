@@ -125,12 +125,7 @@ public:
 			return;
 
 		if (multithreaded /*&& is_multithreaded_enabled*/) {
-			int nDefThreads = tbb::task_scheduler_init::default_num_threads();
-			size_t step = num_objs_used / nDefThreads;
-			if (step == 0 && num_objs_used > 0)
-			{
-				step = 1;
-			}
+			size_t step = 1;
 			tbb::parallel_for(size_t(0), size_t(num_objs_used), step, [&, dt](size_t i) {
 				objs[i].update(dt); }
 			);

@@ -232,12 +232,12 @@ namespace Particles
 
 			tbb::parallel_for(size_t(0), size_t(_particles.size()), step, [&](int i)
 			{
-				PROFILE_FUNCTION("Process Particle");
+				//PROFILE_FUNCTION("Update Particle");
 				//If the particle is about to die, we save it in a list to delete it afterwards
 				if (!processParticle(_particles[i], kWindVelocity, fadeRatio, delta)) {
 					{
 						//Using mutex
-						FreeListMutexType::scoped_lock lock(FreeListMutex);
+						RenderParticleMutexType::scoped_lock lock(_renderParticleMutex);
 						_particlesToDelete.emplace_back(i);
 
 					}
@@ -248,7 +248,7 @@ namespace Particles
 		else {
 			for (auto it = 0; it != _particles.size(); it++)
 			{
-				PROFILE_FUNCTION("Process Particle");
+				//PROFILE_FUNCTION("Process Particle");
 				if (!processParticle(_particles[it], kWindVelocity, fadeRatio, delta)) {
 					_particlesToDelete.emplace_back(it);
 				}
@@ -295,6 +295,20 @@ namespace Particles
 		return fadeRatio > 0.f && (!_particles.empty() || _core->n_system.looping);
 	}
 
+	void CSystem::renderParticle(TParticle& p, TIParticle& T, TCompTransform* c_ent_transform, VEC3 cameraPos, VEC3 cameraUp, const int frameCols) {
+		//PROFILE_FUNCTION("Render Particle");
+		VEC3 pos = p.is_update ? c_ent_transform->getPosition() + p.position : p.position;
+		MAT44 bb = MAT44::CreateBillboard(pos, cameraPos, cameraUp);
+		MAT44 sc = MAT44::CreateScale(p.size * p.scale);
+		MAT44 rt = MAT44::CreateFromYawPitchRoll(p.rotation.x, p.rotation.y, p.rotation.z);
+
+		int row = p.frame / frameCols;
+		int col = p.frame % frameCols;
+		VEC2 minUV = VEC2(col * (1 / _core->n_renderer.frameSize.x), row * (1 / _core->n_renderer.frameSize.y));
+		VEC2 maxUV = minUV + VEC2(1 / _core->n_renderer.frameSize.x, 1 / _core->n_renderer.frameSize.y);
+
+		T = { rt * sc * bb, minUV, maxUV, p.color };
+	}
 	// To update this with the compute shader.
 	void CSystem::render()
 	{
@@ -324,23 +338,25 @@ namespace Particles
 		CRenderMeshInstanced* instanced_particle = (CRenderMeshInstanced*)rmesh;
 		instanced_particle->vtx_decl = CVertexDeclManager::get().getByName("CpuParticleInstance");
 
-		std::vector<Particles::TIParticle> particles_instances;
-		particles_instances.reserve(_particles.size());
+		//Lazy initialization
+		TIParticle foo;
+		std::vector<Particles::TIParticle> particles_instances(_particles.size(), foo);
 
-		for (auto& p : _particles)
-		{
-			VEC3 pos = p.is_update ? c_ent_transform->getPosition() + p.position : p.position;
-			MAT44 bb = MAT44::CreateBillboard(pos, cameraPos, cameraUp);
-			MAT44 sc = MAT44::CreateScale(p.size * p.scale);
-			MAT44 rt = MAT44::CreateFromYawPitchRoll(p.rotation.x, p.rotation.y, p.rotation.z);
-
-			int row = p.frame / frameCols;
-			int col = p.frame % frameCols;
-			VEC2 minUV = VEC2(col * (1 / _core->n_renderer.frameSize.x), row * (1 / _core->n_renderer.frameSize.y));
-			VEC2 maxUV = minUV + VEC2(1 / _core->n_renderer.frameSize.x, 1 / _core->n_renderer.frameSize.y);
-
-			Particles::TIParticle t_struct = { rt * sc * bb, minUV, maxUV, p.color };
-			particles_instances.push_back(t_struct);
+		if (EngineMultithreading.isMultithreadingEnabled()) {
+			size_t step = 1;
+			tbb::parallel_for(size_t(0), size_t(_particles.size()), step, [&](int i)
+			{
+				//PROFILE_FUNCTION("Render Particle");
+				renderParticle(_particles[i], particles_instances[i], c_ent_transform, cameraPos, cameraUp, frameCols);
+			}
+			);
+		}
+		else {
+			for (int i = 0; i < _particles.size(); i++)
+			{
+				//PROFILE_FUNCTION("Render Particle");
+				renderParticle(_particles[i], particles_instances[i], c_ent_transform, cameraPos, cameraUp, frameCols);
+			}
 		}
 
 		instanced_particle->setInstancesData(particles_instances.data(), particles_instances.size(), sizeof(Particles::TIParticle));

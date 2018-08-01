@@ -8,7 +8,7 @@
     "transform": 90
   },
   "multithread": [
-    "particles"
+   "skeleton"
   ],
   "update": [
     "circular_controller",

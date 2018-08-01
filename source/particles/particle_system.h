@@ -183,6 +183,7 @@ namespace Particles
 		bool update(float delta);
         bool processParticle(TParticle& p, const VEC3& kWindVelocity, float fadeRatio, float delta);
         void render();
+		void renderParticle(TParticle& p, TIParticle& T , TCompTransform* transform, VEC3 cameraPos, VEC3 cameraUp, const int frameCols);
         void launch();
         void debugInMenu();
 
@@ -217,10 +218,12 @@ namespace Particles
         VEC3 _lastSystemPosition;
 
         static TParticlesHandle _lastHandle;
-
+		
 		//Multithreading mutex
-		typedef tbb::spin_mutex FreeListMutexType;
-		FreeListMutexType FreeListMutex;
+		typedef tbb::spin_mutex RenderParticleMutexType;
+		RenderParticleMutexType _renderParticleMutex;
+		RenderParticleMutexType::scoped_lock lock;
+
     };
 
 }
