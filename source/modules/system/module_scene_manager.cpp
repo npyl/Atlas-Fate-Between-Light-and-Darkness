@@ -9,6 +9,7 @@
 #include "components/comp_render.h"
 #include "components/comp_transform.h"
 #include "render/texture/material.h"
+#include <thread>
 
 // for convenience
 using json = nlohmann::json;
@@ -176,6 +177,40 @@ bool CModuleSceneManager::loadScene(const std::string & name) {
 
     return false;
 }
+
+/* Method used to load a listed scene (must be in the database) */
+bool CModuleSceneManager::prepareSceneMT(const std::string & name) {
+
+	auto it = _scenes.find(name);
+	if (it != _scenes.end())
+	{
+
+		// Load the subscene
+		Scene * current_scene = it->second;
+
+		for (auto& scene_name : current_scene->groups_subscenes) {
+			dbg("Preparing scene to load scene %s\n", scene_name.c_str());
+			TEntityParseContext ctx;
+			parseScene(scene_name, ctx, false);
+		}
+		return true;
+	}
+
+	return false;
+}
+
+void CModuleSceneManager::preparingSceneMT(const std::string & name) {
+
+	//std::thread loadSceneThread(&CModuleSceneManager::prepareSceneMT, name);
+	//loadSceneThread.join();
+
+
+}
+
+
+//void CModuleSceneManager::loadPreparedSceneMT() {
+//
+//}
 
 bool CModuleSceneManager::unLoadActiveScene() {
 

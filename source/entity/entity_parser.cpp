@@ -33,7 +33,7 @@ TEntityParseContext::TEntityParseContext(TEntityParseContext& another_ctx, const
 }
 
 // 
-bool parseScene(const std::string& filename, TEntityParseContext& ctx) {
+bool parseScene(const std::string& filename, TEntityParseContext& ctx, bool notifyCreation) {
 
 	ctx.filename = filename;
 
@@ -66,7 +66,7 @@ bool parseScene(const std::string& filename, TEntityParseContext& ctx) {
 				// Parse the prefab, if any other child is created they will inherit our ctx transform
 				TEntityParseContext prefab_ctx(ctx, delta_transform);
 				prefab_ctx.is_prefab = true;
-				if (!parseScene(prefab_src, prefab_ctx))
+				if (!parseScene(prefab_src, prefab_ctx, notifyCreation))
 					return false;
 
 				assert(!prefab_ctx.entities_loaded.empty());
@@ -87,7 +87,7 @@ bool parseScene(const std::string& filename, TEntityParseContext& ctx) {
 
 				// Do the parse
 				prefab_ctx.is_prefab = false;
-				e->load(j_entity_without_transform, prefab_ctx);
+				e->load(j_entity_without_transform, prefab_ctx, notifyCreation);
 
 			}
 			else {
@@ -99,7 +99,7 @@ bool parseScene(const std::string& filename, TEntityParseContext& ctx) {
 				CEntity* e = h_e;
 
 				// Do the parse
-				e->load(j_entity, ctx);
+				e->load(j_entity, ctx, notifyCreation);
 
 			}
 
