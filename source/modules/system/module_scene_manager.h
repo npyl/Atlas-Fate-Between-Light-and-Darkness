@@ -29,7 +29,7 @@ public:
 
     bool loadScene(const std::string & name);
 	bool prepareSceneMT(const std::string & name);
-	void preparingSceneMT(const std::string & name);
+	bool preparingSceneMT(const std::string & name);
 	void loadPreparedSceneMT(const std::string & name);
 
     Scene* createScene(const std::string& name);

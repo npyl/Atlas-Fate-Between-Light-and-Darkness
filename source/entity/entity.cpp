@@ -67,7 +67,7 @@ void CEntity::debugInMenu() {
   }
 }
 
-void CEntity::load(const json& j, TEntityParseContext& ctx, bool notifyCreation) {
+void CEntity::load(const json& j, TEntityParseContext& ctx) {
 
   ctx.current_entity = CHandle(this);
   for (auto it = j.begin(); it != j.end(); ++it) {
@@ -107,7 +107,7 @@ void CEntity::load(const json& j, TEntityParseContext& ctx, bool notifyCreation)
 
   // Send a msg to the entity components to let them know
   // the entity is fully loaded.
-	if (!ctx.is_prefab && notifyCreation) {
+	if (!ctx.is_prefab) {
 		sendMsg(TMsgEntityCreated());
 	}
 }

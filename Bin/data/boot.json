@@ -171,5 +171,15 @@
       "data/scenes/Basilic_interior/objects.scene",
       "data/scenes/Basilic_interior/buttons.scene"
     ]
+  },
+  "scene_test": {
+    "static_data": {
+      "initial_script": "",
+      "navmesh": "data/navmeshes/basilic_interior_navmesh.bin"
+    },
+    "scene_group": [
+      "data/scenes/test.scene"
+
+    ]
   }
 }

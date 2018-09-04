@@ -1,6 +1,7 @@
 #pragma once 
 
 #include "modules/module.h" 
+#include <future>
 
 
 class CModuleMultithread : public IModule
@@ -13,6 +14,7 @@ public:
 
 	int const getThreadsNumber() { return _ndefThreads; }
 	bool const isMultithreadingEnabled() { return _enabledMultithreading; }
+	std::future<bool> fut;
 
 private:
 

@@ -191,7 +191,7 @@ bool CModuleSceneManager::prepareSceneMT(const std::string & name) {
 		for (auto& scene_name : current_scene->groups_subscenes) {
 			dbg("Preparing scene to load scene %s\n", scene_name.c_str());
 			TEntityParseContext ctx;
-			parseScene(scene_name, ctx, false);
+			parseScene(scene_name, ctx);
 		}
 		return true;
 	}
@@ -199,12 +199,17 @@ bool CModuleSceneManager::prepareSceneMT(const std::string & name) {
 	return false;
 }
 
-void CModuleSceneManager::preparingSceneMT(const std::string & name) {
-
+bool CModuleSceneManager::preparingSceneMT(const std::string & name) {
+	bool done = false;
 	//std::thread loadSceneThread(&CModuleSceneManager::prepareSceneMT, name);
 	//loadSceneThread.join();
-
-
+	//dbg("Scene prepared: %s \n \n \n \n \n", name.c_str());
+	Sleep(4000);
+	dbg("4 seconds waited");
+	Sleep(2000);
+	dbg("2 more seconds waited and i am out");
+	done = true;
+	return done;
 }
 
 

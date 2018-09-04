@@ -501,9 +501,8 @@ void movePlayer(VEC3 pos) {
 void loadScene(const std::string &level) {
 	//EngineScene.preparingSceneMT(level);
 	auto& aux = EngineScene;
-	auto future = std::async(std::launch::async, [&aux, level] {return aux.prepareSceneMT(level); });
-	dbg("Scene prepared: %s \n \n \n \n \n", level.c_str());
-
+	EngineMultithreading.fut = std::async(std::launch::async, [&aux, level] {return aux.prepareSceneMT(level); });
+	//EngineScene.loadScene(level);
 
 }
 
