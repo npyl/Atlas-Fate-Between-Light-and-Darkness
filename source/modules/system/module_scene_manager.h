@@ -44,7 +44,11 @@ private:
     Scene * _persistentScene;
     std::string _default_scene;
     std::map<std::string, Scene*> _scenes;
+	std::vector<std::string> _resources;
 
     void loadJsonScenes(const std::string filepath);
     void setActiveScene(Scene* scene);
+	bool parseSceneResources(const std::string& filename, TEntityParseContext& ctx);
+	void generateResourceLists();
+
 };
