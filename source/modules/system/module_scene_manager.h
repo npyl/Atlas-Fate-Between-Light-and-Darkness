@@ -49,6 +49,6 @@ private:
     void loadJsonScenes(const std::string filepath);
     void setActiveScene(Scene* scene);
 	bool parseSceneResources(const std::string& filename, TEntityParseContext& ctx);
-	void generateResourceLists();
+	bool generateResourceLists();
 
 };

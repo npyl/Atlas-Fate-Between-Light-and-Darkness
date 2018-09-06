@@ -12,6 +12,8 @@
 #include <thread>
 #include <fstream>
 #include "resources/json_resource.h"
+#include <future>
+
 
 
 // for convenience
@@ -171,14 +173,16 @@ bool CModuleSceneManager::parseSceneResources(const std::string& filename, TEnti
 	return true;
 }
 
-void CModuleSceneManager::generateResourceLists() {
+bool CModuleSceneManager::generateResourceLists() {
 	auto it = _scenes.begin();
 	while (it != _scenes.end()) {
 		std::string filename = "data/scenes/Resource List " + it->second->name + ".txt";
 		Scene * current_scene = it->second;
 		for (auto& scene_name : current_scene->groups_subscenes) {
 			TEntityParseContext ctx;
-			parseSceneResources(scene_name, ctx);
+			if (!parseSceneResources(scene_name, ctx)) {
+				return false;
+			}
 		}
 		//std::ofstream file{ "data/scenes/Test.resources" };
 		std::ofstream file(filename, std::ofstream::out);
@@ -190,6 +194,7 @@ void CModuleSceneManager::generateResourceLists() {
 		//_resources;
 		it++;
 	}
+	return true;
 }
 
 bool CModuleSceneManager::start() {
@@ -200,7 +205,7 @@ bool CModuleSceneManager::start() {
 	_persistentScene->isLoaded = true;
 
 	loadJsonScenes("data/boot.json");
-	generateResourceLists();
+	EngineMultithreading.fut = std::async(std::launch::async, [&] {return generateResourceLists(); });
 
 	return true;
 }
