@@ -9,9 +9,11 @@
 #include "components/comp_render.h"
 #include "components/comp_transform.h"
 #include "render/texture/material.h"
+
 #include <thread>
 #include <fstream>
 #include "resources/json_resource.h"
+#include "resources/resources_manager.h"
 #include <future>
 
 
@@ -191,9 +193,9 @@ bool CModuleSceneManager::generateResourceLists() {
 			file << line;
 			file << std::endl;
 		}
-		//_resources;
 		it++;
 	}
+	_resources.clear();
 	return true;
 }
 
@@ -220,6 +222,9 @@ bool CModuleSceneManager::stop() {
 void CModuleSceneManager::update(float delta) {
 
 	// TO-DO, Maybe not needed
+	if (preparingLevel) {
+		createResources();
+	}
 }
 
 Scene* CModuleSceneManager::createScene(const std::string& name) {
@@ -333,38 +338,35 @@ bool CModuleSceneManager::loadScene(const std::string & name) {
 	return false;
 }
 
-/* Method used to load a listed scene (must be in the database) */
-bool CModuleSceneManager::prepareSceneMT(const std::string & name) {
-
-	auto it = _scenes.find(name);
-	if (it != _scenes.end())
+/* Method used to retrieve resources needed to load a level */
+bool CModuleSceneManager::getResourcesList(const std::string & name) {
+	std::string path = "data/scenes/";
+	std::string filename = path + "Resource List " + name + ".txt";
+	std::ifstream file(filename);
+	std::string str;
+	while (std::getline(file, str))
 	{
-
-		// Load the subscene
-		Scene * current_scene = it->second;
-
-		for (auto& scene_name : current_scene->groups_subscenes) {
-			dbg("Preparing scene to load scene %s\n", scene_name.c_str());
-			TEntityParseContext ctx;
-			parseScene(scene_name, ctx);
-		}
-		return true;
+		// Process str
+		_resources.emplace_back(str);
 	}
-
-	return false;
+	preparingLevel = true;
+	levelToLoad = name;
+	return true;
 }
 
-bool CModuleSceneManager::preparingSceneMT(const std::string & name) {
-	bool done = false;
-	//std::thread loadSceneThread(&CModuleSceneManager::prepareSceneMT, name);
-	//loadSceneThread.join();
-	//dbg("Scene prepared: %s \n \n \n \n \n", name.c_str());
-	Sleep(4000);
-	dbg("4 seconds waited");
-	Sleep(2000);
-	dbg("2 more seconds waited and i am out");
-	done = true;
-	return done;
+void CModuleSceneManager::createResources() {
+	int step = 5;
+	int i = 0;
+	while ( i < step && !_resources.empty()) {
+		Resources.get(_resources[0]);
+		_resources.erase(_resources.begin());
+		i++;
+	}
+	if (_resources.empty()) {
+		preparingLevel = false;
+		loadScene(levelToLoad);
+		levelToLoad.clear();
+	}
 }
 
 
