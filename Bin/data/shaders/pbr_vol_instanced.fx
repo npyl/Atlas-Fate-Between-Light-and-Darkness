@@ -75,9 +75,9 @@ float computeVolumeShadowFactorLight(float4x4 mat, float3 wPos) {
   if (pos_in_light_proj_space.z < 0.)
     return 0.f;
 		
-		return txLightShadowMap.SampleCmp(samPCFWhite, homo_space.xy, homo_space.z, 0).x;
+	return txLightShadowMap.SampleCmp(samPCFWhite, homo_space.xy, homo_space.z, 0).x;
 		
-		  // Poisson distribution random points around a circle
+	// Poisson distribution random points around a circle
   const float2 offsets[] = {
     float2(0,0),
     float2(-0.3700152, 0.575369),
@@ -144,9 +144,9 @@ float4 PS_IVLight(
 {
     // Sampling planes volumetric lights based shader.
 		float shadow_factor = computeVolumeShadowFactorLight(iViewProj, iWorldPos);
-	
+
     float camera_dist = length(iWorldPos - iLightPos.xyz);
-    float val = 1 / (1.5 + (camera_dist * camera_dist) * iLightValues.w);
+    float val = 1 / (0.25 + (camera_dist * camera_dist) * iLightValues.w);
 
     // From wPos to Light
     float3 light_dir_full = iLightPos.xyz - iWorldPos;
@@ -158,5 +158,108 @@ float4 PS_IVLight(
     float att_spot = clamp((theta - iLightValues.z) / 0.18, 0, 1);
     float clamp_spot = theta > iLightValues.x ? att_spot : 0.0; // spot factor 
 		
-    return float4(1,1,1, clamp_spot * val  * noise0.x) * shadow_factor;// * projectColor(iWorldPos);
+    return float4(light_color.xyz, clamp_spot * val * noise0.x) * shadow_factor;// * projectColor(iWorldPos);
+}
+
+#define NUM_SAMPLES 25
+#define NUM_SAMPLES_RCP 0.04
+#define FACTOR_TAU 0.000001f
+#define FACTOR_PHI 100000.0f
+#define PI_RCP 1.318f
+
+float4 PS_GBuffer_RayShafts(
+  float4 Pos       : SV_POSITION
+  , float3 iNormal : NORMAL0
+  , float4 iTangent : NORMAL1
+  , float2 iTex0 : TEXCOORD0
+  , float2 iTex1 : TEXCOORD1
+  , float3 iWorldPos : TEXCOORD2
+): SV_Target0
+{
+	float NB_STEPS = 10;
+  float TAU = FACTOR_TAU * 1.1;
+  float PHI = FACTOR_PHI * 4.5;
+	
+	// Clamped world position to closest fragment
+	int3 ss_load_coords = uint3(Pos.xy, 0);
+  float  zlinear = txGBufferLinearDepth.Load(ss_load_coords).x;
+  float  depth = zlinear > Pos.z ? Pos.z : zlinear;
+  float3 wPos = getWorldCoords(Pos.xy, depth);
+	
+  float3 ray_vector = camera_pos - wPos;
+	float ray_length = length(ray_vector);
+	float3 ray_dir = ray_vector / ray_length;
+
+	float step_length = ray_length / NB_STEPS;
+	float3 step = ray_dir * step_length;
+	
+	float3 currentPosition = wPos;
+	float total_fog = 0.0f;
+	float3 color = global_fog_env_color;
+	float l = ray_length;
+			
+	for (int i = 0; i < NB_STEPS; i++)
+	{
+		float shadowTerm = computeShadowFactorLight(currentPosition);
+    float d = length(currentPosition - light_pos);
+    float dRCP = rcp(d);
+    float amount = TAU*(shadowTerm*(PHI*0.25f*PI_RCP)*dRCP*dRCP)*exp(-d*TAU)*exp(-l*TAU)*step_length;
+		
+		l-=step_length;
+    total_fog += amount;
+		currentPosition += step;
+	}
+
+	return float4(total_fog.xxx, 1);
+}
+
+float4 PS_GBuffer_Shafts(
+  float4 Pos       : SV_POSITION
+  , float3 iNormal : NORMAL0
+  , float4 iTangent : NORMAL1
+  , float2 iTex0 : TEXCOORD0
+  , float2 iTex1 : TEXCOORD1
+  , float3 iWorldPos : TEXCOORD2
+): SV_Target0
+{
+	// Fresnel component
+	float3 dir_to_eye = normalize(camera_pos.xyz - iWorldPos.xyz);
+	float3 N = normalize(iNormal.xyz);
+	float fresnel = dot(-N, -dir_to_eye);
+
+	float4 color = float4(0.8, 0.8, 0.8, 1);	
+	color.a = txAlbedo.Sample(samLinear, iTex0).r;
+	
+	color.a *= txNoiseMap.Sample(samLinear, iTex0 * 1.0 + 0.02 * global_world_time * float2(.5, 0)).r;
+	//color.a *= txNoiseMap.Sample(samLinear, iTex0 * 1.0 - 0.04 * global_world_time * float2(.5, 0));
+	
+	// Compute smooth intersections
+	int3 ss_load_coords = uint3(Pos.xy, 0);
+	float linear_depth = txGBufferLinearDepth.Load(ss_load_coords).x;
+	float fragment_depth = dot(iWorldPos - camera_pos, camera_front) / camera_zfar;
+	
+	float delta_c = length(camera_pos - iWorldPos);
+	float delta_z = abs(linear_depth - fragment_depth);
+	//color.a *= saturate(delta_z * camera_zfar);
+	//color.a *= 1 - saturate(1/(delta_c * delta_c)) * 0.88;
+		
+	color.a *= pow(abs(fresnel), 4) * 0.4;
+	return color;
+}
+
+float4 PS_GBuffer_Beam(
+  float4 Pos       : SV_POSITION
+  , float3 iNormal : NORMAL0
+  , float4 iTangent : NORMAL1
+  , float2 iTex0 : TEXCOORD0
+  , float2 iTex1 : TEXCOORD1
+  , float3 iWorldPos : TEXCOORD2
+): SV_Target0
+{
+	float4 color = float4(0.8, 0.8, 0.8, 1);	
+	color.a = txAlbedo.Sample(samLinear, iTex0).r;
+	color.a *= txNoiseMap.Sample(samLinear, iTex0 * 1.0 + 0.1 * global_world_time * float2(.5, 0)).r;
+	color.a *= txNoiseMap.Sample(samLinear, iTex0 * 1.0 - 0.1 * global_world_time * float2(.5, 0)).r;
+	
+	return 1.4 * color * (0.65 + sin(global_world_time) * .15);
 }

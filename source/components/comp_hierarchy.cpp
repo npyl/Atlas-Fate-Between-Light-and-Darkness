@@ -18,14 +18,14 @@ void TCompHierarchy::registerMsgs() {
   DECL_MSG(TCompHierarchy, TMsgHierarchyGroupCreated, onGroupCreated);
 }
 
-void TCompHierarchy::convertTotalTransformToRelative(VEC3 objPosition, QUAT objRotation, float objScale, VEC3 & resultPosition, QUAT & resultRotation, float & resultScale)
+void TCompHierarchy::convertTotalTransformToRelative(VEC3 objPosition, QUAT objRotation, VEC3 objScale, VEC3 & resultPosition, QUAT & resultRotation, VEC3 & resultScale)
 {
     TCompTransform* c_parent_transform = h_parent_transform;
     TCompTransform* my_transform = h_my_transform;
 
     MAT44 myMatrix = c_parent_transform->asMatrix();
 
-    resultScale = objScale / c_parent_transform->getScale();
+    resultScale = objScale / c_parent_transform->getScale().x;
 
     VEC3 delta_pos_rotated = (objPosition - c_parent_transform->getPosition()) / c_parent_transform->getScale();
     QUAT parentRotation = c_parent_transform->getRotation();
@@ -48,9 +48,9 @@ QUAT TCompHierarchy::getRelativeLookAt(VEC3 new_target)
 
     VEC3 resultPos;
     QUAT resultRot;
-    float resultScale;
+    VEC3 resultScale;
 
-    convertTotalTransformToRelative(objectivePos, objectiveRotation, 1.f, resultPos, resultRot, resultScale);
+    convertTotalTransformToRelative(objectivePos, objectiveRotation, VEC3::One, resultPos, resultRot, resultScale);
     return resultRot;
 }
 

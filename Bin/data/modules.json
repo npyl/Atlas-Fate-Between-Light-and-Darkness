@@ -38,6 +38,7 @@
 		"console",
 		"cameras",
 		"input",
-		"sound"
+		"sound",
+		"debug"
 	]
 }

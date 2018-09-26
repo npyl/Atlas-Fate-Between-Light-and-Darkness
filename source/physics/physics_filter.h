@@ -12,6 +12,8 @@ enum FilterGroup {
     DItem = 1 << 6,
     MovableObject = 1 << 7,
     Button = 1 << 8,
+    NonCastShadows = 1 << 9,
+    Light = 1 << 10,
     Scenario = Wall | Floor,
     Characters = Player | Enemy,
     All = -1

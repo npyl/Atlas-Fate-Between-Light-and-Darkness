@@ -34,10 +34,9 @@ public:
 
     ~TCompCollider();
     void debugInMenu();
-    void renderDebug(bool onlyDynamics = false);
-    void renderColliders(bool onlyDynamics);
     void load(const json& j, TEntityParseContext& ctx);
     void update(float dt);
+    void renderDebug();
 
     /* Auxiliar methods */
     bool collisionDistance(const VEC3 & org, const VEC3 & dir, float maxDistance);

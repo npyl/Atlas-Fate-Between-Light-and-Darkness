@@ -8,7 +8,6 @@ DECL_OBJ_MANAGER("render_ao", TCompRenderAO);
 // ---------------------
 void TCompRenderAO::debugInMenu() {
     TCompRenderBlur::debugInMenu();
-	ImGui::Checkbox("Enabled", &enabled);
 	ImGui::DragFloat("Amount", &amount, 0.01f, 0.0f, 1.0f);
 	ImGui::DragFloat("Radius", &radius, 0.01f, 0.0f, 10.0f);
 	ImGui::DragFloat("ZRange Discard", &zrange_discard, 0.001f, 0.0f, 0.1f);
@@ -39,8 +38,10 @@ void TCompRenderAO::load(const json& j, TEntityParseContext& ctx) {
 }
 
 const CTexture* TCompRenderAO::compute(CTexture* linear_depth_texture) {
+
 	if (!enabled)
 		return white;
+
 	CTraceScoped scope("AO");
 
 	rt_output->activateRT();
@@ -56,10 +57,10 @@ const CTexture* TCompRenderAO::compute(CTexture* linear_depth_texture) {
 	mesh->activateAndRender();
 
     // Blur the highlights
-    CTexture* output = apply(rt_output);
+    //CTexture* output = apply(rt_output);
 
 	ID3D11RenderTargetView* null_rt = nullptr;
 	Render.ctx->OMSetRenderTargets(1, &null_rt, nullptr);
 
-	return output;
+	return rt_output;
 }

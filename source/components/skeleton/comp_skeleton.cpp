@@ -5,6 +5,8 @@
 #include "resources/resources_manager.h"
 #include "render/render_objects.h"
 #include "components/comp_transform.h"
+#include "cal3d/animcallback.h"
+#include "components/comp_name.h"
 
 DECL_OBJ_MANAGER("skeleton", TCompSkeleton);
 
@@ -29,6 +31,14 @@ MAT44 Cal2DX(CalVector trans, CalQuaternion rot) {
         ;
 }
 
+void TCompSkeleton::registerMsgs()
+{
+	DECL_MSG(TCompSkeleton, TMsgEntityCreated, onMsgEntityCreated);
+	DECL_MSG(TCompSkeleton, TMsgAnimationCallback, onMsgAnimationCallback);
+	DECL_MSG(TCompSkeleton, TMsgAnimationCompleted, onMsgAnimationCompleted);
+	DECL_MSG(TCompSkeleton, TMsgScenePaused, onMsgSceneStop);
+}
+
 // --------------------------------------------------------------------
 TCompSkeleton::TCompSkeleton()
     : cb_bones("Bones")
@@ -50,13 +60,21 @@ void TCompSkeleton::load(const json& j, TEntityParseContext& ctx) {
     CalLoader::setLoadingMode(LOADER_ROTATE_X_AXIS | LOADER_INVERT_V_COORD);
 
     std::string skel_name = j.value("skeleton", "");
+
     float scaleFactor = j.value("scale", 1.0f);
 
+	if (j.count("callbacks")) {
+		auto& j_callbacks = j["callbacks"];
+		for (auto it = j_callbacks.begin(); it != j_callbacks.end(); ++it) {
+			std::string eis = it.value().value("animation","");
+			float timeToCall = it.value().value("time_to_call", 0.0f);
+		}
+	}
     assert(!skel_name.empty());
     auto res_skel = Resources.get(skel_name)->as< CGameCoreSkeleton >();
     CalCoreModel* core_model = const_cast<CGameCoreSkeleton*>(res_skel);
     model = new CalModel(core_model);
-
+	
     for (int i = 0; i < model->getCoreModel()->getCoreAnimationCount(); i++) {
 
         auto core_anim = model->getCoreModel()->getCoreAnimation(i);
@@ -71,10 +89,11 @@ void TCompSkeleton::load(const json& j, TEntityParseContext& ctx) {
     actualCycleAnimId[0] = 0;
     model->getMixer()->blendCycle(actualCycleAnimId[0], 1.f, 0.f);
 
-  cb_bones.BonesScale = scaleFactor;
-  if (model->getSkeleton()->getCoreSkeleton()->getScale() != scaleFactor) {
-	  model->getCoreModel()->scale(scaleFactor);
-  }
+    cb_bones.BonesScale = scaleFactor;
+    if (model->getSkeleton()->getCoreSkeleton()->getScale() != scaleFactor) {
+	    model->getCoreModel()->scale(scaleFactor);
+    }
+
 
     // Do a time zero update just to have the bones in a correct place
     model->update(0.f);
@@ -86,22 +105,31 @@ void TCompSkeleton::update(float dt) {
     PROFILE_FUNCTION("updateSkel");
     assert(model);
 
-    if (!EngineEntities.getAnimationsEnabled()) {
-      dt = 0.f;
-    }
-
     if (actualCycleAnimId[1] != -1 && lastFrameCyclicAnimationWeight != cyclicAnimationWeight) {
         model->getMixer()->blendCycle(actualCycleAnimId[0], cyclicAnimationWeight, 0.f);
         model->getMixer()->blendCycle(actualCycleAnimId[1], 1.f - cyclicAnimationWeight, 0.f);
     }
 
     TCompTransform* tmx = get<TCompTransform>();
+	
     if (tmx != NULL) {
         VEC3 pos = tmx->getPosition();
         QUAT rot = tmx->getRotation();
         model->getMixer()->setWorldTransform(DX2Cal(pos), DX2Cal(rot));
-        model->update(dt);
+		if(!this->paused)
+			model->update(dt);
     }
+
+	if (movingRoot) {
+
+		executingMoveRootAnimation();
+	}
+
+	if (endingRoot) {
+
+		endingMoveRootAnimation();
+	}
+
     lastFrameCyclicAnimationWeight = cyclicAnimationWeight;
 }
 
@@ -122,8 +150,9 @@ void TCompSkeleton::debugInMenu() {
 
     ImGui::DragFloat("Scale", &scale, 0.01f, 0, 5.f);
     if (ImGui::SmallButton("Scale Model")) {
-        model->getSkeleton()->getCoreSkeleton()->scale(scale);
-        model->getCoreModel()->scale(scale);
+        //model->getSkeleton()->getCoreSkeleton()->scale(scale);
+        //model->getCoreModel()->scale(scale);
+		
     }
 
     if (core_anim)
@@ -242,7 +271,7 @@ void TCompSkeleton::renderDebug() {
     VEC3 lines[MAX_SUPPORTED_BONES][2];
     int nrLines = model->getSkeleton()->getBoneLines(&lines[0][0].x);
     TCompTransform* transform = get<TCompTransform>();
-    float scale = transform->getScale();
+    //VEC scale = transform->getScale();
     //for (int currLine = 0; currLine < nrLines; currLine++)
     //    renderLine(lines[currLine][0] * scale, lines[currLine][1] * scale, VEC4(1, 1, 1, 1));
 }
@@ -265,14 +294,30 @@ void TCompSkeleton::changeCyclicAnimation(int anim1Id, float speed, int anim2Id,
     model->getMixer()->setTimeFactor(speed);
 }
 
-void TCompSkeleton::executeActionAnimation(int animId, float speed, float in_delay, float out_delay) {
+void TCompSkeleton::executeActionAnimation(int animId, float speed, bool rootMovement, bool rootRot, float in_delay, float out_delay) {
 
     bool auto_lock = false;
+	//if (isExecutingActionAnimation(animId))
+		//return;
     for (auto a : model->getMixer()->getAnimationActionList()) {
         a->remove(out_delay);
     }
+	
     model->getMixer()->executeAction(animId, in_delay, out_delay, 1.0f, auto_lock);
 
+	if (rootRot) {
+		movingRoot = true;
+		rotatingRoot = true;
+		animationToRootName = model->getCoreModel()->getCoreAnimation(animId)->getName();
+		lastAcum = VEC3(0, 0, 0);
+	}
+
+	if (rootMovement) {
+		movingRoot = true;
+
+		animationToRootName = model->getCoreModel()->getCoreAnimation(animId)->getName();
+		lastAcum = VEC3(0, 0, 0);
+	}
     if (speed != 1.0f) {
         std::list<CalAnimationAction *>::iterator iteratorAnimationAction;
         iteratorAnimationAction = model->getMixer()->getAnimationActionList().begin();
@@ -282,6 +327,33 @@ void TCompSkeleton::executeActionAnimation(int animId, float speed, float in_del
             iteratorAnimationAction++;
         }
     }
+}
+
+void TCompSkeleton::playPartialCyclicAnimation(int animId, float in_delay) {
+
+	model->getMixer()->blendCycle(animId, 1.0f, in_delay);
+	cyclicPartialAnimationsPlaying.push_back(animId);
+}
+
+void TCompSkeleton::clearPartialCyclicAnimation(int animId, float out_delay) {
+
+	model->getMixer()->clearCycle(animId, out_delay);
+	cyclicPartialAnimationsPlaying.remove(animId);
+}
+
+void TCompSkeleton::clearAllPartialCyclicAnimation(float out_delay) {
+
+	std::list<int>::iterator iteratorCyclicPartial;
+	while (iteratorCyclicPartial != cyclicPartialAnimationsPlaying.end()) {
+		model->getMixer()->clearCycle((*iteratorCyclicPartial), out_delay);
+		iteratorCyclicPartial++;
+	}
+	cyclicPartialAnimationsPlaying.clear();
+}
+
+bool TCompSkeleton::removeActionAnimation(int animId) {
+
+	return model->getMixer()->removeAction(animId);
 }
 
 //Set the weight added to a combination of twi cyclic animations
@@ -324,6 +396,7 @@ bool TCompSkeleton::isExecutingActionAnimation(std::string animName) {
     iteratorAnimationAction = model->getMixer()->getAnimationActionList().begin();
     while (iteratorAnimationAction != model->getMixer()->getAnimationActionList().end())
     {
+		//dbg("%d\n",(*iteratorAnimationAction)->getCoreAnimation()->getRefCount());
         std::string itName = (*iteratorAnimationAction)->getCoreAnimation()->getName();
         if (itName.compare(animName) == 0) {
             return true;
@@ -331,6 +404,35 @@ bool TCompSkeleton::isExecutingActionAnimation(std::string animName) {
         iteratorAnimationAction++;
     }
     return false;
+}
+
+bool TCompSkeleton::isExecutingActionAnimation(int animId) {
+
+	std::list<CalAnimationAction *>::iterator iteratorAnimationAction;
+	iteratorAnimationAction = model->getMixer()->getAnimationActionList().begin();
+	while (iteratorAnimationAction != model->getMixer()->getAnimationActionList().end())
+	{
+		if (stringAnimationIdMap[(*iteratorAnimationAction)->getCoreAnimation()->getName()] == animId) {
+			return true;
+		}
+		iteratorAnimationAction++;
+	}
+	return false;
+}
+
+bool TCompSkeleton::isExecutingActionAnimationForRoot(std::string animName) {
+
+	std::list<CalAnimationAction *>::iterator iteratorAnimationAction;
+	iteratorAnimationAction = model->getMixer()->getAnimationActionList().begin();
+	while (iteratorAnimationAction != model->getMixer()->getAnimationActionList().end())
+	{
+		std::string itName = (*iteratorAnimationAction)->getCoreAnimation()->getName();
+		if (itName.compare(animName) == 0 && (*iteratorAnimationAction)->getState() != CalAnimation::State::STATE_OUT) {
+			return true;
+		}
+		iteratorAnimationAction++;
+	}
+	return false;
 }
 
 //Returns the n bones that are positioned lowest by the y axis.
@@ -387,7 +489,6 @@ std::vector<VEC3> TCompSkeleton::getFeetPositions() {
         float z = model->getSkeleton()->getBone(feetBonesId[i])->getTranslationAbsolute().z;
         feetPositions.push_back(VEC3(x, y, z));
     }
-    dbg("");
     return feetPositions;
 }
 
@@ -398,10 +499,101 @@ VEC3 TCompSkeleton::getBonePosition(const std::string & name) {
     return Cal2DX(model->getSkeleton()->getBone(bone_id)->getTranslationAbsolute());
 }
 
+QUAT TCompSkeleton::getBoneRotation(const std::string & name) {
+
+	int bone_id = model->getCoreModel()->getCoreSkeleton()->getCoreBoneId(name);
+	return Cal2DX(model->getSkeleton()->getBone(bone_id)->getRotationAbsolute());
+}
+
+VEC3 TCompSkeleton::getBonePositionById(int id) {
+	VEC3 pos = Cal2DX( model->getSkeleton()->getBone(id)->getTranslationAbsolute() );
+	return pos;
+}
+
+void TCompSkeleton::setBonePositionById(int id, VEC3 position) {
+	model->getSkeleton()->getBone(id)->setTranslation(DX2Cal(position));
+}
+
+void TCompSkeleton::executingMoveRootAnimation() {
+
+	TCompTransform* tmx = get<TCompTransform>();
+	if (isExecutingActionAnimationForRoot(animationToRootName)) {
+
+		if (rotatingRoot) {
+			Quaternion aux_quaternion = Quaternion::CreateFromYawPitchRoll(deg2rad(-90), deg2rad(-90), deg2rad(0));
+			model->getSkeleton()->getBone(0)->setRotation(DX2Cal(aux_quaternion * tmx->getRotation()));
+			model->getSkeleton()->getBone(0)->calculateState();
+		}
+		else {
+			VEC3 acum = Cal2DX(model->getSkeleton()->getBone(1)->getTranslation());
+			VEC3 aux_diff = acum - lastAcum;
+
+			VEC3 diff = VEC3(aux_diff.x, aux_diff.z, -aux_diff.y);
+
+			tmx->setPosition(tmx->getPosition() + tmx->getFront() * diff.z);
+			tmx->setPosition(tmx->getPosition() + tmx->getLeft() * diff.x);
+			tmx->setPosition(tmx->getPosition() + tmx->getUp() * diff.y);
+
+
+
+			model->getSkeleton()->getBone(1)->setTranslation(CalVector(0, 0, 0));
+			model->getSkeleton()->getBone(1)->calculateState();
+
+			lastAcum = acum;
+		}
+
+	}
+	else {
+		movingRoot = false;
+		endingRoot = true;
+	}
+}
+
+void TCompSkeleton::endingMoveRootAnimation() {
+
+	TCompTransform* tmx = get<TCompTransform>();
+	if (isExecutingActionAnimation(animationToRootName)) {
+
+		if (rotatingRoot) {
+			Quaternion aux_quaternion = Quaternion::CreateFromYawPitchRoll(deg2rad(-90), deg2rad(-90), deg2rad(0));
+			model->getSkeleton()->getBone(0)->setRotation(DX2Cal(aux_quaternion * tmx->getRotation()));
+			model->getSkeleton()->getBone(0)->calculateState();
+		}
+		else {
+			model->getSkeleton()->getBone(1)->setTranslation(CalVector(0, 0, 0));
+			model->getSkeleton()->getBone(1)->calculateState();
+		}
+
+	}
+	else {
+		animationToRootName = "";
+		endingRoot = false;
+		rotatingRoot = false;
+	}
+}
+
 float TCompSkeleton::getAnimationDuration(int animId) {
 
     auto core_anim = model->getCoreModel()->getCoreAnimation(animId);
     if (core_anim)
         return core_anim->getDuration();
     return -1.f;
+}
+
+void TCompSkeleton::onMsgEntityCreated(const TMsgEntityCreated& msg) {
+	EngineAnimations.registerModelToHandle(this->model, CHandle(this).getOwner());
+}
+
+void TCompSkeleton::onMsgAnimationCallback(const TMsgAnimationCallback& msg) {
+	//Call the LUA function for the callback
+	EngineLogic.execScript(msg.function_to_call + "(" + CHandle(this).getOwner().asString() + ")");
+}
+
+void TCompSkeleton::onMsgAnimationCompleted(const TMsgAnimationCompleted& msg) {
+	
+}
+
+void TCompSkeleton::onMsgSceneStop(const TMsgScenePaused& msg) {
+	TCompSkeleton* e = CHandle(this);
+	e->paused = msg.isPaused;
 }

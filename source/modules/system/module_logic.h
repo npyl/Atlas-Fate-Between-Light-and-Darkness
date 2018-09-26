@@ -7,6 +7,13 @@
 #include "modules/system/module_particles.h"
 #include "input/button.h"
 #include "components/player_controller/comp_player_tempcontroller.h"
+#include "components/ia/comp_bt_patrol.h"
+#include "components/comp_transform.h"
+#include "components/comp_audio.h"
+//#include "components/camera_controller/comp_camera_thirdperson.h"
+
+class TCompCameraThirdPerson;
+class TCompRender;
 
 class CModuleLogic : public IModule
 {
@@ -27,9 +34,6 @@ public:
         void* variable;
     };
 
-    int spawnedPatrols = 0, spawnedMimetics = 0, spawnedSpotlights = 0;
-
-
     /* Enum with event id. Add as many as necessary */
     enum Events {
         GAME_START,
@@ -38,7 +42,8 @@ public:
         SCENE_END,
         TRIGGER_ENTER,
         TRIGGER_EXIT,
-        ENEMY_KILLED,
+        PATROL_STUNNED,
+        PATROL_KILLED,
         PLAYER_ON_SHADOW_ENTER,
         NUM_EVENTS
     };
@@ -58,6 +63,8 @@ public:
     bool execScriptDelayed(const std::string& script, float delay);
     bool execEvent(Events event, const std::string& params = "", float delay = 0.f);
     void printLog();
+    void setPause(bool paused) { this->paused = paused; }
+    void clearDelayedScripts();
 
 private:
 
@@ -69,6 +76,9 @@ private:
     void BootLuaSLB();
     void publishClasses();
     void loadScriptsInFolder(char * path);
+
+    bool started = false;
+    bool paused = false;
 };
 
 /* Auxiliar functions */
@@ -78,39 +88,48 @@ CModuleParticles* getParticles();
 TCompTempPlayerController* getPlayerController();
 void execDelayedScript(const std::string& script, float delay);
 void pauseEnemies(bool pause);
+void pauseEnemyEntities(bool pause);
 void deleteEnemies();
+bool isDebug();
 void pauseGame(bool pause);
 void pausePlayerToggle();
-void staminaInfinite();
+void infiniteStamineToggle();
 void immortal();
 void inShadows();
 void speedBoost(const float speed);
 void playerInvisible();
 void noClipToggle();
 void lanternsDisable(bool disable);
-void blendInCamera(const std::string& cameraName, float blendInTime);
+void blendInCamera(const std::string& cameraName, float blendInTime, const std::string& mode = "cinematic", const std::string& interpolator = "");
 void blendOutCamera(const std::string& cameraName, float blendOutTime);
 void blendOutActiveCamera(float blendOutTime);
-void move(const std::string& entityName, VEC3 pos, VEC3 lookat = VEC3::Zero);
-void movePlayer(VEC3);
-void spawn(const std::string& type, VEC3 pos, VEC3 lookat = VEC3::Zero);
+void resetMainCameras();
+CHandle spawn(const std::string & name, const VEC3 & pos, const VEC3& lookat);
+void move(const std::string & name, const VEC3 & pos, const VEC3& lookat);
 void bind(const std::string& key, const std::string& script);
-void loadScene(const std::string &level);
-void unloadScene();
+void loadscene(const std::string &level);
+void unloadscene();
 void loadCheckpoint();
 void shadowsToggle();
 void debugToggle();
 void postFXToggle();
 void renderNavmeshToggle();
-void playSound2D(const std::string& soundName);
-void exeShootImpactSound();
 void sleep(float time);
 void cinematicModeToggle();
-void spotlightsToggle();
-void animationsToggle();
-void wireframeToggle();
-void collidersToggle(bool onlyDynamics = false);
+bool isCheckpointSaved();
+void destroyHandle(unsigned int h);
+void resetPatrolLights();
 
+/* Sounds */
+SoundEvent playEvent(const std::string& name);
+void stopAllAudioComponents();
+
+/* Tutorial */
+void setTutorialPlayerState(bool active, const std::string& stateName);
+
+/* Cinematic */
+void setCinematicPlayerState(bool active, const std::string & stateName);
+void setAIState(const std::string& name, bool active, const std::string & stateName);
 
 /* DEBUG - TODO: Delete */
 void sendOrderToDrone(const std::string& droneName, VEC3 position);
@@ -118,5 +137,12 @@ void toggle_spotlight(const std::string& lightName);
 void toggleButtonCanBePressed(const std::string& buttonName, bool canBePressed);
 
 // Extra cvar commands
-void fpsToggle(bool value);
+void cg_drawfps(bool value);
 void cg_drawlights(int type);
+
+CEntity* toEntity(CHandle h);
+TCompTransform* toTransform(CHandle h);
+TCompAIPatrol* toAIPatrol(CHandle h);
+TCompAudio* toAudio(CHandle h);
+TCompCameraThirdPerson* toTPCamera(CHandle h);
+TCompRender* toRender(CHandle h);

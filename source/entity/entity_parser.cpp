@@ -24,6 +24,7 @@ CHandle TEntityParseContext::findEntityByName(const std::string& name) const {
 }
 
 TEntityParseContext::TEntityParseContext(TEntityParseContext& another_ctx, const CTransform& delta_transform) {
+
 	parent = &another_ctx;
 	recursion_level = another_ctx.recursion_level + 1;
 	entity_starting_the_parse = another_ctx.entity_starting_the_parse;
@@ -42,21 +43,17 @@ bool parseScene(const std::string& filename, TEntityParseContext& ctx) {
 
 	// For each item in the array...
 	for (int i = 0; i < j_scene.size(); ++i) {
-		PROFILE_FUNCTION("For each item in the json");
-
 		auto& j_item = j_scene[i];
 
 		assert(j_item.is_object());
 
 		if (j_item.count("entity")) {
 			auto& j_entity = j_item["entity"];
-			PROFILE_FUNCTION("Entity");
 
 			CHandle h_e;
 
 			// Do we have the prefab key in the json?
 			if (j_entity.count("prefab")) {
-				PROFILE_FUNCTION("Doing prefab");
 
 				// Get the src/id of the prefab
 				std::string prefab_src = j_entity["prefab"];
@@ -95,28 +92,31 @@ bool parseScene(const std::string& filename, TEntityParseContext& ctx) {
 
 			}
 			else {
-				PROFILE_FUNCTION("Not doing prefab");
 
 				// Create a new fresh entity
 				h_e.create< CEntity >();
 
 				// Cast to entity object
 				CEntity* e = h_e;
-				{
-					PROFILE_FUNCTION("Do the parse");
-					// Do the parse
-					e->load(j_entity, ctx);
-				}
+
+				// Do the parse
+				e->load(j_entity, ctx);
 
 			}
 
 			ctx.entities_loaded.push_back(h_e);
 		}
+
+        // To parse static instancing containers
+        if (j_item.count("instance_container")) {
+            auto& j_entity = j_item["instance_container"];
+
+            EngineInstancing.parseContainer(j_entity, ctx);
+        }
 	}
 
 	// Create a comp_group automatically if there is more than one entity
 	if (ctx.entities_loaded.size() > 1) {
-		PROFILE_FUNCTION("Creating comp group");
 
 		// The first entity becomes the head of the group. He is NOT in the group
 		CHandle h_root_of_group = ctx.entities_loaded[0];
@@ -132,19 +132,17 @@ bool parseScene(const std::string& filename, TEntityParseContext& ctx) {
 			c_group->add(ctx.entities_loaded[i]);
 	}
 
-	/* Just for hierarchies - Notifies its parent */
-	TMsgHierarchyGroupCreated msgHierarchy = { ctx };
-	for (auto h : ctx.entities_loaded) {
-		PROFILE_FUNCTION("Notify parent");
-		h.sendMsg(msgHierarchy);
-	}
+    /* Just for hierarchies - Notifies its parent */
+    TMsgHierarchyGroupCreated msgHierarchy = { ctx };
+    for (auto h : ctx.entities_loaded) {
+    h.sendMsg(msgHierarchy);
+    }
 
-	// Notify each entity created that we have finished
-	// processing this file
-	if (!ctx.is_prefab && ctx.entities_loaded.size() > 0) {
-		PROFILE_FUNCTION("Finishing file messages");		
-		sendMsgChildren(ctx.entities_loaded[0], ctx);
-	}
+    // Notify each entity created that we have finished
+    // processing this file
+    if (!ctx.is_prefab && ctx.entities_loaded.size() > 0) {
+    sendMsgChildren(ctx.entities_loaded[0], ctx);
+    }
 
 
 	return true;
@@ -152,14 +150,13 @@ bool parseScene(const std::string& filename, TEntityParseContext& ctx) {
 
 void sendMsgChildren(CHandle hEntity, TEntityParseContext& ctx)
 {
-	TMsgEntitiesGroupCreated msg = { ctx };
-	CEntity* eEntity = hEntity;
-	eEntity->sendMsg(msg);
-	TCompGroup* group = eEntity->get<TCompGroup>();
-	if (group) {
-		for (auto h : group->handles) {
-			PROFILE_FUNCTION("Send message children");
-			sendMsgChildren(h, ctx);
-		}
-	}
+    TMsgEntitiesGroupCreated msg = { ctx };
+    CEntity* eEntity = hEntity;
+    eEntity->sendMsg(msg);
+    TCompGroup* group = eEntity->get<TCompGroup>();
+    if (group) {
+        for (auto h : group->handles) {
+            sendMsgChildren(h, ctx);
+        }
+    }
 }

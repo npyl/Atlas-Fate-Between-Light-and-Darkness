@@ -28,7 +28,7 @@ void TCompFadeController::load(const json& j, TEntityParseContext& ctx) {
     _fall_speed = j.value("fall_speed", 0.1f);
     _material = j.value("material", "data/materials/characters/mtl_player_main_shade.material");
 
-    _invert_fade = 1;
+    _invert_fade = -1;
     _is_active = false;
 }
 
@@ -43,6 +43,8 @@ void TCompFadeController::update(float dt) {
     if (_is_active) {
 
         TCompRender * c_my_render = get<TCompRender>();
+        if (!c_my_render)
+            return;
 
         // Notify it has finished
         if (c_my_render->self_opacity > 1 || c_my_render->self_opacity < 0) {
@@ -64,16 +66,20 @@ void TCompFadeController::update(float dt) {
 
 /* Used to blend between two colors at a given time */
 void TCompFadeController::launch(const TMsgFadeBody& msg) {
-    
+
     TCompRender * c_my_render = get<TCompRender>();
     assert(c_my_render);
+
+    if (msg.is_exit == 1 && c_my_render->self_opacity <= 0 || msg.is_exit == 0 && c_my_render->self_opacity >= 1) {
+        return;
+    }
 
     _is_active = true;
     _elapsed_time = 0.f;
     _invert_fade = msg.is_exit ? -1 : 1;
 
     c_my_render->color = _fade_color;
-    c_my_render->self_opacity = msg.is_exit ? 1 : 0;
+    c_my_render->self_opacity = msg.is_exit ? 1.f : 0.f;
 
     if (_is_drownable) {
 
@@ -82,7 +88,7 @@ void TCompFadeController::launch(const TMsgFadeBody& msg) {
         c_my_rigid->is_enabled = false;
     }
 
-    c_my_render->setMaterial(_material);
+    //c_my_render->setMaterial(_material);
 }
 
 void TCompFadeController::destroy() {

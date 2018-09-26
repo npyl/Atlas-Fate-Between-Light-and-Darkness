@@ -2,6 +2,8 @@
 #include "particle_parser.h"
 #include "particles/particle_system.h"
 
+#include "Noise/FastNoiseSIMD.h"
+
 namespace Particles
 {
     void CParser::parseFile(const std::string& filename)
@@ -29,7 +31,7 @@ namespace Particles
     TCoreSystem* CParser::parseParticleSystem(const json& data)
     {
         TCoreSystem* cps = new TCoreSystem();
-
+        
         const json& system = data["system"];
         {
             cps->n_system.duration = system.value("duration", cps->n_system.duration);
@@ -53,9 +55,23 @@ namespace Particles
         {
             cps->n_emission.rate_time = emission.value("rate_time", cps->n_emission.rate_time);
             cps->n_emission.rate_distance = emission.value("rate_distance", cps->n_emission.rate_distance);
-            cps->n_emission.interval = emission.value("interval", cps->n_emission.interval);
+            //cps->n_emission.interval = emission.value("interval", cps->n_emission.interval);
             cps->n_emission.variation = emission.value("variation", cps->n_emission.variation);
-            // Add bursts support
+            cps->n_emission.time_ratio = 1 / cps->n_emission.rate_time;
+
+            // bursts support
+
+            if (emission.count("bursts")) {
+                for (auto& raw_burst : emission["bursts"])
+                {
+                    Particles::TNBurst burst;
+                    burst.time = raw_burst[0];
+                    burst.count = raw_burst[1];
+                    burst.cycles = raw_burst[2];
+                    burst.interval = raw_burst[3];
+                    cps->n_emission.bursts.push_back(burst);
+                }
+            }
         }
         
         // shape
@@ -70,6 +86,7 @@ namespace Particles
             else if (emitterType == "circle") cps->n_shape.type = TCoreSystem::TNShape::Circle;
             else                              cps->n_shape.type = TCoreSystem::TNShape::Point;
 
+            cps->n_shape.shell_emit = shape.value("shell", false);
             cps->n_shape.size = loadVEC3(shape.value("size", "1 1 1"));
             cps->n_shape.angle = deg2rad(shape.value("angle", rad2deg(cps->n_shape.angle)));
         }
@@ -95,6 +112,8 @@ namespace Particles
 
             cps->n_velocity.acceleration = velocity.value("acceleration", cps->n_velocity.acceleration);
             cps->n_velocity.wind = velocity.value("wind", cps->n_velocity.wind);
+            cps->n_velocity.type = velocity.value("type", cps->n_velocity.type);
+            cps->n_velocity.inherit_velocity = velocity.value("inherit", cps->n_velocity.inherit_velocity);
         }
 
         // render
@@ -104,12 +123,16 @@ namespace Particles
             if (renderMode == "billboard")        cps->n_renderer.mode = TCoreSystem::TNRenderer::BILLBOARD;
             if (renderMode == "horizontal")        cps->n_renderer.mode = TCoreSystem::TNRenderer::HORIZONTAL;
             if (renderMode == "vertical")        cps->n_renderer.mode = TCoreSystem::TNRenderer::VERTICAL;
+            if (renderMode == "stretched")        cps->n_renderer.mode = TCoreSystem::TNRenderer::STRETCHED;
 
             cps->n_renderer.initialFrame = render.value("initial_frame", cps->n_renderer.initialFrame);
             cps->n_renderer.frameSize = loadVEC2(render.value("frame_size", "1 1"));
             cps->n_renderer.numFrames = render.value("num_frames", cps->n_renderer.numFrames);
             cps->n_renderer.frameSpeed = render.value("frame_speed", cps->n_renderer.frameSpeed);
+            cps->n_renderer.length = render.value("length", cps->n_renderer.length);
             cps->n_renderer.texture = Resources.get(render.value("texture", ""))->as<CTexture>();
+            cps->n_renderer.softness = render.value("soft", cps->n_renderer.softness);
+            cps->n_renderer.tech = render.value("tech", "particles_instanced_combinative.tech");
         }
 
         // noise
@@ -187,7 +210,7 @@ namespace Particles
             jsonfile["emission"]["rate_time"] = E_ROUND(system->n_emission.rate_time);
             jsonfile["emission"]["rate_distance"] = E_ROUND(system->n_emission.rate_distance);
             jsonfile["emission"]["variation"] = E_ROUND(system->n_emission.variation);
-            jsonfile["emission"]["interval"] = E_ROUND(system->n_emission.interval);
+            //jsonfile["emission"]["interval"] = E_ROUND(system->n_emission.interval);
         }
 
         // Write shape

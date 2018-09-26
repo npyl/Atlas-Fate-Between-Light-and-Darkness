@@ -9,7 +9,8 @@
 			"camera": {
 				"target": "TPCamera",
 				"blendOut": 0.4,
-				"blendIn": 0.4
+				"blendIn": 0.4,
+				"fov": 70
 			}
 		},
 		{
@@ -20,7 +21,8 @@
 			"camera": {
 				"target": "TPCamera",
 				"blendOut": 0.4,
-				"blendIn": 0.4
+				"blendIn": 0.4,
+				"fov": 70
 			}
 		},
 		{
@@ -39,7 +41,8 @@
 			"camera": {
 				"target": "TPCamera",
 				"blendOut": 0.4,
-				"blendIn": 0.4
+				"blendIn": 0.4,
+				"fov": 75
 			}
 		},
 		{
@@ -58,7 +61,8 @@
 			"camera": {
 				"target": "TPCamera",
 				"blendOut": 0.4,
-				"blendIn": 0.4
+				"blendIn": 0.4,
+				"fov": 72
 			}
 		},
 		{
@@ -77,7 +81,8 @@
 			"camera": {
 				"target": "TPCamera",
 				"blendOut": 0.4,
-				"blendIn": 0.4
+				"blendIn": 0.4,
+				"fov": 80
 			}
 		},
 		{
@@ -90,7 +95,8 @@
 			"camera": {
 				"target": "TPCameraCrouched",
 				"blendOut": 0.4,
-				"blendIn": 0.4
+				"blendIn": 0.4,
+				"fov": 60
 			}
 		},
 		{
@@ -103,7 +109,8 @@
 			"camera": {
 				"target": "TPCameraCrouched",
 				"blendOut": 0.4,
-				"blendIn": 0.4
+				"blendIn": 0.4,
+				"fov": 65
 			}
 		},
 		{
@@ -116,15 +123,16 @@
 			"camera": {
 				"target": "TPCameraCrouched",
 				"blendOut": 0.4,
-				"blendIn": 0.4
+				"blendIn": 0.4,
+				"fov": 68
 			}
 		},
 		{
 			"name": "entermerge",
 			"type": "EnterMergeState",
 			"animation": "entermerge",
-			"speed": 4,
-			"size": 1,
+			"size": 0.1,
+			"radius": 0.01,
 			"camera": {
 				"target": "SMCameraHor",
 				"blendOut": 0.2,
@@ -158,7 +166,8 @@
 			"camera": {
 				"target": "TPCamera",
 				"blendOut": 0.4,
-				"blendIn": 0.4
+				"blendIn": 0.4,
+				"fov": 75
 			}
 		},
 		{
@@ -172,7 +181,8 @@
 			"camera": {
 				"target": "TPCameraCrouched",
 				"blendOut": 0.4,
-				"blendIn": 0.4
+				"blendIn": 0.4,
+				"fov": 65
 			}
 		},
 		{
@@ -182,9 +192,10 @@
 			"speed": 4,
 			"size": 1,
 			"camera": {
-				"target": "SMCameraHor",
-				"blendOut": 0.0,
-				"blendIn": 0.5
+				"target": "TPCamera",
+				"blendOut": 0.4,
+				"blendIn": 0.4,
+				"fov": 70
 			}
 		},
 		{
@@ -215,7 +226,8 @@
 			"camera": {
 				"target": "TPCameraCrouched",
 				"blendOut": 0.4,
-				"blendIn": 0.2
+				"blendIn": 0.2,
+				"fov": 60
 			}
 		},
 		{
@@ -228,7 +240,8 @@
 			"camera": {
 				"target": "TPCamera",
 				"blendOut": 0.4,
-				"blendIn": 0.4
+				"blendIn": 0.4,
+				"fov": 80
 			}
 		},
 		{
@@ -240,7 +253,20 @@
 			"camera": {
 				"target": "TPCamera",
 				"blendOut": 0.4,
-				"blendIn": 0.4
+				"blendIn": 0.4,
+				"fov": 70
+			}
+		},
+		{
+			"name": "fallDie",
+			"type": "FallDieState",
+			"animation": "dead",
+			"size": 1,
+			"camera": {
+				"target": "TPCamera",
+				"blendOut": 0.4,
+				"blendIn": 0.4,
+				"fov": 70
 			}
 		},
 		{
@@ -252,7 +278,8 @@
 			"camera": {
 				"target": "TPCamera",
 				"blendOut": 0.4,
-				"blendIn": 0.4
+				"blendIn": 0.4,
+				"fov": 70
 			}
 		},
 		{
@@ -264,7 +291,8 @@
 			"camera": {
 				"target": "TPCamera",
 				"blendOut": 0.4,
-				"blendIn": 0.4
+				"blendIn": 0.4,
+				"fov": 70
 			}
 		},
 		{
@@ -276,7 +304,8 @@
 			"camera": {
 				"target": "TPCamera",
 				"blendOut": 0.4,
-				"blendIn": 0.4
+				"blendIn": 0.4,
+				"fov": 70
 			}
 		},
 		{
@@ -288,7 +317,8 @@
 			"camera": {
 				"target": "TPCamera",
 				"blendOut": 0.4,
-				"blendIn": 0.4
+				"blendIn": 0.4,
+				"fov": 70
 			}
 		},
 		{
@@ -296,11 +326,29 @@
 			"type": "GrabEnemyState",
 			"animation": "idle",
 			"speed": 0,
-			"size": 1
+			"size": 1,
+			"camera": {
+				"target": "TPCamera",
+				"blendOut": 0.4,
+				"blendIn": 0.4,
+				"fov": 70
+			}
 		},
 		{
-			"name": "sonarEnemy",
-			"type": "SonarState",
+			"name": "sonarEnemyUp",
+			"type": "SonarStateUp",
+			"animation": "inhibitorRemoved",
+			"speed": 0,
+			"noise": {
+				"is_only_once": true,
+				"radius": 10.0,
+				"time_to_repeat": 0.5,
+				"is_artificial": true
+			}
+		},
+		{
+			"name": "sonarEnemyCrouch",
+			"type": "SonarStateCrouch",
 			"animation": "inhibitorRemoved",
 			"speed": 0,
 			"noise": {
@@ -324,11 +372,11 @@
 			}
 		},
 		{
-		  "name": "pressingButton",
-		  "type": "PressingButtonState",
-		  "animation": "idle",
-		  "speed": 0,
-		  "size": 1
+			"name": "pressingButton",
+			"type": "PressingButtonState",
+			"animation": "idle",
+			"speed": 0,
+			"size": 1
 		}
 	],
 	"transitions": [{
@@ -539,28 +587,38 @@
 			}
 		},
 		{
-		  "type": "VariableTransition",
-		  "source": "idle",
-		  "target": "sonarEnemy",
-		  "variable": {
-			"name": "sonar",
-			"type": "bool",
-			"value": true
-		  }
-		},
-		{
 			"type": "VariableTransition",
-			"source": "crouch",
-			"target": "sonarEnemy",
+			"source": "idle",
+			"target": "sonarEnemyUp",
 			"variable": {
-			"name": "sonar",
-			"type": "bool",
-			"value": true
+				"name": "sonar",
+				"type": "bool",
+				"value": true
 			}
 		},
 		{
 			"type": "VariableTransition",
-			"source": "sonarEnemy",
+			"source": "crouch",
+			"target": "sonarEnemyCrouch",
+			"variable": {
+				"name": "sonar",
+				"type": "bool",
+				"value": true
+			}
+		},
+		{
+			"type": "VariableTransition",
+			"source": "sonarEnemyCrouch",
+			"target": "die",
+			"variable": {
+				"name": "onDead",
+				"type": "bool",
+				"value": true
+			}
+		},
+		{
+			"type": "VariableTransition",
+			"source": "sonarEnemyUp",
 			"target": "die",
 			"variable": {
 				"name": "onDead",
@@ -570,8 +628,14 @@
 		},
 		{
 			"type": "TimeTransition",
-			"source": "sonarEnemy",
+			"source": "sonarEnemyCrouch",
 			"target": "crouch",
+			"time": 1
+		},
+				{
+			"type": "TimeTransition",
+			"source": "sonarEnemyUp",
+			"target": "idle",
 			"time": 1
 		},
 		{
@@ -843,6 +907,16 @@
 		{
 			"type": "VariableTransition",
 			"source": "fall",
+			"target": "landmerge",
+			"variable": {
+				"name": "onFallMerge",
+				"type": "bool",
+				"value": true
+			}
+		},
+		{
+			"type": "VariableTransition",
+			"source": "fall",
 			"target": "hardLand",
 			"variable": {
 				"name": "onHardLanded",
@@ -863,7 +937,7 @@
 		{
 			"type": "VariableTransition",
 			"source": "hardLand",
-			"target": "die",
+			"target": "fallDie",
 			"variable": {
 				"name": "onFallDead",
 				"type": "bool",
@@ -884,11 +958,21 @@
 			"type": "AnimationTransition",
 			"source": "hardLand",
 			"target": "idle",
-			"animation_name": "crouch"
+			"animation_name": "land_hard"
 		},
 		{
 			"type": "VariableTransition",
 			"source": "softLand",
+			"target": "fallDie",
+			"variable": {
+				"name": "onFallDead",
+				"type": "bool",
+				"value": true
+			}
+		},
+		{
+			"type": "VariableTransition",
+			"source": "fallDie",
 			"target": "die",
 			"variable": {
 				"name": "onFallDead",
@@ -904,19 +988,13 @@
 		},
 		{
 			"type": "VariableTransition",
-			"source": "fall",
-			"target": "landmerge",
+			"source": "landmerge",
+			"target": "entermerge",
 			"variable": {
-				"name": "onFallMerge",
+				"name": "onGround",
 				"type": "bool",
 				"value": true
 			}
-		},
-		{
-			"type": "TimeTransition",
-			"source": "landmerge",
-			"target": "merge",
-			"time": 0.6
 		},
 		{
 			"type": "VariableTransition",
@@ -999,6 +1077,26 @@
 			}
 		},
 		{
+			"type": "VariableTransition",
+			"source": "pressingButton",
+			"target": "die",
+			"variable": {
+				"name": "onDead",
+				"type": "bool",
+				"value": true
+			}
+		},
+		{
+			"type": "VariableTransition",
+			"source": "grabEnemy",
+			"target": "die",
+			"variable": {
+				"name": "onDead",
+				"type": "bool",
+				"value": true
+			}
+		},
+		{
 			"type": "AnimationTransition",
 			"source": "attack",
 			"target": "idle",
@@ -1053,6 +1151,26 @@
 		{
 			"type": "VariableTransition",
 			"source": "crouch",
+			"target": "die",
+			"variable": {
+				"name": "onDead",
+				"type": "bool",
+				"value": true
+			}
+		},
+		{
+			"type": "VariableTransition",
+			"source": "crouchwalk",
+			"target": "die",
+			"variable": {
+				"name": "onDead",
+				"type": "bool",
+				"value": true
+			}
+		},
+		{
+			"type": "VariableTransition",
+			"source": "crouchwalkslow",
 			"target": "die",
 			"variable": {
 				"name": "onDead",
@@ -1265,9 +1383,9 @@
 			"source": "idle",
 			"target": "pressingButton",
 			"variable": {
-			"name": "buttonPressed",
-			"type": "bool",
-			"value": true
+				"name": "buttonPressed",
+				"type": "bool",
+				"value": true
 			}
 		},
 		{

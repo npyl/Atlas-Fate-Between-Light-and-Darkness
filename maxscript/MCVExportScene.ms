@@ -19,7 +19,7 @@ struct TMaterialExporter (
 		local base_name = getFilenameFile map_filename
 		local json_filename = "data/textures/" + base_name + ".dds"
 		local ofull_path = project_path + json_filename
-		print ofull_path
+
 		-- Check if ofull_path exists
 		if not doesFileExist ofull_path then (
 			format "We should copy from % to %\n" map_filename ofull_path
@@ -29,17 +29,49 @@ struct TMaterialExporter (
 		fs.writeKeyValue alias json_filename
 	),
 	
-	-- Exports a single std material to a json format
-	fn exportStdMaterial mat mat_name tech = (
+		-- Exports a single std material to a json format
+	fn exportMixMaterial mat mat_name base_name tech sdw = (
 		
-		format "Exporting material % % %\n" mat_name mat (classof mat as string)
+		exported_materials = #()
+		local mat_name1 = base_name + mat.map1.name + ".material"
+		local mat_name2 = base_name + mat.map2.name + ".material"
+		append exported_materials mat_name1
+		append exported_materials mat_name2
+		
+		format "Exporting mixed material % % %\n" mat_name mat (classof mat as string)
 		fs.begin (project_path + mat_name )
 		fs.beginObj()
 			if tech != undefined then ( 
 				fs.writeKeyValue "technique" tech 
 				fs.writeComma()
 			)
-			fs.writeKeyValue "shadows" true
+			
+			fs.writeKeyValue "shadows" sdw
+			fs.writeComma()
+			fs.writeKey "textures" 
+			fs.beginObj()
+			fs.endObj()
+			fs.writeComma()
+			fs.writeKey "mats"
+			fs.arrayOfStrings exported_materials
+			fs.writeComma()
+			exportMap mat.mask "mix_blend_weights"
+			
+		fs.endObj()
+		fs.end()
+	),
+	
+	-- Exports a single std material to a json format
+	fn exportStdMaterial mat mat_name tech sdw = (
+		
+		format "Exporting mixing material % % %\n" mat_name mat (classof mat as string)
+		fs.begin (project_path + mat_name )
+		fs.beginObj()
+			if tech != undefined then ( 
+				fs.writeKeyValue "technique" tech 
+				fs.writeComma()
+			)
+			fs.writeKeyValue "shadows" sdw
 			fs.writeComma()
 			fs.writeKey "textures" 
 			fs.beginObj()
@@ -58,10 +90,16 @@ struct TMaterialExporter (
 					fs.writeComma()
 					exportMap mat.glossinessMap "roughness"
 				)	
+				
 				if mat.bumpMap != undefined then (
 					fs.writeComma()
 					exportMap mat.bumpMap "normal"
-				)			
+				)
+				else (
+					fs.writeComma()
+					fs.writeKeyValue "normal" "data/textures/null_normal.dds"
+				)
+				
 				if mat.displacementMap != undefined then (
 					fs.writeComma()
 					exportMap mat.displacementMap "height"
@@ -82,14 +120,14 @@ struct TMaterialExporter (
 	),
 	
 	-- Will return an array of all the materials names used by obj and exported by us
-	fn exportMaterial mat base_name obj tech = (
+	fn exportMaterial mat base_name obj tech sdw = (
 		
 		local exported_materials = #()
 		
 		if classof mat == StandardMaterial then (
 			local mat_name = base_name + mat.name + ".material"
 			append exported_materials mat_name
-			exportStdMaterial mat mat_name tech
+			exportStdMaterial mat mat_name tech sdw
 			
 		) else if classof mat == MultiMaterial then (
 			local multi_mat = mat
@@ -104,8 +142,16 @@ struct TMaterialExporter (
 				
 				local mat_name = base_name + mat_of_mesh.name + ".material"
 				append exported_materials mat_name
-				exportStdMaterial mat_of_mesh mat_name tech
+				exportStdMaterial mat_of_mesh mat_name tech sdw
 			)
+		) else if classof mat == Blend then (
+			local mat_name = base_name + mat.name + ".material"
+			local mat_name1 = base_name + mat.map1.name + ".material"
+			local mat_name2 = base_name + mat.map2.name + ".material"
+			append exported_materials mat_name
+			exportStdMaterial mat.map1 mat_name1 tech sdw
+			exportStdMaterial mat.map2 mat_name2 tech sdw
+			exportMixMaterial mat mat_name base_name "pbr_mix.tech"
 		)
 		
 		return exported_materials
@@ -123,6 +169,7 @@ struct TSceneExporter (
 	mats_path = base_path + "materials/",
 	cols_path = base_path + "colliders/",
 	tex_path = base_path + "textures/",
+	curve_path = base_path + "curves/",
 	local_path = "",
 	use_instancing = false,
 	is_prefab = false,
@@ -256,6 +303,44 @@ struct TSceneExporter (
 		fs.endObj()
 	),
 	
+	fn exportTransformDecal obj = (
+		fs.writeKey "transform" 
+		
+		local max2mcv = rotateXMatrix -90
+		local mcv2max = rotateXMatrix 90
+		local mcv_position = obj.pos * max2mcv
+		print obj.pos
+		local mcv_transform = mcv2max * obj.transform * max2mcv
+		local mcv_quat = mcv_transform.rotationPart as quat
+		local mcv_final_position = checkPoint mcv_position
+		fs.beginObj()
+			fs.writeKeyValue "pos" mcv_final_position
+			fs.writeComma()
+			fs.writeKeyValue "rotation" mcv_quat
+			fs.writeComma()
+			fs.writeKeyValue "scale" [obj.width, 0.1, obj.length]
+		fs.endObj()
+	),
+	
+	fn exportTransformNormal obj = (
+		fs.writeKey "transform" 
+		
+		local max2mcv = rotateXMatrix -90
+		local mcv2max = rotateXMatrix 90
+		local mcv_position = obj.pos * max2mcv
+		print obj.pos
+		local mcv_transform = obj.transform * max2mcv
+		local mcv_quat = mcv_transform.rotationPart as quat
+		local mcv_final_position = checkPoint mcv_position
+		fs.beginObj()
+			fs.writeKeyValue "pos" mcv_final_position
+			fs.writeComma()
+			fs.writeKeyValue "rotation" mcv_quat
+			fs.writeComma()
+			fs.writeKeyValue "scale" [obj.width, obj.length, 1]
+		fs.endObj()
+	),
+	
 		-- ----------------------------------------------------------
 	fn exportTransformPrefab obj = (
 		fs.writeKey "transform" 
@@ -317,7 +402,7 @@ struct TSceneExporter (
 		
 			if mat != undefined then (
 				local me = TMaterialExporter project_path:project_path base_path:base_path
-				exported_materials = me.exportMaterial mat f_mats_path obj undefined
+				exported_materials = me.exportMaterial mat f_mats_path obj undefined true
 			)
 			
 			fs.writeKey "materials"
@@ -368,11 +453,45 @@ struct TSceneExporter (
 				
 		if mat != undefined then (
 			local me = TMaterialExporter project_path:project_path base_path:base_path
-			exported_materials = me.exportMaterial mat f_mats_path obj "pbr_instanced.tech"
+			exported_materials = me.exportMaterial mat f_mats_path obj "pbr_instanced.tech" true
 		)
 		
 		fs.writeKey "materials"
 		fs.arrayOfStrings exported_materials
+		fs.endObj()
+	),
+	
+	fn exportDecalInstance obj = (
+		
+		local decal_name = "instanced_default"
+		local f_mats_path = mats_path + local_path
+		local exported_materials = #(f_mats_path + "mtl_instanced_default.material")
+		local mat = obj.material
+		
+		-- Do some material safe checks.
+		if mat != undefined then (
+			decal_name = substituteString mat.name "mtl_" ""
+		)
+		
+		-- First, export the instanced mesh file
+		local mesh_name = "data/meshes/UnitBox.mesh"
+		local imesh_name = mesh_path + local_path + decal_name + ".instanced_mesh"
+		exportInstancedMesh imesh_name mesh_name
+		
+		-- Export instanced Mesh
+		fs.writeKey "instance" 
+		fs.beginObj()
+		fs.writeKeyValue "mesh" imesh_name
+		fs.writeComma()
+				
+		if mat != undefined then (
+			local me = TMaterialExporter project_path:project_path base_path:base_path
+			exported_materials = me.exportMaterial mat f_mats_path obj "pbr_decals.tech" false
+		)
+		
+		fs.writeKey "materials"
+		fs.arrayOfStrings exported_materials
+		fs.endObj()
 	),
 	
 	-- ----------------------------------------------------------
@@ -406,7 +525,7 @@ struct TSceneExporter (
 					fs.writeComma()
 					fs.writeKeyValue "name" (cols_path + obj.name + ".collider")
 				) else (
-					fs.writeKeyValue "shape" "convex" 
+					fs.writeKeyValue "shape" "mesh" 
 					fs.writeComma()
 					fs.writeKeyValue "name" (cols_path + obj.name + ".collider")
 				)
@@ -451,6 +570,8 @@ struct TSceneExporter (
 			fs.writeKeyValue "shadows_resolution" 4096
 			fs.writeComma()
 			fs.writeKeyValue "shadows_fmt" "R32_TYPELESS"
+			fs.writeComma()
+			fs.writeKeyValue "volume" false
 			fs.endObj()			
 			return true
 		)
@@ -469,6 +590,8 @@ struct TSceneExporter (
 			fs.writeKeyValue "inner_cut" obj.hotspot
 			fs.writeComma()
 			fs.writeKeyValue "z_far" (distance target.pos obj.pos)
+						fs.writeComma()
+			fs.writeKeyValue "volume" false
 			fs.writeComma()	
 		)
 		else if classof obj == Omnilight   then (
@@ -553,9 +676,9 @@ struct TSceneExporter (
 			if dist == undefined then ( dist = obj.baseObject.targetDistance )
 			local int_radius = tan(obj.falloff * .5f) * dist
 			local totalsides = clamp 12 32 ((int_radius * .25f) as integer)
-			local collider = cone radius1:int_radius radius2:0 height:dist heightsegs:1 sides:totalsides
+			local collider = cone radius1:int_radius radius2:0 height:obj.nearAttenEnd heightsegs:1 sides:totalsides
 			collider.transform = obj.transform
-			collider.position = (obj.position - obj.dir * dist)
+			collider.position = (obj.position - obj.dir * obj.nearAttenEnd)
 			collider = convertToMesh collider
 			collider.pivot = obj.position
 			
@@ -575,9 +698,10 @@ struct TSceneExporter (
 		else if classof obj == omnilight then ( 
 			fs.writeKey "collider" 
 			fs.beginObj()
-			fs.writeKeyValue "shape" "sphere" 
+			fs.writeKeyValue "shape" "sphere"
 			fs.writeComma()
-			fs.writeKeyValue "radius" ((obj.farAttenEnd - obj.farAttenStart) * .5 + obj.farAttenStart) 
+			fs.writeComma()
+			fs.writeKeyValue "radius" obj.nearAttenEnd
 			fs.writeComma()
 			fs.writeKeyValue "is_trigger" true
 			fs.endObj()
@@ -636,14 +760,62 @@ struct TSceneExporter (
 		fs.endObj()
 	),
 	
+	-- Export an entity which is an xref object as a prefab
+	fn exportEntityDecal obj = (
+		
+		-- We must ignore those which are 
+		if (nitems > 0) then fs.writeComma()
+				
+		fs.beginObj()
+		fs.writeKey "entity"
+			fs.beginObj()
+			exportName obj 
+			fs.writeComma()
+			exportTransformDecal obj
+			fs.writeComma()
+			exportDecalInstance obj
+			exportAABB obj
+			fs.endObj()
+		fs.endObj()
+	),
+	
+		-- Export an entity which is an xref object as a prefab
+	fn exportEntityGrass obj = (
+		
+		-- We must ignore those which are 
+		if (nitems > 0) then fs.writeComma()
+		
+		local exported_mesh_path = mesh_path + "grass.instanced_mesh"
+		local exported_materials = #(mats_path + "grass_instanced.material")
+				
+		fs.beginObj()
+		fs.writeKey "entity"
+			fs.beginObj()
+			exportName obj 
+			fs.writeComma()
+			exportTransformNormal obj
+			fs.writeComma()
+			fs.writeKey "instance" 
+			fs.beginObj()
+			fs.writeKeyValue "mesh" exported_mesh_path
+			fs.writeComma()
+			fs.writeKey "materials"
+			fs.arrayOfStrings exported_materials
+			fs.endObj()
+			fs.endObj()
+		fs.endObj()
+	),
+	
 	-- ----------------------------------------------------------
 	fn exportEntity obj = (
 		
 		-- Adding general discarding here
 		if classof obj == Targetobject then (return false )
 		if isCollider obj and  obj.parent != undefined then (return false )
+		if classof obj == QuadPatch then (return exportEntityDecal obj)
+		if classof obj == TriPatch then (return exportEntityGrass obj)
 		if classof obj == xrefobject then (return exportEntityPrefab obj)
-		
+				
 		if (nitems > 0) then fs.writeComma()
 		
 		fs.beginObj()
@@ -697,6 +869,7 @@ struct TSceneExporter (
 		doesFolderExist (project_path + mats_path + local_path ) create:true
 		doesFolderExist (project_path + cols_path + local_path) create:true
 		doesFolderExist (project_path + tex_path + local_path) create:true
+		doesFolderExist (project_path + curve_path + local_path) create:true
 		
 		-- Decide output filename based on .max filename
 		local full_path = project_path + prefabs_path + ofilename + ".prefab"

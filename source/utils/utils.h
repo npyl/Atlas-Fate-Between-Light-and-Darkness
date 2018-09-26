@@ -38,6 +38,11 @@ std::string stringify(VEC2 pos);
 std::string stringify(VEC3 pos);
 std::string stringify(VEC4 pos);
 
+float mapInRange(float result_from, float result_to, float current_from, float current_to, float value);
+
+bool isPointInRectangle(VEC2 point, VEC2 rectangle_size, VEC2 rectangle_position);
+
+VEC2 getMouseInRange(float min_x, float max_x, float min_y, float max_y);
 //float lerpAngle(float a, float b, float t);
 
 #endif

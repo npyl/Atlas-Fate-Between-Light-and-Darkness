@@ -1,0 +1,18 @@
+{
+  "shadows": true
+  ,
+  "textures":
+  {
+    "albedo": "data/textures/tx_suelo_mezquita2_alb.dds"
+    ,
+    "metallic": "data/textures/tx_suelo_mezquita2_met.dds"
+    ,
+    "roughness": "data/textures/tx_suelo_mezquita2_rgh.dds"
+    ,
+    "normal": "data/textures/tx_suelo_mezquita2_nml.dds"
+    ,
+    "height": "data/textures/tx_suelo_mezquita2_hgt.dds"
+    ,
+    "aocclusion": "data/textures/tx_suelo_mezquita2_ao.dds"
+  }
+}

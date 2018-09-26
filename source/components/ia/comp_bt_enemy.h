@@ -19,7 +19,9 @@ protected:
     std::vector<Waypoint> _waypoints;
     int currentWaypoint;
 
+    /* Suspect */
     float suspectO_Meter = 0.f;
+    bool isSuspectingAndSeeingPlayer = false;
     bool isLastPlayerKnownDirLeft = false;
     VEC3 lastPlayerKnownPos = VEC3::Zero;
     bool alarmEnded = true;
@@ -40,7 +42,9 @@ protected:
     int navmeshPathPoint = 0;
     bool recalculateNavmesh = false;
     float maxDistanceToNavmeshPoint = 3.f;
-    bool canArriveToDestination = false;
+    bool canArriveToDestination = true;
+    float maxNavmeshDistance = 60.f;    //TODO: Probar distintos atributos
+    bool isDestinationCloseEnough = true;
 
     /* Timers */
     float timerWaitingInWpt = 0.f;
@@ -51,12 +55,13 @@ protected:
     const Waypoint getWaypoint() { return _waypoints[currentWaypoint]; }
     void addWaypoint(const Waypoint& wpt) { _waypoints.push_back(wpt); };
     void getClosestWpt();
-    bool rotateTowardsVec(VEC3 objective, float dt, float rotationSpeed);
+    bool rotateTowardsVec(VEC3 objective, float rotationSpeed, float dt);
     bool isEntityInFov(const std::string& entityToChase, float fov, float maxChaseDistance);
     bool isEntityHidden(CHandle hEntity);
     void generateNavmesh(VEC3 initPos, VEC3 destPos, bool recalc = false);
     bool moveToPoint(float speed, float rotationSpeed, VEC3 destPoint, float dt);
-
+    bool isCurrentDestinationReachable();
+    void sendSuspectingMsg(bool isSuspecting);
 
     /* TODO: Delete */
     float maxDiff = 0;

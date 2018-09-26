@@ -5,13 +5,16 @@
 
 class CModuleGameManager : public IModule
 {
-    enum PauseState { default, none, main, win, defeat, editor1, editor2 };
+    enum PauseState;
     PauseState _currentstate;
 
     /* Mantain a handle of the player */
     CHandle _player;
     CHandle _fly_camera;
     CCheckpoint* lastCheckpoint;
+
+    /* Maintain the sound for ambient sound */
+    SoundEvent ambient;
 
     // Menu window related variables.
     ImGuiWindowFlags window_flags;
@@ -28,6 +31,8 @@ class CModuleGameManager : public IModule
 
 public:
 
+    enum PauseState { none, main, win, defeat, editor1, editor1unpaused, editor2 };
+
     struct ConfigPublic {
         bool drawfps = true;
 
@@ -42,6 +47,7 @@ public:
     bool saveCheckpoint(VEC3 playerPos, QUAT playerRot);
     bool loadCheckpoint();
     bool deleteCheckpoint();
+    bool isCheckpointSaved() { return lastCheckpoint != nullptr && lastCheckpoint->isSaved(); };
     bool isPaused() const;
 
     PauseState getCurrentState();

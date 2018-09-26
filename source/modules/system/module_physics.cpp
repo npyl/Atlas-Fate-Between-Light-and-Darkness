@@ -118,9 +118,13 @@ void CModulePhysics::update(float delta)
     }
 }
 
-void CModulePhysics::render()
+void CModulePhysics::renderMain()
 {
-
+    //CTraceScoped gpu_scope("renderColliderLayer");
+    //PROFILE_FUNCTION("renderColliderLayer");
+    //getObjectManager<TCompCollider>()->forEach([](TCompCollider* c) {
+    //    c->renderDebug();
+    //});
 }
 
 void CModulePhysics::CustomSimulationEventCallback::onTrigger(PxTriggerPair* pairs, PxU32 count)
@@ -139,6 +143,22 @@ void CModulePhysics::CustomSimulationEventCallback::onTrigger(PxTriggerPair* pai
         }
 
         CEntity* e_trigger = h_trigger_comp_collider.getOwner();
+        //CEntity* e_other_trigger = h_other_comp_collider.getOwner();
+        //TCompCollider * c_collider = e_other_trigger->get<TCompCollider>();
+        //TCompTransform * c_transform = e_other_trigger->get<TCompTransform>();
+
+        //// Special trigger message for the player
+        //if (c_collider->config->group & FilterGroup::Player){
+
+        //    TCompTransform * e_transform = e_trigger->get<TCompTransform>();
+        //    VEC3 c_pos = c_transform->getPosition();
+        //    VEC3 c_dir = e_transform->getPosition() - c_pos;
+        //    float length = c_dir.Length();
+        //    c_dir.Normalize();
+        //    physx::PxRaycastHit hit;
+        //    if (EnginePhysics.Raycast(c_pos, c_dir, length, hit, physx::PxQueryFlag::eANY_HIT))
+        //        dbg("pos %f %f %f\n", c_transform->getPosition().x, c_transform->getPosition().y, c_transform->getPosition().z);
+        //}
 
         if (pairs[i].flags & (PxTriggerPairFlag::eREMOVED_SHAPE_TRIGGER | PxTriggerPairFlag::eREMOVED_SHAPE_OTHER))
         {
@@ -148,7 +168,6 @@ void CModulePhysics::CustomSimulationEventCallback::onTrigger(PxTriggerPair* pai
             continue;
         }
 
-        //dbg("trigger touch\n");
         if (pairs[i].status == PxPairFlag::eNOTIFY_TOUCH_FOUND)
         {
             e_trigger->sendMsg(TMsgTriggerEnter{ h_other_comp_collider.getOwner() });

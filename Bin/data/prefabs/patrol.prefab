@@ -22,8 +22,8 @@
 			],
 			"fade_controller": {
 				"fade_color": "0.0 1.0 1.0 1.0",
-				"fade_time": 4.0,
-				"fall_speed": 0.3,
+				"fade_time": 0.6,
+				"fall_speed": 3.0,
 				"material": "data/materials/characters/mtl_enemy_patrol_shade.material"
 			},
 			"skeleton": {
@@ -48,7 +48,8 @@
 			"tags": ["enemy", "patrol"],
 			"ai_patrol": {
 				"bt": "data/bt/patrol.bt"
-			}
+			},
+			"audio":true
 		}
 	}, {
 		"entity": {
@@ -65,7 +66,7 @@
 		"entity": {
 			"name": "FlashLight",
 			"transform": {
-				"pos": "0 1.5 0",
+				"pos": "0 0 0",
 				"rotation": "0 0 0 0"
 			},
 			"light_spot": {
@@ -89,14 +90,49 @@
 				"lookat": "0 0 3"
 			},
 			"cone_of_light": {
-				"hor_fov": 70,
-				"ver_fov": 70,
+				"hor_fov": 68,
+				"ver_fov": 68,
 				"dist": 15,
 				"target": "The Player"
+			},
+			"particles": {
+				"on_start": false,
+				"cores":
+				[
+					"data/particles/def_amb_flare_spotlight.particles"
+				]
 			},
 			"abs_aabb": true
 			  ,
 			  "local_aabb": true
+		}
+	},  {
+		"entity": {
+			"name": "right_foot",
+			"transform": {
+				"pos": "0 0 0",
+				"lookat": "0 0 0"
+			},
+			"bone_tracker": {
+				"bone": "Bip001 R Foot",
+				"parent": "The Enemy"
+			},
+			"abs_aabb": true,
+			"local_aabb": true
+		}
+	},  {
+		"entity": {
+			"name": "left_foot",
+			"transform": {
+				"pos": "0 0 0",
+				"lookat": "0 0 0"
+			},
+			"bone_tracker": {
+				"bone": "Bip001 L Foot",
+				"parent": "The Enemy"
+			},
+			"abs_aabb": true,
+			"local_aabb": true
 		}
 	}
 ]

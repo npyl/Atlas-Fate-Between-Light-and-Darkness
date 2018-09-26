@@ -14,6 +14,7 @@
 #include "render/render_utils.h"
 #include "components/ia/comp_patrol_animator.h"
 #include "render/render_objects.h"
+#include "components/comp_tags.h"
 
 void TCompAIEnemy::debugInMenu() {
 
@@ -98,7 +99,7 @@ bool TCompAIEnemy::isEntityInFov(const std::string& entityToChase, float fov, fl
     CPhysicsCapsule * capsuleCollider = (CPhysicsCapsule *)myCollider->config;
     float myY = mypos->getPosition().y;
 
-    CHandle hPlayer = getEntityByName(entityToChase);
+    CHandle hPlayer = EngineEntities.getPlayerHandle();
     if (hPlayer.isValid()) {
         CEntity *ePlayer = hPlayer;
         TCompTransform *ppos = ePlayer->get<TCompTransform>();
@@ -107,7 +108,10 @@ bool TCompAIEnemy::isEntityInFov(const std::string& entityToChase, float fov, fl
         TCompTempPlayerController *pController = ePlayer->get<TCompTempPlayerController>();
 
         /* Player inside cone of vision */
-        bool in_fov = mypos->isInFov(ppos->getPosition(), fov, deg2rad(45.f)) && fabsf(myY - playerY) <= 2 * capsuleCollider->height; //in fov and not too high
+        bool in_fov = mypos->isInFov(ppos->getPosition(), fov, deg2rad(45.f))/* && fabsf(myY - playerY) <= 2 * capsuleCollider->height*/; //in fov and not too high
+
+        //bool in_horizontal_fov = mypos->isInHorizontalFov(ppos->getPosition(), fov);
+        //bool in_vertical_fov = mypos->isInVerticalFov(ppos->getPosition(), deg2rad(45.f));
 
         return in_fov && !pController->isInvisible && !pController->isInNoClipMode &&
             !pController->isMerged && !pController->isDead() && dist <= maxChaseDistance && !isEntityHidden(hPlayer);
@@ -158,15 +162,79 @@ void TCompAIEnemy::generateNavmesh(VEC3 initPos, VEC3 destPos, bool recalc)
     navmeshPathPoint = 0;
     recalculateNavmesh = recalc;
 
+    isDestinationCloseEnough = EngineNavmeshes.navmeshLong(navmeshPath) < maxNavmeshDistance;
+
     /* Calculate navmesh generation */
+    //
+    //if (navmeshPath.size() == 0) {
+    //    navmeshPath.push_back(initPos);
+    //}
+
     if (navmeshPath.size() > 0) {
         VEC3 lastNavmeshPoint = navmeshPath[navmeshPath.size() - 1];
         float diff = VEC3::Distance(destPos, lastNavmeshPoint);
         float diffY = fabsf(destPos.y - lastNavmeshPoint.y);
-        canArriveToDestination = diff < 2.f && diffY < 0.1f;
+        //dbg("Can arrive to destination by its long %s\n", diff < 1.5f ? "YES" : "NO");
+        //dbg("Can arrive to destination by its height %s\n", diffY < 0.3f ? "YES" : "NO");
+        canArriveToDestination = diff < 1.5f && diffY < 0.3f;
     }
     else {
-        canArriveToDestination = false;
+        float diff = VEC3::Distance(initPos, destPos);
+        float diffY = fabsf(initPos.y - destPos.y);
+
+        std::vector<physx::PxSweepHit> hits;
+        CEntity * me = myHandle.getOwner();
+        TCompTransform *mypos = me->get<TCompTransform>();
+        TCompCollider* mycol = me->get<TCompCollider>();
+
+        VEC3 offsetY = VEC3::Zero;
+        physx::PxGeometryHolder geometryHolder = mycol->config->getGeometry();
+
+        switch (mycol->config->getGeometry().getType()) {
+        case physx::PxGeometryType::eCAPSULE:
+            offsetY = VEC3(0.f, geometryHolder.capsule().halfHeight + 0.1f, 0.f);
+            break;
+        case physx::PxGeometryType::eBOX:
+            offsetY = VEC3(0.f, geometryHolder.box().halfExtents.y + 0.1f, 0.f);
+            break;
+        default:
+            break;
+        }
+
+        // Set a default filter to do query checks
+        physx::PxFilterData pxFilterData;
+        pxFilterData.word0 = FilterGroup::All;
+        physx::PxQueryFilterData defaultFilter;
+        defaultFilter.data = pxFilterData;
+
+        bool sweephit = EnginePhysics.Sweep(mycol->config->getGeometry().any(), initPos + offsetY, mypos->getRotation(), (destPos - initPos).Normalized(), diff, hits, (physx::PxQueryFlag::eSTATIC | physx::PxQueryFlag::eDYNAMIC), defaultFilter);
+        //dbg("Can arrive to destination by its sweep - Zero navmesh %s\n", !sweephit ? "YES" : "NO");
+        //dbg("Can arrive to destination by its height - Zero navmesh %s\n", diffY < 0.3f ? "YES" : "NO");
+
+        bool realHit = false;
+
+        if (sweephit) {
+            for (int i = 0; i < hits.size() && !realHit; i++) {
+                CHandle h;
+                h.fromVoidPtr(hits[i].actor->userData);
+                TCompCollider * othercol = h;
+                h = h.getOwner();
+                CEntity* e = h;
+                TCompTags* otherTags = e->get<TCompTags>();
+                if (otherTags && !otherTags->hasTag(getID("enemy")) && !otherTags->hasTag(getID("player"))) {
+                    realHit = hits[i].distance < diff;
+                }
+                //dbg("Hit with %s\n", e->getName());
+            }
+        }
+
+        canArriveToDestination = diff < 2.f && !realHit && diffY < 0.3f;
+        if (!canArriveToDestination) {
+            navmeshPath.push_back(initPos);
+        }
+        else {
+            navmeshPath.push_back(destPos);
+        }
     }
     timerWaitingInUnreachablePoint = 0;
 }
@@ -196,22 +264,6 @@ bool TCompAIEnemy::moveToPoint(float speed, float rotationSpeed, VEC3 objective,
     if (VEC3::Distance(objective, vp) <= speed * dt + 0.1f/*fabsf(left.Dot(finalDir)) * maxDistanceToNavmeshPoint + 0.1f*/) {
         return true;
     }
-    else if (navmeshPath.size() == navmeshPathPoint
-        && !canArriveToDestination) {
-
-
-        /* We are in the navmesh last point and cant reach it */
-        playAnimationByName("idle");
-        timerWaitingInUnreachablePoint += dt;
-        if (timerWaitingInUnreachablePoint > 3.f) {
-            TCompEmissionController * e_controller = me->get<TCompEmissionController>();
-            e_controller->blend(enemyColor.colorNormal, 0.1f);
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
     else {
         float actualSpeed = speed;
         VEC3 front = mypos->getFront();
@@ -229,5 +281,22 @@ bool TCompAIEnemy::moveToPoint(float speed, float rotationSpeed, VEC3 objective,
             navmeshPathPoint++;
         }
         return false;
+    }
+}
+
+bool TCompAIEnemy::isCurrentDestinationReachable()
+{
+    return canArriveToDestination && isDestinationCloseEnough;
+}
+
+void TCompAIEnemy::sendSuspectingMsg(bool isSuspecting)
+{
+    if (isSuspecting != isSuspectingAndSeeingPlayer) {
+        CEntity* e_player = EngineEntities.getPlayerHandle();
+        TMsgEnemySuspecting msg;
+        msg.enemy_suspecting = myHandle.getOwner();
+        msg.is_suspecting = isSuspecting;
+        e_player->sendMsg(msg);
+        isSuspectingAndSeeingPlayer = isSuspecting;
     }
 }

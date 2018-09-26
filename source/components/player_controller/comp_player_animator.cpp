@@ -28,6 +28,24 @@ void TCompPlayerAnimator::debugInMenu() {
 	if (ImGui::SmallButton("prova")) {
 		playAnimation(EAnimation::HIT_BACK, speed);
 	}
+    if (ImGui::SmallButton("FALL")) {
+        playAnimation(EAnimation::FALL, speed);
+    }
+    if (ImGui::SmallButton("SM_ENTER")) {
+        playAnimation(EAnimation::SM_ENTER, speed);
+    }
+    if (ImGui::SmallButton("OPEN_WEAPONS")) {
+        playAnimation(EAnimation::OPEN_WEAPONS, speed);
+    }
+	if (ImGui::SmallButton("stop SM")) {
+		removeAction((TCompAnimator::EAnimation)EAnimation::SM_ENTER);
+	}
+	if (ImGui::SmallButton("sonda")) {
+		playAnimation(EAnimation::SONDA_NORMAL, speed);
+	}
+	if (ImGui::SmallButton("sonda_crouch")) {
+		playAnimation(EAnimation::SONDA_CROUCH, speed);
+	}
 
 
 	ImGui::DragFloat("Delta Movement", &delta_movement, 0.01f, 0, 1.f);
@@ -44,7 +62,8 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"idle",
 		"",
 		1.0f,
-		1.0f
+		1.0f,
+		false
 	);
 
 	initializeAnimation(
@@ -54,7 +73,8 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"walk",
 		"",
 		1.0f,
-		1.0f
+		1.0f,
+		false
 	);
 
   /* TODO: Meter animación para andar despacio (ahora es la de andar pero a menos velocidad) */
@@ -65,7 +85,8 @@ void TCompPlayerAnimator::initializeAnimations() {
     "walk",
     "",
     1.0f,
-    0.5f
+    0.5f,
+	  false
   );
 
 	initializeAnimation(
@@ -75,7 +96,8 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"run",
 		"",
 		1.0f,
-		1.0f
+		1.0f,
+		false
 	);
 
 	initializeAnimation(
@@ -85,7 +107,8 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"attack",
 		"",
 		1.0f,
-		1.0f
+		1.0f,
+		false
 	);
 
 	initializeAnimation(
@@ -95,7 +118,8 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"die",
 		"",
 		1.0f,
-		1.0f
+		1.0f,
+		false
 	);
 
 	initializeAnimation(
@@ -105,7 +129,8 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"dead",
 		"",
 		1.0f,
-		1.0f
+		1.0f,
+		false
 	);
 
 	initializeAnimation(
@@ -115,7 +140,8 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"crouch",
 		"",
 		1.0f,
-		1.0f
+		1.0f,
+		false
 	);
 
 	initializeAnimation(
@@ -125,7 +151,8 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"fall",
 		"",
 		1.0f,
-		1.0f
+		1.0f,
+		false
 	);
 
 	initializeAnimation(
@@ -135,7 +162,30 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"crouch_walk",
 		"",
 		1.0f,
-		1.0f
+		1.0f,
+		false
+	);
+
+	initializeAnimation(
+		(TCompAnimator::EAnimation)EAnimation::SONDA_NORMAL,
+		EAnimationType::ACTION,
+		EAnimationSize::SINGLE,
+		"sonda_normal",
+		"",
+		1.0f,
+		1.0f,
+		false
+	);
+
+	initializeAnimation(
+		(TCompAnimator::EAnimation)EAnimation::SONDA_CROUCH,
+		EAnimationType::ACTION,
+		EAnimationSize::SINGLE,
+		"sonda_crouch",
+		"",
+		1.0f,
+		1.0f,
+		false
 	);
 
 	initializeAnimation(
@@ -145,7 +195,8 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"crouch_walk_slow",
 		"",
 		1.0f,
-		1.0f
+		1.0f,
+		false
 	);
 
 	initializeAnimation(
@@ -155,19 +206,21 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"land_soft",
 		"",
 		1.0f,
-		1.0f
+		1.0f,
+		false
 	);
 
-  initializeAnimation(
-    (TCompAnimator::EAnimation)EAnimation::LAND_HARD,
-    EAnimationType::ACTION,
-    EAnimationSize::SINGLE,
-    "crouch",
-    "",
-    1.0f,
-    1.0f
-  );
-
+	  initializeAnimation(
+	    (TCompAnimator::EAnimation)EAnimation::LAND_HARD,
+	    EAnimationType::ACTION,
+	    EAnimationSize::SINGLE,
+	    "land_hard",
+	    "",
+	    1.0f,
+	    1.0f,
+		false
+	  );
+	
 	initializeAnimation(
 		(TCompAnimator::EAnimation)EAnimation::HIT_BACK,
 		EAnimationType::CYCLIC,
@@ -175,7 +228,8 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"walk",
 		"run",
 		1.0f,
-		1.0f
+		1.0f,
+		false
 	);
 
 	initializeAnimation(
@@ -185,7 +239,8 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"metralla_start",
 		"",
 		1.0f,
-		1.0f
+		1.0f,
+		false
 	);
 
 	initializeAnimation(
@@ -195,7 +250,8 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"metralla_middle",
 		"",
 		1.0f,
-		1.0f
+		1.0f,
+		false
 	);
 
 	initializeAnimation(
@@ -205,7 +261,8 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"metralla_finish",
 		"",
 		1.0f,
-		1.0f
+		1.0f,
+		false
 	);
 
 	initializeAnimation(
@@ -215,7 +272,8 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"sm_enter",
 		"",
 		1.0f,
-		1.0f
+		1.0f,
+		false
 	);
 
 	initializeAnimation(
@@ -225,8 +283,42 @@ void TCompPlayerAnimator::initializeAnimations() {
 		"sm_pose",
 		"",
 		1.0f,
-		1.0f
+		1.0f,
+		false
 	);
+
+	initializeAnimation(
+		(TCompAnimator::EAnimation)EAnimation::GRAB_ENEMY,
+		EAnimationType::ACTION,
+		EAnimationSize::SINGLE,
+		"touch_enemy",
+		"",
+		1.0f,
+		1.0f,
+		false
+	);
+	initializeAnimation(
+		(TCompAnimator::EAnimation)EAnimation::GRABING_ENEMY,
+		EAnimationType::CYCLIC,
+		EAnimationSize::SINGLE,
+		"touching_enemy",
+		"",
+		1.0f,
+		1.0f,
+		false
+	);
+
+	initializeAnimation(
+		(TCompAnimator::EAnimation)EAnimation::OPEN_WEAPONS,
+		EAnimationType::ACTION,
+		EAnimationSize::SINGLE,
+		"open_weapons",
+		"",
+		1.0f,
+		1.0f,
+		false
+	);
+
 }
 
 void TCompPlayerAnimator::registerMsgs() {
@@ -237,7 +329,7 @@ void TCompPlayerAnimator::registerMsgs() {
 }
 
 void TCompPlayerAnimator::onSceneStop(const TMsgScenePaused& msg) {
-	playAnimation(EAnimation::IDLE);
+	//playAnimation(EAnimation::IDLE);
 }
 
 void TCompPlayerAnimator::onMsgNoClipToggle(const TMsgNoClipToggle & msg)

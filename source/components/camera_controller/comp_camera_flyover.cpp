@@ -32,7 +32,9 @@ void TCompCameraFlyover::update(float dt)
         float deltaSpeed = _speed * dt;
         if (EngineInput["btRun"].isPressed())
             deltaSpeed *= 3.f;
-
+		
+		if (EngineInput["btSecAction"].isPressed())
+			deltaSpeed *= .3f;
 		VEC3 pos = c_transform->getPosition();
 		VEC3 front = c_transform->getFront();
 		VEC3 left = c_transform->getLeft();
@@ -78,7 +80,7 @@ void TCompCameraFlyover::registerMsgs() {
 
 void TCompCameraFlyover::onMsgActivatedMyself(const TMsgCameraActivated & msg) {
 
-	CEntity * player = getEntityByName("The Player");
+	CEntity * player = EngineEntities.getPlayerHandle();
 	TCompTransform* c_player_transform = player->get<TCompTransform>();
 	TCompTransform* c_transform = get<TCompTransform>();
 	c_transform->setPosition(c_player_transform->getPosition() + Vector3::Up * 2.0f);
@@ -90,7 +92,7 @@ void TCompCameraFlyover::setStatus(bool status) {
     paused = status;
 
     if (!paused) {
-        Engine.getCameras().blendInCamera(CHandle(this).getOwner(), 1.f, CModuleCameras::EPriority::TEMPORARY);
+        Engine.getCameras().blendInCamera(CHandle(this).getOwner(), 1.f, CModuleCameras::EPriority::DEBUG);
     }
     else {
         Engine.getCameras().blendOutCamera(CHandle(this).getOwner(), 1.0f);

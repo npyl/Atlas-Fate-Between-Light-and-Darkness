@@ -1,25 +1,26 @@
 {
-  "startup": "main_menu",
-  "gamestates": [
-    {
-      "name": "splash",
-      "modules": [ "splash" ]
-    },
-    {
-      "name": "main_menu",
-      "modules": [ "main_menu" ]
-    },
-    {
-      "name": "game_over",
-      "modules": [ "game_over" ]
-    },
-    {
-      "name": "map_intro",
-      "modules": [ "map_intro", "game_manager" ]
-    },
-    {
-      "name": "level_select",
-      "modules": [ "level_select" ]
-    }
-  ]
+	"startup" : "map_intro",
+	"gamestates" : 
+	[
+		{
+			"name" : "splash",
+			"modules" : [ "splash" ]
+		},
+		{
+			"name" : "main_menu",
+			"modules" : [ "main_menu" ]
+		},
+		{
+			"name" : "game_over",
+			"modules" : [ "game_over" ]
+		},
+		{
+			"name" : "map_intro",
+			"modules" : [ "map_intro", "game_manager"]
+		},
+		{
+			"name" : "level_select",
+			"modules" : [ "level_select" ]
+		}
+	]
 }
