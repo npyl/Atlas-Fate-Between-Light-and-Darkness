@@ -9,7 +9,6 @@
 #include "components\ia\comp_mimetic_animator.h"
 #include "components\comp_group.h"
 #include "components\comp_name.h"
-#include "components\postfx\comp_render_ao.h"
 #include "components\physics\comp_rigidbody.h"
 #include "components\comp_fsm.h"
 #include <experimental/filesystem>
@@ -232,7 +231,6 @@ void CModuleLogic::publishClasses() {
 
 	// Player hacks
 	m->set("pausePlayerToggle", SLB::FuncCall::create(&pausePlayerToggle));
-	m->set("movePlayer", SLB::FuncCall::create(&movePlayer));
 	m->set("infiniteStamineToggle", SLB::FuncCall::create(&infiniteStamineToggle));
 	m->set("immortal", SLB::FuncCall::create(&immortal));
 	m->set("inShadows", SLB::FuncCall::create(&inShadows));
@@ -241,7 +239,7 @@ void CModuleLogic::publishClasses() {
 	m->set("noClipToggle", SLB::FuncCall::create(&noClipToggle));
 
 	//Light Hacks
-	m->set("spotlightsToggle", SLB::FuncCall::create(&spotlightsToggle));
+	//m->set("spotlightsToggle", SLB::FuncCall::create(&spotlightsToggle));
 	m->set("cg_drawlights", SLB::FuncCall::create(&cg_drawlights));
 	m->set("lanternsDisable", SLB::FuncCall::create(&lanternsDisable));
 	m->set("shadowsToggle", SLB::FuncCall::create(&shadowsToggle));
@@ -262,7 +260,7 @@ void CModuleLogic::publishClasses() {
 	m->set("blendInCamera", SLB::FuncCall::create(&blendInCamera));
 	m->set("blendOutCamera", SLB::FuncCall::create(&blendOutCamera));
 	m->set("blendOutActiveCamera", SLB::FuncCall::create(&blendOutActiveCamera));
-	m->set("resetMainCameras", SLB::FuncCall::create(&resetMainCameras));
+	//m->set("resetMainCameras", SLB::FuncCall::create(&resetMainCameras));
 
 	// tutorial
 	m->set("setTutorialPlayerState", SLB::FuncCall::create(&setTutorialPlayerState));
@@ -294,11 +292,9 @@ void CModuleLogic::publishClasses() {
 
 	// Other
 	m->set("bind", SLB::FuncCall::create(&bind));
-	m->set("cg_drawfps", SLB::FuncCall::create(&cg_drawfps));
-	m->set("cg_drawlights", SLB::FuncCall::create(&cg_drawlights));
+	//m->set("cg_drawfps", SLB::FuncCall::create(&cg_drawfps));
+	//m->set("cg_drawlights", SLB::FuncCall::create(&cg_drawlights));
 	m->set("renderNavmeshToggle", SLB::FuncCall::create(&renderNavmeshToggle));
-	m->set("playSound2D", SLB::FuncCall::create(&playSound2D));
-	m->set("exeShootImpactSound", SLB::FuncCall::create(&exeShootImpactSound));
 	m->set("sleep", SLB::FuncCall::create(&sleep));
 	m->set("cinematicModeToggle", SLB::FuncCall::create(&cinematicModeToggle));
 	m->set("isCheckpointSaved", SLB::FuncCall::create(&isCheckpointSaved));
@@ -317,7 +313,7 @@ void CModuleLogic::publishClasses() {
 	m->set("toAIPatrol", SLB::FuncCall::create(&toAIPatrol));
 	m->set("toAudio", SLB::FuncCall::create(&toAudio));
 	m->set("toTPCamera", SLB::FuncCall::create(&toTPCamera));
-	m->set("toRender", SLB::FuncCall::create(&toRender));
+	//m->set("toRender", SLB::FuncCall::create(&toRender));
 }
 
 /* Check if it is a fast format command */
@@ -563,27 +559,27 @@ void noClipToggle()
 	h.sendMsg(msg);
 }
 
-void spotlightsToggle() {
-	//For all spotlights, we change their status. This does not desactivate lanterns even though they are spotlights.
-	getObjectManager<TCompLightSpot>()->forEach([](TCompLightSpot* c) {
-		c->isEnabled = !c->isEnabled;
-	});
-	//Now we reactivate lanterns in case it is needed.
-	std::vector<CHandle> enemies = CTagsManager::get().getAllEntitiesByTag(getID("patrol"));
-	for (int i = 0; i < enemies.size(); i++) {
-		CEntity* e = enemies[i];
-		TCompAIPatrol* patrol = e->get<TCompAIPatrol>();
-		bool lights = patrol->getStartLightsOn();
-		TCompGroup* group = e->get<TCompGroup>();
-		CHandle lantern = group->getHandleByName("FlashLight");
-		if (lantern.isValid()) {
-			CEntity* e = lantern;
-			TCompLightSpot* patrol_lantern = e->get<TCompLightSpot>();
-			patrol_lantern->isEnabled = lights;    //else, we activate the lanterns.
-		}
-	}
-
-}
+//void spotlightsToggle() {
+//	//For all spotlights, we change their status. This does not desactivate lanterns even though they are spotlights.
+//	getObjectManager<TCompLightSpot>()->forEach([](TCompLightSpot* c) {
+//		c->isEnabled = !c->isEnabled;
+//	});
+//	//Now we reactivate lanterns in case it is needed.
+//	std::vector<CHandle> enemies = CTagsManager::get().getAllEntitiesByTag(getID("patrol"));
+//	for (int i = 0; i < enemies.size(); i++) {
+//		CEntity* e = enemies[i];
+//		TCompAIPatrol* patrol = e->get<TCompAIPatrol>();
+//		bool lights = patrol->getStartLightsOn();
+//		TCompGroup* group = e->get<TCompGroup>();
+//		CHandle lantern = group->getHandleByName("FlashLight");
+//		if (lantern.isValid()) {
+//			CEntity* e = lantern;
+//			TCompLightSpot* patrol_lantern = e->get<TCompLightSpot>();
+//			patrol_lantern->isEnabled = lights;    //else, we activate the lanterns.
+//		}
+//	}
+//
+//}
 
 void lanternsDisable(bool disable) {
 	VHandles patrols = CTagsManager::get().getAllEntitiesByTag(getID("patrol"));
@@ -643,13 +639,6 @@ void move(const std::string & name, const VEC3 & pos, const VEC3 & lookat)
 	}
 }
 
-void movePlayer(VEC3 pos) {
-	CHandle h = getEntityByName("The Player");
-	TMsgPlayerMove msg;
-	msg.pos = pos;
-	h.sendMsg(msg);
-}
-
 void loadScene(const std::string &level) {
 	//EngineScene.preparingSceneMT(level);
 	//to& aux = EngineScene;
@@ -658,7 +647,7 @@ void loadScene(const std::string &level) {
 
 }
 
-void unloadscene() {
+void unloadScene() {
 	EngineScene.unLoadActiveScene();
 }
 
@@ -870,14 +859,6 @@ TCompCameraThirdPerson * toTPCamera(CHandle h)
 {
 	TCompCameraThirdPerson* t = h;
 	return t;
-}
-
-void playSound2D(const std::string& soundName) {
-	EngineSound.playSound2D(soundName);
-}
-
-void exeShootImpactSound() {
-	EngineSound.exeShootImpactSound();
 }
 
 void sendOrderToDrone(const std::string & droneName, VEC3 position)

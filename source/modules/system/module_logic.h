@@ -107,8 +107,8 @@ void resetMainCameras();
 CHandle spawn(const std::string & name, const VEC3 & pos, const VEC3& lookat);
 void move(const std::string & name, const VEC3 & pos, const VEC3& lookat);
 void bind(const std::string& key, const std::string& script);
-void loadscene(const std::string &level);
-void unloadscene();
+void loadScene(const std::string &level);
+void unloadScene();
 void loadCheckpoint();
 void shadowsToggle();
 void debugToggle();
@@ -119,6 +119,11 @@ void cinematicModeToggle();
 bool isCheckpointSaved();
 void destroyHandle(unsigned int h);
 void resetPatrolLights();
+//void spotlightsToggle();
+void wireframeToggle();
+void collidersToggle(bool);
+void animationsToggle();
+void fpsToggle(bool);
 
 /* Sounds */
 SoundEvent playEvent(const std::string& name);

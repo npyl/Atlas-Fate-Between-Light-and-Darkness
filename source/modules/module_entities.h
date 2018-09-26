@@ -10,7 +10,7 @@ class CModuleEntities : public IModule
 	void loadListOfManagers(const json& j, std::vector< CHandleManager* > &managers);
 	void renderDebugOfComponents();
 	CHandle player_handle;
-
+	bool _animationsEnabled = true;
 public:
 	float time_scale_factor = 1.f;
 
@@ -23,6 +23,9 @@ public:
 	float getTimeScale() { return time_scale_factor; }
 
 	CHandle getPlayerHandle();
+
+	bool const getAnimationsEnabled() { return _animationsEnabled; }
+	void setAnimationsEnabled(bool anims) { _animationsEnabled = anims; }
 
 	template< class TMsg >
 	void broadcastMsg(const TMsg& msg) {
