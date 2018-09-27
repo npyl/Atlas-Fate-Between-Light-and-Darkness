@@ -164,3 +164,19 @@ end
 function resetPatrolLights()
 	SLB.resetPatrolLights();
 end
+
+function wireframeToggle()
+	SLB.wireframeToggle()
+end
+
+function collidersToggle(onlyDynamics)
+	SLB.collidersToggle(onlyDynamics)
+end
+
+function fpsToggle(bool)
+	SLB.fpsToggle(bool)
+end
+
+function animationsToggle()
+	SLB.animationsToggle()
+end

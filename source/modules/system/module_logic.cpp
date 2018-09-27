@@ -260,7 +260,7 @@ void CModuleLogic::publishClasses() {
 	m->set("blendInCamera", SLB::FuncCall::create(&blendInCamera));
 	m->set("blendOutCamera", SLB::FuncCall::create(&blendOutCamera));
 	m->set("blendOutActiveCamera", SLB::FuncCall::create(&blendOutActiveCamera));
-	//m->set("resetMainCameras", SLB::FuncCall::create(&resetMainCameras));
+	m->set("resetMainCameras", SLB::FuncCall::create(&resetMainCameras));
 
 	// tutorial
 	m->set("setTutorialPlayerState", SLB::FuncCall::create(&setTutorialPlayerState));
@@ -292,8 +292,8 @@ void CModuleLogic::publishClasses() {
 
 	// Other
 	m->set("bind", SLB::FuncCall::create(&bind));
-	//m->set("cg_drawfps", SLB::FuncCall::create(&cg_drawfps));
-	//m->set("cg_drawlights", SLB::FuncCall::create(&cg_drawlights));
+	m->set("cg_drawfps", SLB::FuncCall::create(&cg_drawfps));
+	m->set("cg_drawlights", SLB::FuncCall::create(&cg_drawlights));
 	m->set("renderNavmeshToggle", SLB::FuncCall::create(&renderNavmeshToggle));
 	m->set("sleep", SLB::FuncCall::create(&sleep));
 	m->set("cinematicModeToggle", SLB::FuncCall::create(&cinematicModeToggle));
@@ -313,7 +313,7 @@ void CModuleLogic::publishClasses() {
 	m->set("toAIPatrol", SLB::FuncCall::create(&toAIPatrol));
 	m->set("toAudio", SLB::FuncCall::create(&toAudio));
 	m->set("toTPCamera", SLB::FuncCall::create(&toTPCamera));
-	//m->set("toRender", SLB::FuncCall::create(&toRender));
+	m->set("toRender", SLB::FuncCall::create(&toRender));
 }
 
 /* Check if it is a fast format command */
@@ -641,9 +641,9 @@ void move(const std::string & name, const VEC3 & pos, const VEC3 & lookat)
 
 void loadScene(const std::string &level) {
 	//EngineScene.preparingSceneMT(level);
-	//to& aux = EngineScene;
-	//gineMultithreading.fut = std::async(std::launch::async, [&aux, level] {return aux.getResourcesList(level); });
-	EngineScene.loadScene(level);
+	auto& aux = EngineScene;
+	EngineMultithreading.fut = std::async(std::launch::async, [&aux, level] {return aux.getResourcesList(level); });
+	//EngineScene.loadScene(level);
 
 }
 
@@ -806,6 +806,11 @@ void fpsToggle(bool value) {
 	CEngine::get().getGameManager().config.drawfps = value;
 }
 
+// Toggle CVARS.
+void cg_drawfps(bool value) {
+	CEngine::get().getGameManager().config.drawfps = value;
+}
+
 void cg_drawlights(int type) {
 
 	bool dir = false, spot = false, point = false;
@@ -859,6 +864,21 @@ TCompCameraThirdPerson * toTPCamera(CHandle h)
 {
 	TCompCameraThirdPerson* t = h;
 	return t;
+}
+
+TCompRender * toRender(CHandle h)
+{
+	TCompRender* t = h;
+	return t;
+}
+
+void resetMainCameras()
+{
+	std::vector<CHandle> v_cameras = CTagsManager::get().getAllEntitiesByTag(getID("main_camera"));
+	for (int i = 0; i < v_cameras.size(); i++) {
+		TMsgCameraResetTargetPos msg;
+		v_cameras[i].sendMsg(msg);
+	}
 }
 
 void sendOrderToDrone(const std::string & droneName, VEC3 position)
