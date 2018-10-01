@@ -93,6 +93,7 @@ bool CModuleSceneManager::parseSceneResources(const std::string& filename, TEnti
 			else {
 				for (auto& j_current = j_entity.begin(); j_current != j_entity.end(); j_current++) {
 					std::vector<std::string>::iterator it;
+
 					if (j_entity.count("render") > 0) {
 						auto& j_render = j_entity["render"];
 						for (auto ite = j_render.begin(); ite != j_render.end(); ++ite) {
@@ -284,7 +285,22 @@ bool CModuleSceneManager::loadScene(const std::string & name) {
             dbg("Autoloading scene %s\n", scene_name.c_str());
             TEntityParseContext ctx;
             parseScene(scene_name, ctx);
+			for (auto& entity : ctx.entities_loaded) {
+				CEntity* e = entity;
+				_entitiesLoaded.push_back(e->getName());
+			}
         }
+
+		//Creating file with the entities of the level
+		std::string filename = "data/scenes/Entities List " + it->second->name + ".txt";
+		std::ofstream file(filename, std::ofstream::out);
+		for (auto line : _entitiesLoaded) {
+			//file.write(line.c_str(), line.size());
+			file << line;
+			file << std::endl;
+		}
+
+		_entitiesLoaded.clear();
 
         // Renew the active scene
         current_scene->isLoaded = true;
@@ -330,6 +346,37 @@ bool CModuleSceneManager::loadScene(const std::string & name) {
     return false;
 }
 
+bool CModuleSceneManager::unloadScene(const std::string & name) {
+	
+	getEntitiesList(name);
+	for (auto& entity : _entitiesLoaded) {
+		CHandle h = getEntityByName(entity);
+		if (h.isValid()) {
+			CEntity * e = h;
+			e->~CEntity();
+		}
+
+	}
+
+	//EngineLogic.clearDelayedScripts();
+	//EngineLogic.execEvent(EngineLogic.SCENE_END, _activeScene->name);
+
+	//EngineEntities.destroyAllEntities();
+	//EngineCameras.deleteAllCameras();
+	//EngineIA.clearSharedBoards();
+	//EngineNavmeshes.destroyNavmesh();
+	//EngineInstancing.clearInstances();
+	//EngineParticles.killAll();
+
+	//_activeScene->isLoaded = false;
+	//_activeScene = nullptr;
+
+	///* TODO: Delete checkpoint */
+
+	return true;
+}
+
+
 /* Method used to retrieve resources needed to load a level */
 bool CModuleSceneManager::getResourcesList(const std::string & name) {
 	std::string path = "data/scenes/";
@@ -343,6 +390,20 @@ bool CModuleSceneManager::getResourcesList(const std::string & name) {
 	}
 	preparingLevel = true;
 	levelToLoad = name;
+	return true;
+}
+
+/* Method used to retrieve entities needed to unload a level */
+bool CModuleSceneManager::getEntitiesList(const std::string & name) {
+	std::string path = "data/scenes/";
+	std::string filename = path + "Entities List " + name + ".txt";
+	std::ifstream file(filename);
+	std::string str;
+	while (std::getline(file, str))
+	{
+		// Process str
+		_entitiesLoaded.emplace_back(str);
+	}
 	return true;
 }
 

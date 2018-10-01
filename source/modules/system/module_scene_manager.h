@@ -40,9 +40,10 @@ public:
 	bool stop() override;
 	void update(float delta) override;
 
+	bool unloadScene(const std::string & name);
     bool loadScene(const std::string & name);
 	bool getResourcesList(const std::string & name);
-	void loadPreparedSceneMT(const std::string & name);
+	bool getEntitiesList(const std::string & name);
 
     Scene* createScene(const std::string& name);
     Scene* getSceneByName(const std::string& name);
@@ -57,6 +58,7 @@ private:
     std::string _default_scene;
     std::map<std::string, Scene*> _scenes;
 	std::vector<std::string> _resources;
+	std::vector<std::string> _entitiesLoaded;
 	bool preparingLevel = false;
 	std::string levelToLoad;
 

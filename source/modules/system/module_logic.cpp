@@ -647,8 +647,8 @@ void loadScene(const std::string &level) {
 
 }
 
-void unloadScene() {
-	EngineScene.unLoadActiveScene();
+void unloadScene(const std::string &level) {
+	EngineScene.unloadScene(level);
 }
 
 void sleep(float time) {

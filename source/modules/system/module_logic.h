@@ -108,7 +108,7 @@ CHandle spawn(const std::string & name, const VEC3 & pos, const VEC3& lookat);
 void move(const std::string & name, const VEC3 & pos, const VEC3& lookat);
 void bind(const std::string& key, const std::string& script);
 void loadScene(const std::string &level);
-void unloadScene();
+void unloadScene(const std::string &level);
 void loadCheckpoint();
 void shadowsToggle();
 void debugToggle();
