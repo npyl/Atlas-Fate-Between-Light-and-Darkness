@@ -59,6 +59,7 @@ private:
     std::map<std::string, Scene*> _scenes;
 	std::vector<std::string> _resources;
 	std::vector<std::string> _entitiesLoaded;
+	std::vector<std::string> _persistentData = { "data/scenes/Intro/player_intro_fsm.scene" };
 	bool preparingLevel = false;
 	std::string levelToLoad;
 
@@ -67,6 +68,7 @@ private:
 	bool parseSceneResources(const std::string& filename, TEntityParseContext& ctx);
 	bool generateResourceLists();
 	void createResources();
+	bool checkPersistent(const std::vector<std::string>, std::string);
 
 };
  

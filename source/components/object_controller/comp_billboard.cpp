@@ -27,15 +27,17 @@ void TCompBillBoard::registerMsgs()
 
 void TCompBillBoard::update(float dt) {
 
-    TCompTransform * self_transform = get<TCompTransform>();
-    float yaw, pitch, roll;
-    
-    CEntity* eCurrentCamera = Engine.getCameras().getOutputCamera();
-    assert(eCurrentCamera);
-    TCompCamera* camera = eCurrentCamera->get<TCompCamera>();
-    assert(camera);
+	TCompTransform * self_transform = get<TCompTransform>();
+	float yaw, pitch, roll;
 
-    float new_yaw = getYawFromVector(-camera->getFront());
-    self_transform->getYawPitchRoll(&yaw, &pitch, &roll);
-    self_transform->setYawPitchRoll(new_yaw, pitch, 0);
+	CEntity* eCurrentCamera = Engine.getCameras().getOutputCamera();
+	assert(eCurrentCamera);
+	TCompCamera* camera = eCurrentCamera->get<TCompCamera>();
+	assert(camera);
+	if (camera) {
+		float new_yaw = getYawFromVector(-camera->getFront());
+		self_transform->getYawPitchRoll(&yaw, &pitch, &roll);
+		self_transform->setYawPitchRoll(new_yaw, pitch, 0);
+
+	}
 }

@@ -273,7 +273,7 @@ bool CModuleSceneManager::loadScene(const std::string & name) {
             gameManager.deleteCheckpoint();
         }
 
-        unLoadActiveScene();
+        //unLoadActiveScene();
 
         // Load the subscene
         Scene * current_scene = it->second;
@@ -285,10 +285,12 @@ bool CModuleSceneManager::loadScene(const std::string & name) {
             dbg("Autoloading scene %s\n", scene_name.c_str());
             TEntityParseContext ctx;
             parseScene(scene_name, ctx);
-			for (auto& entity : ctx.entities_loaded) {
-				CEntity* e = entity;
-				_entitiesLoaded.push_back(e->getName());
-			}
+			if (!checkPersistent(_persistentData, scene_name)) {
+				for (auto& entity : ctx.entities_loaded) {
+					CEntity* e = entity;
+						_entitiesLoaded.push_back(e->getName());
+				}
+			}			
         }
 
 		//Creating file with the entities of the level
@@ -348,6 +350,8 @@ bool CModuleSceneManager::loadScene(const std::string & name) {
 
 bool CModuleSceneManager::unloadScene(const std::string & name) {
 	
+	EngineCameras.deleteAllCameras();
+
 	getEntitiesList(name);
 	for (auto& entity : _entitiesLoaded) {
 		CHandle h = getEntityByName(entity);
@@ -405,6 +409,15 @@ bool CModuleSceneManager::getEntitiesList(const std::string & name) {
 		_entitiesLoaded.emplace_back(str);
 	}
 	return true;
+}
+
+bool CModuleSceneManager::checkPersistent(const std::vector<std::string> persistentData, std::string scene) {
+	for (auto& name : persistentData) {
+		if (name.compare(scene) == 0) {
+			return true;
+		}
+	}
+	return false;
 }
 
 void CModuleSceneManager::createResources() {

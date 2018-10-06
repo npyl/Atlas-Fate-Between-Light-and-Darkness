@@ -119,7 +119,7 @@
 
 		},
 		"scene_group": [
-			"data/scenes/ZoneA/player2_fsm.scene",
+			
 			"data/scenes/main_cameras.scene",
 			"data/scenes/ZoneA/zone_a_suelo.scene",
 			"data/scenes/ZoneA/zone_a_casas.scene",
@@ -176,9 +176,9 @@
 			"env_fog": "0.004 0.004 0.043"
 		},
 		"scene_group": [
-			"data/scenes/Coliseo/player2_fsm.scene",
+			
 			"data/scenes/Coliseo/test_instancing.scene",
-			"data/scenes/Coliseo/camera.scene",
+			
 			"data/scenes/Coliseo/coliseo_particles.scene",
 			"data/scenes/Coliseo/coliseo_luces.scene",
 			"data/scenes/Coliseo/coliseo_structures.scene"
@@ -199,7 +199,7 @@
 			"env_fog": "0.004 0.004 0.043"
 		},
 		"scene_group": [
-			"data/scenes/Coliseo/player2_fsm2.scene",
+			
 			"data/scenes/Coliseo/test_instancing.scene",
 			"data/scenes/Coliseo/camera.scene",
 			"data/scenes/Coliseo/coliseo_particles.scene",
@@ -223,7 +223,7 @@
 			"env_fog": "0.004 0.004 0.043"
 		},
 		"scene_group": [
-			"data/scenes/Basilic_courtyard/player.scene",
+			
 			"data/scenes/main_cameras.scene",
 			"data/scenes/Basilic_courtyard/enemy.scene",
 			"data/scenes/Basilic_courtyard/whitebox_patio_test_light.scene",
@@ -268,7 +268,7 @@
 			"env_fog": "0.004 0.004 0.043"
 		},
 		"scene_group": [
-			"data/scenes/Basilic_interior/player.scene",
+			
 			"data/scenes/main_cameras.scene",
 			"data/scenes/Basilic_interior/enemy.scene",
 			"data/scenes/Basilic_interior/test_instancing.scene",
