@@ -55,6 +55,13 @@ bool CModuleEntities::start()
     loadListOfManagers(j["update"], om_to_update);
     loadListOfManagers(j["render_debug"], om_to_render_debug);
 
+		std::vector< std::string > names = j["multithread"];
+		for (auto& n : names) {
+			auto om = CHandleManager::getByName(n.c_str());
+			assert(om || fatal("Can't find a manager of components of type %s to update. Check file components.json\n", n.c_str()));
+			om->multithreaded = true;
+		}
+
     return true;
 }
 

@@ -255,6 +255,7 @@
     <ClCompile Include="modules\system\module_instancing.cpp" />
     <ClCompile Include="modules\system\module_lerp.cpp" />
     <ClCompile Include="modules\system\module_logic.cpp" />
+    <ClCompile Include="modules\system\module_multithread.cpp" />
     <ClCompile Include="modules\system\module_particles.cpp" />
     <ClCompile Include="modules\system\module_physics.cpp" />
     <ClCompile Include="modules\system\module_scene_manager.cpp" />
@@ -536,6 +537,7 @@
     <ClInclude Include="modules\system\module_instancing.h" />
     <ClInclude Include="modules\system\module_lerp.h" />
     <ClInclude Include="modules\system\module_logic.h" />
+    <ClInclude Include="modules\system\module_multithread.h" />
     <ClInclude Include="modules\system\module_particles.h" />
     <ClInclude Include="modules\system\module_physics.h" />
     <ClInclude Include="modules\system\module_scene_manager.h" />

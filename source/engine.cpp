@@ -34,7 +34,9 @@ CEngine::CEngine()
 	, _module_instancing("instancing")
 	, _module_debug("debug")
 	, _module_lerp("lerp")
-    , _module_particles("particles")
+	, _module_particles("particles")
+	, _module_multithread("multithread")
+
 {}
 
 bool CEngine::start() {
@@ -47,7 +49,7 @@ bool CEngine::start() {
 	static CModuleLevelSelect module_level_select("level_select");
 	static CModuleCredits module_credits("credits");
 
-    //static CModuleTestInstancing module_test_instancing("test_instancing");
+	//static CModuleTestInstancing module_test_instancing("test_instancing");
 
 	_modules.registerSystemModule(&_module_render);
 	_modules.registerSystemModule(&_module_entities);
@@ -62,11 +64,13 @@ bool CEngine::start() {
 	_modules.registerSystemModule(&_module_game_console);
 	_modules.registerSystemModule(&_module_gui);
 	_modules.registerSystemModule(&_module_logic);          //Always last to start the ongamestarted event from here
-    _modules.registerSystemModule(&_module_scene_manager);
-    _modules.registerSystemModule(&_module_instancing);
-    _modules.registerSystemModule(&_module_debug);
-    _modules.registerSystemModule(&_module_particles);
+	_modules.registerSystemModule(&_module_scene_manager);
+	_modules.registerSystemModule(&_module_instancing);
+	_modules.registerSystemModule(&_module_debug);
+	_modules.registerSystemModule(&_module_particles);
 	_modules.registerSystemModule(&_module_lerp);
+	_modules.registerSystemModule(&_module_multithread);
+
 
 	_modules.registerGameModule(&module_splash);
 	_modules.registerGameModule(&module_game_manager);
@@ -75,7 +79,7 @@ bool CEngine::start() {
 	_modules.registerGameModule(&module_map_intro);
 	_modules.registerGameModule(&module_credits);
 	_modules.registerGameModule(&module_level_select);
-    //_modules.registerGameModule(&module_test_instancing);
+	//_modules.registerGameModule(&module_test_instancing);
 
 	_modules.loadModules("data/modules.json");
 	_modules.loadGamestates("data/gamestates.json");
@@ -98,10 +102,10 @@ void CEngine::update(float delta)
 
 void CEngine::render()
 {
-    PROFILE_FUNCTION("CEngine::render");
-    _module_render.generateFrame();
+	PROFILE_FUNCTION("CEngine::render");
+	_module_render.generateFrame();
 }
 
 CModuleGameManager& CEngine::getGameManager() {
-    return *(CModuleGameManager*)_modules.getModule("game_manager");
+	return *(CModuleGameManager*)_modules.getModule("game_manager");
 }
