@@ -69,6 +69,7 @@ public:
   static uint32_t        npredefined_managers;
 
 public:
+	bool multithreaded = false;
 
   // ---------------------------------------
   CHandleManager()

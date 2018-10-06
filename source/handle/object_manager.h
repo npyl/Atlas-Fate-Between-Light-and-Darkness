@@ -2,7 +2,7 @@
 #define INC_OBJECT_MANAGER_H_
 
 #include "handle_manager.h"
-//#include "tbb/tbb.h"
+#include "tbb/tbb.h"
 
 // Declared in module_multithreading
 extern bool is_multithreaded_enabled;
@@ -123,19 +123,21 @@ public:
 
     if (!num_objs_used)
         return;
-    /*
-    if ( multithreaded && is_multithreaded_enabled ) {
-      int nDefThreads = tbb::task_scheduler_init::default_num_threads();
-      size_t step = num_objs_used / nDefThreads;
-      tbb::parallel_for(size_t(0), size_t(num_objs_used), step, [&, dt](size_t i) {
-        objs[i].update(dt); }
-      );
-    }
-    else {
-      */
-      for (uint32_t i = 0; i < num_objs_used; ++i) 
-        objs[i].update(dt);
-    //}
+		if (multithreaded /*&& is_multithreaded_enabled*/) {
+			int nDefThreads = tbb::task_scheduler_init::default_num_threads();
+			size_t step = num_objs_used / nDefThreads;
+			if (step == 0 && num_objs_used > 0)
+			{
+				step = 1;
+			}
+			tbb::parallel_for(size_t(0), size_t(num_objs_used), step, [&, dt](size_t i) {
+				objs[i].update(dt); }
+			);
+		}
+		else {
+			for (uint32_t i = 0; i < num_objs_used; ++i)
+				objs[i].update(dt);
+		}
   }
 
   // ---------------------------------------- 

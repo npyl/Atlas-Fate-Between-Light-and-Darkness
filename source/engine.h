@@ -20,65 +20,71 @@
 #include "modules/system/module_debug.h"
 #include "modules/system/module_lerp.h"
 #include "modules/module_animations.h"
+#include "modules/system/module_multithread.h"
+
 
 class CModuleGameManager;
 
 class CEngine
 {
 public:
-    CEngine();
-    static CEngine& get();
+	CEngine();
+	static CEngine& get();
 
-    bool start();
-    bool stop();
-    void update(float delta);
-    void render();
+	bool start();
+	bool stop();
+	void update(float delta);
+	void render();
 
-    // System modules
-    CModuleManager& getModules() { return _modules; }
-    CModuleRender& getRender() { return _module_render; }
-    CModuleIA& getIA() { return _module_ia; }
+	// System modules
+	CModuleManager& getModules() { return _modules; }
+	CModuleRender& getRender() { return _module_render; }
+	CModuleIA& getIA() { return _module_ia; }
 	CModuleAnimations& getAnimations() { return _module_animations; }
-    CModuleInput& getInput() { return _module_input; }
-    CModulePhysics& getPhysics() { return _module_physics; }
-    CModuleCameras& getCameras() { return _module_cameras; }
-    CModuleEntities& getEntities() { return _module_entities; }
-    CModuleNavmesh& getNavmeshes() { return _module_navmesh; }
-    CModuleFSM& getFSM() { return _module_fsm; }
-    CModuleSound& getSound() { return _module_sound; }
-    CModuleLogic& getLogic() { return _module_logic; }
-    CModuleGameConsole& getGameConsole() { return _module_game_console; }
-    CModuleGUI& getGUI() { return _module_gui; }
-    CModuleSceneManager& getSceneManager() { return _module_scene_manager; }
-    CModuleInstancing& getInstancing() { return _module_instancing; }
+	CModuleInput& getInput() { return _module_input; }
+	CModulePhysics& getPhysics() { return _module_physics; }
+	CModuleCameras& getCameras() { return _module_cameras; }
+	CModuleEntities& getEntities() { return _module_entities; }
+	CModuleNavmesh& getNavmeshes() { return _module_navmesh; }
+	CModuleFSM& getFSM() { return _module_fsm; }
+	CModuleSound& getSound() { return _module_sound; }
+	CModuleLogic& getLogic() { return _module_logic; }
+	CModuleGameConsole& getGameConsole() { return _module_game_console; }
+	CModuleGUI& getGUI() { return _module_gui; }
+	CModuleSceneManager& getSceneManager() { return _module_scene_manager; }
+	CModuleInstancing& getInstancing() { return _module_instancing; }
 	CModuleLerp& getLerp() { return _module_lerp; }
-    CModuleParticles& getParticles() { return _module_particles; }
+	CModuleParticles& getParticles() { return _module_particles; }
+	CModuleMultithread& getMultithread() { return _module_multithread; }
 
-    CModuleDebug& getDebug() { return _module_debug; }
 
-    // Game modules
-    CModuleGameManager& getGameManager();
+	CModuleDebug& getDebug() { return _module_debug; }
+
+	// Game modules
+	CModuleGameManager& getGameManager();
 
 private:
-    CModuleManager  _modules;
-    CModuleRender   _module_render;
-    CModuleEntities _module_entities;
-    CModulePhysics _module_physics;
-    CModuleIA       _module_ia;
+	CModuleManager  _modules;
+	CModuleRender   _module_render;
+	CModuleEntities _module_entities;
+	CModulePhysics _module_physics;
+	CModuleIA       _module_ia;
 	CModuleAnimations       _module_animations;
-    CModuleInput    _module_input;
-    CModuleCameras  _module_cameras;
-    CModuleFSM      _module_fsm;
-    CModuleSound    _module_sound;
-    CModuleNavmesh  _module_navmesh;
-    CModuleLogic    _module_logic;
-    CModuleGameConsole _module_game_console;
-    CModuleGUI _module_gui;
-    CModuleSceneManager _module_scene_manager;
+	CModuleInput    _module_input;
+	CModuleCameras  _module_cameras;
+	CModuleFSM      _module_fsm;
+	CModuleSound    _module_sound;
+	CModuleNavmesh  _module_navmesh;
+	CModuleLogic    _module_logic;
+	CModuleGameConsole _module_game_console;
+	CModuleGUI _module_gui;
+	CModuleSceneManager _module_scene_manager;
 	CModuleLerp _module_lerp;
-    CModuleInstancing _module_instancing;
-    CModuleParticles  _module_particles;
-    CModuleDebug _module_debug;
+	CModuleInstancing _module_instancing;
+	CModuleParticles  _module_particles;
+	CModuleDebug _module_debug;
+	CModuleMultithread  _module_multithread;
+
 };
 
 #define Engine CEngine::get()
