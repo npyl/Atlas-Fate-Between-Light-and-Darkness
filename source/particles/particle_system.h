@@ -189,11 +189,14 @@ namespace Particles
         VEC3 generateDirection() const;
         void getRenderMode(VEC3 & camera_pos, VEC3 & camera_up, float & length);
 
+				bool processParticle(TParticle& p, const VEC3& kWindVelocity, const float fadeRatio, const MAT44 world, const MAT44 world_rot, const float delta);
+
         VEC3 AddNoiseOnAngle(float min, float max);
 
         CHandle             _entity;
         TParticlesHandle    _handle;
         VParticles          _particles;
+				std::vector<int>    _particlesToDelete;
         const TCoreSystem*  _core = nullptr;
 
         float               _time = 0.f;
@@ -210,6 +213,10 @@ namespace Particles
         VEC3 _lastSystemPosition;
 
         std::vector<TNBurst> bursts;
+
+				//Multithreading mutex
+				typedef tbb::spin_mutex FreeListMutexType;
+				FreeListMutexType FreeListMutex;
     };
 
 }

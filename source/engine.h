@@ -105,3 +105,4 @@ private:
 #define EngineInstancing CEngine::get().getInstancing()
 #define EngineDebug CEngine::get().getDebug()
 #define EngineAnimations CEngine::get().getAnimations()
+#define EngineMT CEngine::get().getMultithread()
