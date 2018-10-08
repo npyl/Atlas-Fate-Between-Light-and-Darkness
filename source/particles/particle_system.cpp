@@ -302,11 +302,11 @@ namespace Particles
 
 				tbb::parallel_for(size_t(0), size_t(_particles.size()), step, [&](int i)
 				{
-					PROFILE_FUNCTION("Process Particle with MT");
+					//PROFILE_FUNCTION("Process Particle with MT");
 					//If the particle is about to die, we save it in a list to delete it afterwards
 					if (!processParticle(_particles[i], kWindVelocity, _fadeRatio, world, world_rot, delta)) {
 						{
-							PROFILE_FUNCTION("Mutex");
+							//PROFILE_FUNCTION("Mutex");
 							//Using mutex
 							FreeListMutexType::scoped_lock lock(FreeListMutex);
 							_particlesToDelete.emplace_back(i);
@@ -320,7 +320,7 @@ namespace Particles
 			else {
 				for (auto it = 0; it != _particles.size(); it++)
 				{
-					PROFILE_FUNCTION("Process Particle without MT");
+					//PROFILE_FUNCTION("Process Particle without MT");
 					if (!processParticle(_particles[it], kWindVelocity, _fadeRatio, world, world_rot, delta)) {
 						_particlesToDelete.emplace_back(it);
 					}
@@ -330,7 +330,7 @@ namespace Particles
 
 			//Deleting particles that were previously queued for destruction
 			if (_particlesToDelete.size() > 0) {
-				PROFILE_FUNCTION("Deleting particles");
+				//PROFILE_FUNCTION("Deleting particles");
 				std::sort(_particlesToDelete.begin(), _particlesToDelete.end());
 				//std::unique(_particlesToDelete.begin(), _particlesToDelete.end());
 				for (int i = _particlesToDelete.size() - 1; i >= 0; i--) {

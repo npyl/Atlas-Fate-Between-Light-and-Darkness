@@ -33,6 +33,7 @@ public:
 	}
 
 	void updateGPU() const {
+		PROFILE_FUNCTION("updateGPU");
 		const TPOD* pod = this;
 		Render.ctx->UpdateSubresource(cb, 0, NULL, pod, 0, 0);
 	}
