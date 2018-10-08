@@ -46,12 +46,12 @@ void CModuleParticles::update(float delta)
 	{
 		Particles::CSystem* ps = *it;
 
-		bool active = ps->update(delta);
-		if (!active)
-		{
-			// Destroy the entity if it's marked as destroyable entity
-			//if (ps->_destroy_entity)
-					//EngineLogic.execScript("destroyHandle(" + std::to_string(ps->getHandle()) + ")");
+        bool active = ps->update(delta);
+        if (!active)
+        {
+            // Destroy the entity if it's marked as destroyable entity
+            if (ps->_destroy_entity) 
+                EngineLogic.execScript("destroyHandle(" + ps->getHandleEntity().asString() + ")");
 
 			delete ps;
 			it = _activeSystems.erase(it);

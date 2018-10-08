@@ -714,7 +714,13 @@ namespace Particles
 		return _handle;
 	}
 
-	void CSystem::setActive(bool active) {
+    CHandle CSystem::getHandleEntity() const
+    {
+        return _entity;
+    }
+
+    void CSystem::setActive(bool active)
+    {
 
 		_enabled = active;
 	}
@@ -725,14 +731,14 @@ namespace Particles
 		_fadeTime = 0.f;
 	}
 
-	VEC3 CSystem::AddNoiseOnAngle(float min, float max) {
-
-		float xNoise = random(min, max);
-		float yNoise = random(min, max);
-		float zNoise = random(min, max);
-		//VEC3 noize = VEC3(xNoise, yNoise, zNoise);
-		//noize.Normalize();
-		//return noize;
+    VEC3 CSystem::AddNoiseOnAngle(float min, float max) 
+    {
+        float xNoise = random(min, max);
+        float yNoise = random(min, max);
+        float zNoise = random(min, max);
+        //VEC3 noize = VEC3(xNoise, yNoise, zNoise);
+        //noize.Normalize();
+        //return noize;
 
 		// Convert Angle to Vector3
 		VEC3 noise = VEC3(
