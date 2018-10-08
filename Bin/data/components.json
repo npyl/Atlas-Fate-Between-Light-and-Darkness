@@ -8,7 +8,7 @@
     "transform": 90
   },
   "multithread": [
-    "skeleton"
+    
   ],
   "update": [
     "circular_controller",
@@ -56,6 +56,7 @@
     "camera",
     "laser",
     "fsm",
+    "blur_active_controller",
     "gpu_particles",
     "glitch_controller",
     "player_animator",

@@ -149,6 +149,8 @@ void execDeadButton();
 void takeOutBlackScreen();
 void goToMainMenu();
 void takeOutCredits();
+void takeOutControlsOnMainMenu();
+void takeOutCreditsOnMainMenu();
 
 /* DEBUG - TODO: Delete */
 void sendOrderToDrone(const std::string& droneName, VEC3 position);

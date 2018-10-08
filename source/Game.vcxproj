@@ -97,6 +97,7 @@
     <ClCompile Include="camera\camera.cpp" />
     <ClCompile Include="checkpoints\checkpoint.cpp" />
     <ClCompile Include="components\camera_controller\comp_auxcamera_shadowmerge.cpp" />
+    <ClCompile Include="components\camera_controller\comp_blur_active_controller.cpp" />
     <ClCompile Include="components\camera_controller\comp_camera_flyover.cpp" />
     <ClCompile Include="components\camera_controller\comp_camera_follow_entity.cpp" />
     <ClCompile Include="components\camera_controller\comp_camera_orbit.cpp" />
@@ -213,6 +214,7 @@
     <ClCompile Include="gui\widgets\gui_image.cpp" />
     <ClCompile Include="gui\widgets\gui_radial_bar.cpp" />
     <ClCompile Include="gui\widgets\gui_sprite.cpp" />
+    <ClCompile Include="gui\widgets\gui_subtitles.cpp" />
     <ClCompile Include="gui\widgets\gui_text.cpp" />
     <ClCompile Include="gui\widgets\gui_video.cpp" />
     <ClCompile Include="handle\handle_def.cpp" />
@@ -344,6 +346,7 @@
     <ClInclude Include="camera\camera.h" />
     <ClInclude Include="checkpoints\checkpoint.h" />
     <ClInclude Include="components\camera_controller\comp_auxcamera_shadowmerge.h" />
+    <ClInclude Include="components\camera_controller\comp_blur_active_controller.h" />
     <ClInclude Include="components\camera_controller\comp_camera_flyover.h" />
     <ClInclude Include="components\camera_controller\comp_camera_follow_entity.h" />
     <ClInclude Include="components\camera_controller\comp_camera_orbit.h" />
@@ -484,6 +487,7 @@
     <ClInclude Include="gui\widgets\gui_image.h" />
     <ClInclude Include="gui\widgets\gui_radial_bar.h" />
     <ClInclude Include="gui\widgets\gui_sprite.h" />
+    <ClInclude Include="gui\widgets\gui_subtitles.h" />
     <ClInclude Include="gui\widgets\gui_text.h" />
     <ClInclude Include="gui\widgets\gui_video.h" />
     <ClInclude Include="handle\handle.h" />

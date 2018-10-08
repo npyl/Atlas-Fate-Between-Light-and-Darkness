@@ -23,6 +23,8 @@
 #include "windows/app.h"
 #include "components/object_controller/comp_noise_emitter.h"
 #include "modules/game/module_game_manager.h"
+#include "components/postfx/comp_render_blur.h"
+#include "components/postfx/comp_render_focus.h"
 
 bool CModuleLogic::start() {
 
@@ -291,6 +293,8 @@ void CModuleLogic::publishClasses() {
 	m->set("takeOutBlackScreen", SLB::FuncCall::create(&takeOutBlackScreen));
 	m->set("goToMainMenu", SLB::FuncCall::create(&goToMainMenu));
 	m->set("takeOutCredits", SLB::FuncCall::create(&takeOutCredits));
+	m->set("takeOutControlsOnMainMenu", SLB::FuncCall::create(&takeOutControlsOnMainMenu));
+	m->set("takeOutCreditsOnMainMenu", SLB::FuncCall::create(&takeOutCreditsOnMainMenu));
 	
     // Other
     m->set("lanternsDisable", SLB::FuncCall::create(&lanternsDisable));
@@ -946,4 +950,16 @@ void goToMainMenu() {
 void takeOutCredits() {
 	EngineGUI.deactivateWidget(CModuleGUI::EGUIWidgets::INGAME_MENU_PAUSE);
 	EngineGUI.deactivateWidget(CModuleGUI::EGUIWidgets::CREDITS);
+}
+
+void takeOutControlsOnMainMenu() {
+	EngineGUI.deactivateWidget(CModuleGUI::EGUIWidgets::MAIN_MENU_CONTROLS_BACKGROUND);
+	EngineGUI.deactivateWidget(CModuleGUI::EGUIWidgets::MAIN_MENU_CONTROLS_BACK);
+	EngineGUI.activateController(CModuleGUI::EGUIWidgets::MAIN_MENU_BUTTONS);
+}
+
+void takeOutCreditsOnMainMenu() {
+	EngineGUI.deactivateWidget(CModuleGUI::EGUIWidgets::MAIN_MENU_CREDITS_BACKGROUND);
+	EngineGUI.deactivateWidget(CModuleGUI::EGUIWidgets::MAIN_MENU_CREDITS_BACK);
+	EngineGUI.activateController(CModuleGUI::EGUIWidgets::MAIN_MENU_BUTTONS);
 }
