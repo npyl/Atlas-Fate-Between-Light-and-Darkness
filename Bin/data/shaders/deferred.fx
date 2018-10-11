@@ -74,7 +74,7 @@ float4 ground_fog(float4 iPosition, float2 iTex0, float3 in_color)
 	float be = 0.045 * smoothstep(0.0, 2.0, 60.0 - wPos.y);
 	float bi = 0.075* smoothstep(0.0, 80, 10.0 - wPos.y);
 	
-	float fog_factor = exp(-dist * be) * (1 - exp(-dist * bi)) * global_fog_ground_density;
+	float fog_factor = exp(-dist * be) * (1 - exp(-dist * bi)) * global_fog_ground_density * (1  + dist * global_fog_ground_density);
 	float3 color = in_color * ( 1 - fog_factor) + global_fog_color * fog_factor;
 		
 	return float4(color,1);
