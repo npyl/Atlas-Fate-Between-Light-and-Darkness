@@ -462,7 +462,8 @@
 				"cores":
 				[
 					"data/particles/def_amb_rain_heavy.particles",
-					"data/particles/def_amb_rain_core_heavy.particles"
+					"data/particles/def_amb_rain_core_heavy.particles",
+					"data/particles/def_amb_storm_clouds.particles"
 				]
 			}
 		}
