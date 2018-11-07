@@ -132,7 +132,7 @@
 				"mergeAngle": 0.45,
 				"maxFallingTime": 0.5,
 				"hardFallingTime": 0.4,
-				"maxFallingDistance": 6,
+				"maxFallingDistance": 12,
 				"maxAttackDistance": 2,
 				"minStamina": 0,
 				"maxStamina": 100,
