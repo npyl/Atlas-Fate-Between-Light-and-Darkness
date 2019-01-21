@@ -1,5 +1,0 @@
-{
-  "instanced_mesh" : "data/meshes/grass_plane.mesh",
-  "instances_type" : "InstancedPos",
-  "num_instances_reserved" : 1000
-}

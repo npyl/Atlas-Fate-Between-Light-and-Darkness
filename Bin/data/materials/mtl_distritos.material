@@ -1,8 +1,0 @@
-{
-	"technique": "tv_screen_district.tech",
-	"shadows": true,
-	"textures": {
-		"albedo": "data/textures/tx_distritos_alb.dds",
-		"normal": "data/textures/null_normal.dds"
-	}
-}

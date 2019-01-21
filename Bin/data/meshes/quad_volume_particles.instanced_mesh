@@ -1,5 +1,0 @@
-{
-  "instanced_mesh" : "unit_quad_xy.mesh",
-  "instances_type" : "CpuParticleInstance",
-  "num_instances_reserved" : 8
-}

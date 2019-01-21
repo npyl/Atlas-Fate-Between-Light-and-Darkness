@@ -1,7 +1,0 @@
-{
-	"technique": "pbr_shaft_spotlight.tech",
-	"shadows": false,
-	"textures": {
-		"albedo": "data/textures/tx_luz_alb.dds"
-	}
-}

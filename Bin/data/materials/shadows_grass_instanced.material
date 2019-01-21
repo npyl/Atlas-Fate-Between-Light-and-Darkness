@@ -1,7 +1,0 @@
-{
-  "technique": "shadows_grass_instanced.tech",
-  "textures":
-  {
-    "albedo": "data/textures/grass/grass_brown_alb.dds"
-  }
-}

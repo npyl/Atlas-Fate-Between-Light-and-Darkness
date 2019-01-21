@@ -1,9 +1,0 @@
-{
-  "technique": "skybox.tech"
-  , 
-  "shadows": false,
-  "textures":
-  {
-    "albedo": "data/textures/default_skybox.dds"
-  }
-}
